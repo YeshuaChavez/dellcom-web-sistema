@@ -1,0 +1,109 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── SISTEMA ADMINISTRATIVO ───────────────────────────
+
+model Usuario {
+  id            Int              @id @default(autoincrement()) @map("id_usuario")
+  nombre        String
+  usuario       String           @unique
+  email         String           @unique
+  contrasena    String
+  rol           Rol              @default(tecnico)
+  activo        Boolean          @default(true)
+  createdAt     DateTime         @default(now())
+  archivos      ArchivoTecnico[]
+  licencias     Licencia[]
+}
+
+enum Rol {
+  admin
+  tecnico
+  vendedor
+}
+
+model Licencia {
+  id             Int       @id @default(autoincrement()) @map("id_licencia")
+  id_usuario     Int
+  usuario        Usuario   @relation(fields: [id_usuario], references: [id])
+  software       String
+  correo_cuenta  String
+  contrasena     String
+  fecha_inicio   DateTime
+  fecha_fin      DateTime?
+  nombre_cliente String
+  telefono       String?
+  estado         EstadoLicencia @default(activo)
+  observaciones  String?   @db.Text
+  createdAt      DateTime  @default(now())
+}
+
+enum EstadoLicencia {
+  activo
+  vencido
+}
+
+model ArchivoTecnico {
+  id            Int         @id @default(autoincrement()) @map("id_archivo")
+  id_usuario    Int
+  usuario       Usuario     @relation(fields: [id_usuario], references: [id])
+  nombre        String
+  tipo          TipoArchivo
+  url_archivo   String
+  descripcion   String?     @db.Text
+  fecha_subida  DateTime    @default(now())
+}
+
+enum TipoArchivo {
+  programa
+  driver
+  excel
+  link
+}
+
+// ─── SISTEMA WEB ──────────────────────────────────────
+
+model Servicio {
+  id          Int                @id @default(autoincrement()) @map("id_servicio")
+  nombre      String
+  descripcion String             @db.Text
+  icono_url   String?
+  activo      Boolean            @default(true)
+  trabajos    TrabajoRealizado[]
+}
+
+model Categoria {
+  id       Int        @id @default(autoincrement()) @map("id_categoria")
+  nombre   String     @unique
+  activo   Boolean    @default(true)
+  productos Producto[]
+}
+
+model Producto {
+  id           Int       @id @default(autoincrement()) @map("id_producto")
+  id_categoria Int
+  categoria    Categoria @relation(fields: [id_categoria], references: [id])
+  nombre       String
+  descripcion  String?   @db.Text
+  precio       Decimal   @db.Decimal(10, 2)
+  imagen_url   String?
+  activo       Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}
+
+model TrabajoRealizado {
+  id           Int      @id @default(autoincrement()) @map("id_trabajo")
+  id_servicio  Int?
+  servicio     Servicio? @relation(fields: [id_servicio], references: [id])
+  titulo       String
+  descripcion  String?  @db.Text
+  imagen_url   String
+  fecha        DateTime @default(now())
+}
