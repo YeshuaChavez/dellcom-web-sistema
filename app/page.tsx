@@ -416,11 +416,6 @@ export default async function Home() {
                         src={trabajo.imagen_url} 
                         alt={trabajo.titulo} 
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
-                        onError={(e) => {
-                          const target = e.currentTarget as HTMLImageElement;
-                          target.onerror = null;
-                          target.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100%' height='100%' viewBox='0 0 400 200'><rect width='100%' height='100%' fill='%23f1f5f9'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='16' fill='%2394a3b8'>DELLCOM PORTAFOLIO</text></svg>";
-                        }}
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
                       <div className="absolute top-4 left-4 bg-black/60 backdrop-blur-sm text-white px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">
