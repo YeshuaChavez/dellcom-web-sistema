@@ -178,6 +178,15 @@ export default function DescargasPage() {
             <Link className="text-on-surface-variant hover:text-primary transition-colors text-sm font-semibold" href="/#nosotros">Nosotros</Link>
             <Link className="text-on-surface-variant hover:text-primary transition-colors text-sm font-semibold" href="/#contacto">Contacto</Link>
             
+            {/* Admin Login Link */}
+            <Link 
+              href="/admin/login"
+              className="text-on-surface-variant hover:text-primary transition-colors text-sm font-semibold flex items-center gap-1.5"
+            >
+              <span className="material-symbols-outlined text-[18px]">vpn_key</span>
+              Acceso Técnico
+            </Link>
+            
             {/* AnyDesk Support CTA Link */}
             <a 
               href="https://anydesk.com/download"

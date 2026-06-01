@@ -182,6 +182,15 @@ export default async function Home() {
             <a className="text-on-surface-variant hover:text-primary transition-colors text-sm font-semibold" href="#nosotros">Nosotros</a>
             <a className="text-on-surface-variant hover:text-primary transition-colors text-sm font-semibold" href="#contacto">Contacto</a>
             
+            {/* Admin Login Link */}
+            <a 
+              href="/admin/login"
+              className="text-on-surface-variant hover:text-primary transition-colors text-sm font-semibold flex items-center gap-1.5"
+            >
+              <span className="material-symbols-outlined text-[18px]">vpn_key</span>
+              Acceso Técnico
+            </a>
+            
             {/* AnyDesk Support CTA Link */}
             <a 
               href="https://anydesk.com/download"
