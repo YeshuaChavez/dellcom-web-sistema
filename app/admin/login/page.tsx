@@ -76,25 +76,25 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center px-4 relative overflow-hidden bg-slate-50 selection:bg-primary/20 selection:text-primary">
+    <div className="min-h-screen flex flex-col justify-center items-center px-4 relative overflow-hidden bg-slate-100 selection:bg-primary/20 selection:text-primary">
       {/* Background Video (Light Mode Optimized) */}
       <video
         autoPlay
         loop
         muted
         playsInline
-        className="absolute inset-0 w-full h-full object-cover z-0 opacity-20 filter brightness-110 contrast-100 saturate-100"
+        className="absolute inset-0 w-full h-full object-cover z-0 opacity-40 filter brightness-105 contrast-95 saturate-100"
       >
         <source src="/vid/laptop_video.mp4" type="video/mp4" />
         Your browser does not support the video tag.
       </video>
 
       {/* Light semi-transparent overlay with glass backdrop blur */}
-      <div className="absolute inset-0 bg-slate-50/80 backdrop-blur-[3px] pointer-events-none z-0"></div>
+      <div className="absolute inset-0 bg-white/70 backdrop-blur-[3px] pointer-events-none z-0"></div>
 
       {/* Grid Pattern Background */}
       <div 
-        className="absolute inset-0 pointer-events-none opacity-[0.15] z-0"
+        className="absolute inset-0 pointer-events-none opacity-[0.12] z-0"
         style={{
           backgroundImage: "radial-gradient(#94a3b8 1.5px, transparent 1.5px)",
           backgroundSize: "24px 24px"
@@ -102,7 +102,7 @@ export default function AdminLoginPage() {
       />
       
       {/* Light Gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-tr from-white via-white/90 to-red-500/5 pointer-events-none z-0"></div>
+      <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-transparent to-primary/5 pointer-events-none z-0"></div>
 
       {/* Red Glowing Auroras in the background */}
       <div className="absolute top-1/4 left-1/4 w-[350px] h-[350px] bg-primary/5 rounded-full blur-[100px] pointer-events-none z-0"></div>
