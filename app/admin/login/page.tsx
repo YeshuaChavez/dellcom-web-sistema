@@ -77,13 +77,12 @@ export default function AdminLoginPage() {
 
   return (
     <div className="min-h-screen flex flex-col justify-center items-center px-4 relative overflow-hidden bg-slate-100 selection:bg-primary/20 selection:text-primary">
-      {/* Background Video (Light Mode Optimized) */}
       <video
         autoPlay
         loop
         muted
         playsInline
-        className="absolute inset-0 w-full h-full object-cover z-0 opacity-40 filter brightness-105 contrast-95 saturate-100"
+        className="absolute inset-0 w-full h-full object-cover z-0 opacity-[0.65] filter brightness-105 contrast-95 saturate-100"
       >
         <source src="/vid/laptop_video.mp4" type="video/mp4" />
         Your browser does not support the video tag.
