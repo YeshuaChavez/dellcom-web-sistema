@@ -268,8 +268,10 @@ export default function ContactoPage() {
                   </div>
                   <div>
                     <p className="font-bold text-on-surface">Líneas de Atención</p>
-                    <p className="text-on-surface-variant mt-0.5">
-                      +51 987 654 321 | soporte@dellcom.pe
+                    <p className="text-on-surface-variant mt-0.5 flex flex-col gap-0.5">
+                      <span>+51 925 981 741</span>
+                      <span>+51 922 452 929</span>
+                      <span className="text-[10px] text-slate-400 mt-1 font-semibold">soporte@dellcom.pe</span>
                     </p>
                   </div>
                 </div>
@@ -277,7 +279,7 @@ export default function ContactoPage() {
 
               {/* Direct WhatsApp Action */}
               <a
-                href="https://wa.me/51987654321?text=Hola%20DELLCOM,%20deseo%20asistencia%20t%C3%A9cnica%20inmediata."
+                href="https://wa.me/51925981741?text=Hola%20DELLCOM,%20deseo%20asistencia%20t%C3%A9cnica%20inmediata."
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-full bg-[#25D366] text-white py-4 rounded-2xl text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 hover:scale-[1.02] transition-all shadow-lg shadow-green-500/20 active:scale-95 cursor-pointer"

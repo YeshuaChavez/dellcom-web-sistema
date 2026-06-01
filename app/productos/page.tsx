@@ -356,7 +356,7 @@ export default function ProductosPage() {
                     </div>
                     <a 
                       className="flex items-center gap-1.5 bg-primary hover:bg-primary/95 text-white px-4 py-2.5 rounded-xl text-[11px] font-bold transition-all active:scale-95 shadow-md shadow-primary/10 cursor-pointer" 
-                      href={`https://wa.me/51987654321?text=Hola%20Dellcom%20SAC,%20deseo%20cotizar%20el%20producto%20${encodeURIComponent(prod.nombre)}.`}
+                      href={`https://wa.me/51925981741?text=Hola%20Dellcom%20SAC,%20deseo%20cotizar%20el%20producto%20${encodeURIComponent(prod.nombre)}.`}
                       target="_blank"
                       rel="noopener noreferrer"
                     >

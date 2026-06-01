@@ -89,7 +89,7 @@ export default function HomeHeroSearch() {
     setIsOpen(false);
     
     // Redirect direct to WhatsApp with prefilled message
-    const whatsappUrl = `https://wa.me/51987654321?text=${encodeURIComponent(item.mensajeWhatsApp)}`;
+    const whatsappUrl = `https://wa.me/51925981741?text=${encodeURIComponent(item.mensajeWhatsApp)}`;
     window.open(whatsappUrl, "_blank");
   };
 

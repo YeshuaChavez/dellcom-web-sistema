@@ -33,7 +33,7 @@ export default function CleanFooter() {
           </p>
           <div className="flex gap-4">
             <a 
-              href="https://wa.me/51987654321" 
+              href="https://wa.me/51925981741" 
               target="_blank" 
               rel="noopener noreferrer" 
               className="w-10 h-10 rounded-full border border-slate-200 flex items-center justify-center text-on-surface-variant hover:text-primary hover:border-primary transition-all"
@@ -86,9 +86,12 @@ export default function CleanFooter() {
               <span className="material-symbols-outlined text-primary text-[20px]">location_on</span>
               <span className="text-sm text-on-surface-variant">Av. Santa Elvira, Mza. E, Lote 59, Urb. San Elías, Los Olivos, Lima.</span>
             </li>
-            <li className="flex items-center gap-3">
+            <li className="flex items-start gap-3">
               <span className="material-symbols-outlined text-primary text-[20px]">call</span>
-              <span className="text-sm text-on-surface-variant">+51 987 654 321</span>
+              <div className="flex flex-col gap-0.5">
+                <span className="text-sm text-on-surface-variant">+51 925 981 741</span>
+                <span className="text-sm text-on-surface-variant">+51 922 452 929</span>
+              </div>
             </li>
             <li className="flex items-center gap-3">
               <span className="material-symbols-outlined text-primary text-[20px]">mail</span>

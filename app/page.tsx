@@ -274,7 +274,7 @@ export default async function Home() {
                       </div>
                       
                       <a 
-                        href={`https://wa.me/51987654321?text=Hola%20Dellcom,%20me%20interesa%20el%20servicio%20de%20${encodeURIComponent(service.nombre)}`}
+                        href={`https://wa.me/51925981741?text=Hola%20Dellcom,%20me%20interesa%20el%20servicio%20de%20${encodeURIComponent(service.nombre)}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-2 text-primary text-xs font-bold uppercase tracking-wider group-hover:gap-4 transition-all pt-2"
@@ -440,7 +440,11 @@ export default async function Home() {
                   <span className="material-symbols-outlined text-primary mt-0.5">phone_iphone</span>
                   <div className="text-xs">
                     <p className="font-bold text-on-surface">Contacto Directo</p>
-                    <p className="text-on-surface-variant mt-0.5">+51 987 654 321 | soporte@dellcom.pe</p>
+                    <p className="text-on-surface-variant mt-0.5 flex flex-col gap-0.5">
+                      <span>+51 925 981 741</span>
+                      <span>+51 922 452 929</span>
+                      <span className="text-[10px] text-slate-400 mt-1 font-semibold">soporte@dellcom.pe</span>
+                    </p>
                   </div>
                 </div>
               </div>

@@ -25,7 +25,7 @@ export default function AnyDeskConsole({ onCodeChange }: AnyDeskConsoleProps) {
     const formatted = `${cleanCode.substring(0, 3)} ${cleanCode.substring(3, 6)} ${cleanCode.substring(6, 9)}`;
 
     const message = `Hola DELLCOM, solicito asistencia remota mediante ${appType}. Mi código de dirección de conexión es: ${formatted}.`;
-    const whatsappUrl = `https://wa.me/51987654321?text=${encodeURIComponent(message)}`;
+    const whatsappUrl = `https://wa.me/51925981741?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, "_blank");
   };
 
