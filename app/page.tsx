@@ -4,11 +4,11 @@ import ScrollRevealObserver from "./components/ScrollRevealObserver";
 
 const serviceVisuals: Record<string, { image: string; icon: string }> = {
   "reparación": {
-    image: "https://images.unsplash.com/photo-1588508065123-287b28e013da?auto=format&fit=crop&w=600&q=80",
+    image: "/img/servicios/reparacion_laptop.jpg",
     icon: "laptop_mac"
   },
   "microelectrónica": {
-    image: "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?auto=format&fit=crop&w=600&q=80",
+    image: "/img/servicios/microelectronica.jpg",
     icon: "memory"
   },
   "redes": {
@@ -16,15 +16,15 @@ const serviceVisuals: Record<string, { image: string; icon: string }> = {
     icon: "dns"
   },
   "soporte": {
-    image: "https://images.unsplash.com/photo-1531403009284-440f080d1e12?auto=format&fit=crop&w=600&q=80",
+    image: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?auto=format&fit=crop&w=600&q=80",
     icon: "support_agent"
   },
   "correo": {
-    image: "https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=600&q=80",
+    image: "https://images.unsplash.com/photo-1557200134-90327ee9fafa?auto=format&fit=crop&w=600&q=80",
     icon: "mail"
   },
   "licencia": {
-    image: "https://images.unsplash.com/photo-1600132806370-bf17e65e942f?auto=format&fit=crop&w=600&q=80",
+    image: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=600&q=80",
     icon: "verified_user"
   }
 };
