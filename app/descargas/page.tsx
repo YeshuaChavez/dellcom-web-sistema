@@ -181,9 +181,8 @@ export default function DescargasPage() {
             {/* Admin Login Link */}
             <Link 
               href="/admin/login"
-              className="text-on-surface-variant hover:text-primary transition-colors text-sm font-semibold flex items-center gap-1.5"
+              className="text-on-surface-variant hover:text-primary transition-colors text-sm font-semibold"
             >
-              <span className="material-symbols-outlined text-[18px]">vpn_key</span>
               Acceso Técnico
             </Link>
             
