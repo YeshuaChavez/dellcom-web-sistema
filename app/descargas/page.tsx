@@ -3,41 +3,23 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 
-interface Producto {
+interface ArchivoTecnico {
   id: number;
   nombre: string;
-  descripcion: string;
-  precio: string | number;
-  imagen_url: string;
-  categoria: {
-    nombre: string;
-  };
-}
-
-interface Categoria {
-  id: number;
-  nombre: string;
+  tipo: "programa" | "driver" | "excel" | "link";
+  url_archivo: string;
+  descripcion: string | null;
+  fecha_subida: string;
 }
 
 // Inline Dellcom SVG Logo
 function DellcomLogo({ className = "w-10 h-10" }: { className?: string }) {
   return (
     <svg viewBox="0 0 100 100" className={className} xmlns="http://www.w3.org/2000/svg">
-      {/* Outer glowing red ring */}
       <circle cx="50" cy="50" r="46" stroke="#dc2626" strokeWidth="3" fill="none" opacity="0.85" />
-      {/* Dark background circle */}
       <circle cx="50" cy="50" r="43" fill="#000000" />
-      
-      {/* Left side: Stylized Brain in White */}
       <path 
-        d="M 48 20 
-           C 40 20, 36 24, 36 28 
-           C 30 28, 27 33, 29 39 
-           C 24 41, 23 48, 26 53 
-           C 21 57, 21 64, 25 68 
-           C 23 74, 28 80, 35 80 
-           C 38 80, 42 78, 44 76
-           C 46 78, 48 80, 48 80 Z" 
+        d="M 48 20 C 40 20, 36 24, 36 28 C 30 28, 27 33, 29 39 C 24 41, 23 48, 26 53 C 21 57, 21 64, 25 68 C 23 74, 28 80, 35 80 C 38 80, 42 78, 44 76 C 46 78, 48 80, 48 80 Z" 
         stroke="#ffffff" 
         strokeWidth="3.5" 
         strokeLinecap="round" 
@@ -52,11 +34,7 @@ function DellcomLogo({ className = "w-10 h-10" }: { className?: string }) {
         strokeLinejoin="round" 
         fill="none" 
       />
-      
-      {/* Center line separator */}
       <line x1="50" y1="18" x2="50" y2="82" stroke="#dc2626" strokeWidth="2.5" strokeDasharray="3 3" />
-      
-      {/* Right side: Circuit Traces in Crimson Red */}
       <path 
         d="M 52 24 L 66 24 L 66 32 M 52 38 L 74 38 L 74 46 M 52 50 L 64 50 L 72 58 M 52 64 L 72 64 M 52 74 L 64 74 L 64 68" 
         stroke="#dc2626" 
@@ -65,8 +43,6 @@ function DellcomLogo({ className = "w-10 h-10" }: { className?: string }) {
         strokeLinejoin="round" 
         fill="none" 
       />
-      
-      {/* Circuit Nodes (small circles) */}
       <circle cx="66" cy="32" r="3" fill="#dc2626" />
       <circle cx="74" cy="46" r="3" fill="#dc2626" />
       <circle cx="72" cy="58" r="3" fill="#dc2626" />
@@ -76,145 +52,112 @@ function DellcomLogo({ className = "w-10 h-10" }: { className?: string }) {
   );
 }
 
-// Custom Component for Product Images with dynamic fallback icons
-function ProductImage({ src, alt, categoryName }: { src?: string; alt: string; categoryName: string }) {
-  const [error, setError] = useState(false);
-
-  // Helper to determine the best material icon based on category name
-  const getIconForCategory = (cat: string) => {
-    const name = cat.toLowerCase();
-    if (name.includes("impres") || name.includes("ribbon") || name.includes("tint") || name.includes("suministr")) return "print";
-    if (name.includes("red") || name.includes("connect") || name.includes("router") || name.includes("cable")) return "router";
-    if (name.includes("almacen") || name.includes("memor") || name.includes("disco") || name.includes("ssd") || name.includes("ram")) return "memory";
-    if (name.includes("accesorio") || name.includes("mouse") || name.includes("teclad")) return "keyboard";
-    if (name.includes("licenc") || name.includes("soft")) return "verified_user";
-    return "devices";
-  };
-
-  const iconName = getIconForCategory(categoryName);
-
-  if (error || !src) {
-    return (
-      <div className="w-full h-full flex flex-col items-center justify-center bg-slate-100/60 text-slate-400 select-none p-4 min-h-[200px]">
-        <span className="material-symbols-outlined text-[56px] text-slate-300 mb-2 group-hover:scale-110 group-hover:text-primary transition-all duration-300">
-          {iconName}
-        </span>
-        <span className="text-[10px] uppercase font-bold tracking-widest text-slate-400 font-headline">DELLCOM SAC</span>
-      </div>
-    );
-  }
-
-  // Handle local path conversion (e.g. img/productos/... -> /img/productos/...) if they get added to public
-  const cleanedSrc = src.startsWith("http") || src.startsWith("/") ? src : `/${src}`;
-
-  return (
-    <img 
-      alt={alt} 
-      className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 max-h-[220px]" 
-      src={cleanedSrc}
-      onError={() => setError(true)}
-    />
-  );
-}
-
-// Fallback products and categories data if database is empty/connection fails
-const FALLBACK_PRODUCTS: Producto[] = [
+const FALLBACK_ARCHIVOS: ArchivoTecnico[] = [
   {
     id: 1,
-    nombre: "Ribbon Zebra YMCKO Color",
-    descripcion: "Cinta ribbon a color original compatible con impresoras Zebra. Ideal para credenciales y fotochecks de alta calidad.",
-    precio: 189.00,
-    imagen_url: "",
-    categoria: { nombre: "Ribbons y Tintas" }
+    nombre: "Controlador de Impresora Zebra GK420t",
+    tipo: "driver",
+    url_archivo: "https://www.zebra.com/us/en/support-downloads.html",
+    descripcion: "Controlador oficial certificado de Windows para la impresora térmica Zebra GK420t. Versión de 32/64 bits.",
+    fecha_subida: "2026-05-15T00:00:00.000Z"
   },
   {
     id: 2,
-    nombre: "Disco Externo Portátil 1TB",
-    descripcion: "Almacenamiento portátil USB 3.0 de alta velocidad. Excelente para copias de seguridad de datos corporativos.",
-    precio: 240.00,
-    imagen_url: "",
-    categoria: { nombre: "Memorias y Discos Externos" }
+    nombre: "Driver de Impresora de Recibos Epson TM-T20III",
+    tipo: "driver",
+    url_archivo: "https://download.epson-biz.com/?product=tm-t20iii",
+    descripcion: "Epson Advanced Printer Driver (APD) para TM-T20III. Recomendado para integración con sistemas POS.",
+    fecha_subida: "2026-05-10T00:00:00.000Z"
   },
   {
     id: 3,
-    nombre: "Tarjetas de PVC ZEBRA Premium",
-    descripcion: "Paquete de 100 tarjetas plásticas de PVC blanco brillante de alta calidad para impresoras de tarjetas Zebra.",
-    precio: 120.00,
-    imagen_url: "",
-    categoria: { nombre: "Tarjetas ZEBRA" }
+    nombre: "AnyDesk Control Remoto",
+    tipo: "programa",
+    url_archivo: "https://anydesk.com/download",
+    descripcion: "Herramienta de control remoto portátil y ligera para que nuestro personal técnico te asista de inmediato.",
+    fecha_subida: "2026-05-01T00:00:00.000Z"
   },
   {
     id: 4,
-    nombre: "Licencia Original Windows 11 Pro",
-    descripcion: "Clave de activación digital original con soporte y actualizaciones oficiales de por vida para entornos corporativos.",
-    precio: 150.00,
-    imagen_url: "",
-    categoria: { nombre: "Licencias de Software" }
+    nombre: "Plantilla Excel de Control de Inventario Dellcom",
+    tipo: "excel",
+    url_archivo: "https://docs.google.com/spreadsheets/",
+    descripcion: "Plantilla diseñada para el registro, conteo y control periódico de stock de suministros e insumos de oficina.",
+    fecha_subida: "2026-04-20T00:00:00.000Z"
   }
 ];
 
-const FALLBACK_CATEGORIES: Categoria[] = [
-  { id: 1, nombre: "Todos" },
-  { id: 2, nombre: "Ribbons y Tintas" },
-  { id: 3, nombre: "Memorias y Discos Externos" },
-  { id: 4, nombre: "Tarjetas ZEBRA" },
-  { id: 5, nombre: "Licencias de Software" }
-];
-
-export default function CatalogoPage() {
-  const [productos, setProductos] = useState<Producto[]>(FALLBACK_PRODUCTS);
-  const [categorias, setCategorias] = useState<Categoria[]>(FALLBACK_CATEGORIES);
+export default function DescargasPage() {
+  const [archivos, setArchivos] = useState<ArchivoTecnico[]>(FALLBACK_ARCHIVOS);
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("Todos");
-  const [cartCount, setCartCount] = useState(0);
+  const [selectedType, setSelectedType] = useState<string>("Todos");
 
   useEffect(() => {
-    async function loadData() {
+    async function loadArchivos() {
       try {
-        const prodRes = await fetch("/api/productos");
-        const catRes = await fetch("/api/categorias");
-        
-        if (prodRes.ok && catRes.ok) {
-          const prodData = await prodRes.json();
-          const catData = await catRes.json();
-          
-          if (prodData && prodData.length > 0) {
-            setProductos(prodData);
-          }
-          if (catData && catData.length > 0) {
-            // Keep unique categories names from database
-            const uniqueCats = [{ id: 0, nombre: "Todos" }, ...catData];
-            setCategorias(uniqueCats);
+        const res = await fetch("/api/archivos");
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.length > 0) {
+            setArchivos(data);
           }
         }
       } catch (err) {
-        console.warn("Error fetching data from API, using static fallbacks.", err);
+        console.warn("Error fetching files from API, using static fallbacks.", err);
       }
     }
-    loadData();
+    loadArchivos();
   }, []);
 
-  // Filter products based on search query and category
-  const filteredProducts = productos.filter((p) => {
+  // Filter archives by search input & type
+  const filteredArchivos = archivos.filter((a) => {
     const matchesSearch = 
-      p.nombre.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (p.descripcion && p.descripcion.toLowerCase().includes(searchQuery.toLowerCase()));
-    
-    const matchesCategory = 
-      selectedCategory === "Todos" || 
-      (p.categoria && p.categoria.nombre.toLowerCase() === selectedCategory.toLowerCase());
+      a.nombre.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (a.descripcion && a.descripcion.toLowerCase().includes(searchQuery.toLowerCase()));
 
-    return matchesSearch && matchesCategory;
+    const matchesType = 
+      selectedType === "Todos" ||
+      (selectedType === "Programas" && a.tipo === "programa") ||
+      (selectedType === "Controladores" && a.tipo === "driver") ||
+      (selectedType === "Documentos" && a.tipo === "excel") ||
+      (selectedType === "Enlaces" && a.tipo === "link");
+
+    return matchesSearch && matchesType;
   });
 
-  const handleQuoteClick = () => {
-    setCartCount(prev => prev + 1);
+  const getIconForType = (type: string) => {
+    switch (type) {
+      case "programa": return "laptop_mac";
+      case "driver": return "memory";
+      case "excel": return "description";
+      case "link": return "link";
+      default: return "folder_open";
+    }
+  };
+
+  const getLabelForType = (type: string) => {
+    switch (type) {
+      case "programa": return "Programa (.exe)";
+      case "driver": return "Controlador (Driver)";
+      case "excel": return "Documento / Excel";
+      case "link": return "Enlace Útil";
+      default: return "Archivo";
+    }
+  };
+
+  const formatDate = (dateStr: string) => {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString("es-ES", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric"
+    });
   };
 
   return (
     <div className="bg-slate-50 min-h-screen flex flex-col justify-between text-on-surface">
       
-      {/* Header / Top Navigation Bar (Identical to page.tsx) */}
+      {/* Header / Top Navigation Bar */}
       <header className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-outline-variant/30 shadow-sm transition-all duration-300" id="main-header">
         <div className="flex justify-between items-center h-16 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
           {/* Logo Brand */}
@@ -229,8 +172,8 @@ export default function CatalogoPage() {
           {/* Desktop Navigation Links */}
           <nav className="hidden md:flex gap-8 items-center">
             <Link className="text-on-surface-variant hover:text-primary transition-colors text-sm font-semibold" href="/">Inicio</Link>
-            <Link className="text-primary font-bold border-b-2 border-primary pb-0.5 text-sm font-semibold" href="/productos">Catálogo</Link>
-            <Link className="text-on-surface-variant hover:text-primary transition-colors text-sm font-semibold" href="/descargas">Descargas</Link>
+            <Link className="text-on-surface-variant hover:text-primary transition-colors text-sm font-semibold" href="/productos">Catálogo</Link>
+            <Link className="text-primary font-bold border-b-2 border-primary pb-0.5 text-sm font-semibold" href="/descargas">Descargas</Link>
             <Link className="text-on-surface-variant hover:text-primary transition-colors text-sm font-semibold" href="/#servicios">Servicios</Link>
             <Link className="text-on-surface-variant hover:text-primary transition-colors text-sm font-semibold" href="/#nosotros">Nosotros</Link>
             <Link className="text-on-surface-variant hover:text-primary transition-colors text-sm font-semibold" href="/#contacto">Contacto</Link>
@@ -246,18 +189,8 @@ export default function CatalogoPage() {
             </a>
           </nav>
           
-          {/* Mobile Menu Icon & Cart Overlay */}
+          {/* Mobile Menu Icon */}
           <div className="flex items-center gap-4 md:hidden">
-            <button 
-              aria-label="Shopping Cart" 
-              className="relative p-2 hover:bg-black/5 rounded-full transition-colors"
-              onClick={() => alert(`Has solicitado cotizaciones para ${cartCount} producto(s).`)}
-            >
-              <span className="material-symbols-outlined text-on-surface">shopping_cart</span>
-              <span className="absolute top-1 right-1 bg-primary text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
-                {cartCount}
-              </span>
-            </button>
             <button className="text-on-surface hover:text-primary transition-colors">
               <span className="material-symbols-outlined text-3xl">menu</span>
             </button>
@@ -265,7 +198,7 @@ export default function CatalogoPage() {
         </div>
       </header>
 
-      {/* Main Catalog View Container */}
+      {/* Main Downloads View Container */}
       <main className="pt-24 pb-20 flex-1 max-w-container-max mx-auto w-full px-margin-mobile md:px-margin-desktop">
         
         {/* Title and Search Bar */}
@@ -273,29 +206,24 @@ export default function CatalogoPage() {
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div>
               <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider mb-2">
-                <span className="material-symbols-outlined text-[16px]">grid_view</span>
-                Catálogo Virtual 2026
+                <span className="material-symbols-outlined text-[16px]">download</span>
+                Centro de Descargas Técnicas
               </div>
               <h2 className="font-headline text-3xl md:text-5xl font-extrabold text-on-surface tracking-tight">
-                Nuestros <span className="text-primary">Productos</span>
+                Drivers y <span className="text-primary">Programas</span>
               </h2>
-            </div>
-            
-            {/* Dynamic cart badge for desktop */}
-            <div className="hidden md:flex items-center gap-3 bg-white border border-outline-variant/30 rounded-2xl px-5 py-3 shadow-sm select-none">
-              <span className="material-symbols-outlined text-primary text-[24px]">shopping_cart</span>
-              <div className="flex flex-col text-left">
-                <span className="text-xs font-bold text-on-surface leading-tight">Artículos a Cotizar</span>
-                <span className="text-[11px] text-on-surface-variant font-medium leading-none">{cartCount} agregados</span>
-              </div>
             </div>
           </div>
 
-          <div className="relative max-w-2xl bg-white rounded-2xl shadow-sm border border-outline-variant/30 overflow-hidden">
+          <p className="text-sm text-on-surface-variant max-w-2xl leading-relaxed">
+            Descarga de forma segura y directa los controladores oficiales de tus impresoras térmicas, manuales de usuario, utilitarios de configuración y programas de asistencia.
+          </p>
+
+          <div className="relative max-w-2xl bg-white rounded-2xl shadow-sm border border-outline-variant/30 overflow-hidden mt-4">
             <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline-variant">search</span>
             <input 
               className="w-full pl-12 pr-4 py-4 bg-transparent focus:outline-none text-on-surface font-body-md text-sm placeholder:text-slate-400"
-              placeholder="Buscar por nombre, marca o especificación..." 
+              placeholder="Buscar controlador, programa, manual..." 
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -306,69 +234,63 @@ export default function CatalogoPage() {
         {/* Dynamic Category Navigation Tabs */}
         <section className="mb-8">
           <div className="flex overflow-x-auto no-scrollbar gap-3 pb-3">
-            {categorias.map((cat) => (
+            {["Todos", "Controladores", "Programas", "Documentos", "Enlaces"].map((tab) => (
               <button 
-                key={cat.id}
+                key={tab}
                 className={`px-5 py-2.5 rounded-full font-headline text-xs font-bold tracking-wide uppercase transition-all whitespace-nowrap border ${
-                  selectedCategory.toLowerCase() === cat.nombre.toLowerCase()
+                  selectedType === tab
                     ? "bg-primary border-primary text-white shadow-md shadow-primary/20"
                     : "bg-white border-outline-variant/30 text-on-surface-variant hover:bg-slate-50"
                 }`}
-                onClick={() => setSelectedCategory(cat.nombre)}
+                onClick={() => setSelectedType(tab)}
               >
-                {cat.nombre}
+                {tab}
               </button>
             ))}
           </div>
         </section>
 
-        {/* Dynamic Products Grid */}
-        <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filteredProducts.length > 0 ? (
-            filteredProducts.map((prod) => (
+        {/* Dynamic Downloads Grid */}
+        <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {filteredArchivos.length > 0 ? (
+            filteredArchivos.map((file) => (
               <article 
-                key={prod.id} 
-                className="bg-white rounded-2xl overflow-hidden border border-outline-variant/30 hover:shadow-lg transition-all duration-300 group flex flex-col justify-between"
+                key={file.id} 
+                className="bg-white p-6 rounded-2xl border border-outline-variant/30 hover:shadow-lg transition-all duration-300 flex gap-4 items-start"
               >
-                {/* Product Image Container with Fallbacks */}
-                <div className="aspect-square bg-slate-50/50 p-6 flex items-center justify-center border-b border-outline-variant/10 relative overflow-hidden select-none">
-                  <ProductImage 
-                    src={prod.imagen_url} 
-                    alt={prod.nombre} 
-                    categoryName={prod.categoria?.nombre || "General"} 
-                  />
+                <div className="p-3.5 bg-primary/10 text-primary rounded-xl flex items-center justify-center">
+                  <span className="material-symbols-outlined text-[28px]">
+                    {getIconForType(file.tipo)}
+                  </span>
                 </div>
                 
-                {/* Product Details Section */}
-                <div className="p-5 flex flex-col justify-between flex-1 space-y-4">
-                  <div className="space-y-2">
-                    <span className="inline-block px-2.5 py-0.5 rounded-md bg-slate-100 text-[10px] text-slate-500 font-bold uppercase tracking-wider">
-                      {prod.categoria?.nombre || "General"}
+                <div className="flex-1 space-y-2">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="inline-block px-2 py-0.5 rounded bg-slate-100 text-[9px] text-slate-500 font-bold uppercase tracking-wider">
+                      {getLabelForType(file.tipo)}
                     </span>
-                    <h3 className="font-headline text-base font-bold text-on-surface line-clamp-2 group-hover:text-primary transition-colors leading-snug">
-                      {prod.nombre}
-                    </h3>
-                    <p className="text-xs text-on-surface-variant line-clamp-3 leading-relaxed">
-                      {prod.descripcion || "Consúltanos especificaciones, disponibilidad y compatibilidad de este producto."}
-                    </p>
+                    <span className="text-[10px] text-slate-400 font-semibold">
+                      Subido el {formatDate(file.fecha_subida)}
+                    </span>
                   </div>
-
-                  <div className="flex items-center justify-between pt-2 border-t border-slate-50 mt-auto">
-                    <div className="flex flex-col">
-                      <span className="text-[10px] text-slate-400 font-bold uppercase leading-none">Precio Aprox.</span>
-                      <span className="font-headline text-lg font-extrabold text-primary mt-1">
-                        S/ {Number(prod.precio).toFixed(2)}
-                      </span>
-                    </div>
+                  
+                  <h3 className="font-headline text-base font-bold text-on-surface tracking-tight leading-snug">
+                    {file.nombre}
+                  </h3>
+                  
+                  <p className="text-xs text-on-surface-variant leading-relaxed">
+                    {file.descripcion || "Recurso oficial provisto por el equipo técnico de DELLCOM SAC."}
+                  </p>
+                  
+                  <div className="pt-2">
                     <a 
-                      onClick={handleQuoteClick}
-                      className="flex items-center gap-1.5 bg-primary hover:bg-primary/95 text-white px-4 py-2.5 rounded-xl text-[11px] font-bold transition-all active:scale-95 shadow-md shadow-primary/10 cursor-pointer" 
-                      href={`https://wa.me/51987654321?text=Hola%20Dellcom%20SAC,%20deseo%20cotizar%20el%20producto%20${encodeURIComponent(prod.nombre)}.`}
+                      href={file.url_archivo}
                       target="_blank"
                       rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 bg-primary hover:bg-primary/95 text-white px-4 py-2 rounded-xl text-xs font-bold transition-all active:scale-95 shadow-md shadow-primary/10 cursor-pointer"
                     >
-                      <span className="material-symbols-outlined text-sm">chat</span>
-                      Cotizar
+                      <span className="material-symbols-outlined text-sm">download</span>
+                      Descargar Recurso
                     </a>
                   </div>
                 </div>
@@ -376,14 +298,14 @@ export default function CatalogoPage() {
             ))
           ) : (
             <div className="col-span-full py-20 text-center text-on-surface-variant font-headline text-base bg-white border border-outline-variant/30 rounded-3xl">
-              <span className="material-symbols-outlined text-5xl text-outline-variant/50 mb-3 block">inventory_2</span>
-              No se encontraron productos en esta categoría o búsqueda.
+              <span className="material-symbols-outlined text-5xl text-outline-variant/50 mb-3 block">folder_open</span>
+              No se encontraron recursos técnicos de esta categoría o búsqueda.
             </div>
           )}
         </section>
       </main>
 
-      {/* Footer Section (Identical to page.tsx) */}
+      {/* Footer Section */}
       <footer className="bg-surface-container-lowest py-16 border-t border-outline-variant/20">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-gutter px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
           

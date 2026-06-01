@@ -27,13 +27,25 @@ interface ArchivoTecnico {
   fecha_subida: string;
 }
 
+interface Categoria {
+  id: number;
+  nombre: string;
+}
+
 interface Producto {
   id: number;
   nombre: string;
   precio: number | string;
   descripcion: string | null;
   activo: boolean;
+  id_categoria: number;
+  categoria?: {
+    id: number;
+    nombre: string;
+  };
+  imagen_url: string | null;
 }
+
 
 // Vector SVG Dellcom Logo Component
 function DellcomLogo({ className = "w-10 h-10" }: { className?: string }) {
@@ -84,12 +96,15 @@ export default function AdminDashboardPage() {
   const [licencias, setLicencias] = useState<Licencia[]>([]);
   const [archivos, setArchivos] = useState<ArchivoTecnico[]>([]);
   const [productos, setProductos] = useState<Producto[]>([]);
+  const [categorias, setCategorias] = useState<Categoria[]>([]);
   
   // Search & Modals state
   const [searchQuery, setSearchQuery] = useState("");
   const [showLicenseModal, setShowLicenseModal] = useState(false);
   const [showFileModal, setShowFileModal] = useState(false);
+  const [showProductModal, setShowProductModal] = useState(false);
   const [editingLicense, setEditingLicense] = useState<Licencia | null>(null);
+  const [editingProduct, setEditingProduct] = useState<Producto | null>(null);
 
   // Form states for License Creation/Editing
   const [formSoftware, setFormSoftware] = useState("");
@@ -107,6 +122,14 @@ export default function AdminDashboardPage() {
   const [formFileUrl, setFormFileUrl] = useState("");
   const [formFileDesc, setFormFileDesc] = useState("");
 
+  // Form states for Product Creation/Editing
+  const [formProductName, setFormProductName] = useState("");
+  const [formProductPrice, setFormProductPrice] = useState("");
+  const [formProductDesc, setFormProductDesc] = useState("");
+  const [formProductCategory, setFormProductCategory] = useState("");
+  const [formProductImageUrl, setFormProductImageUrl] = useState("");
+  const [formProductActive, setFormProductActive] = useState(true);
+
   // Redirect if unauthorized
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -120,6 +143,7 @@ export default function AdminDashboardPage() {
       fetchLicencias();
       fetchArchivos();
       fetchProductos();
+      fetchCategorias();
     }
   }, [status]);
 
@@ -143,8 +167,17 @@ export default function AdminDashboardPage() {
 
   const fetchProductos = async () => {
     try {
-      const res = await fetch("/api/productos");
+      const res = await fetch("/api/productos?all=true");
       if (res.ok) setProductos(await res.json());
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const fetchCategorias = async () => {
+    try {
+      const res = await fetch("/api/categorias");
+      if (res.ok) setCategorias(await res.json());
     } catch (e) {
       console.error(e);
     }
@@ -294,6 +327,90 @@ export default function AdminDashboardPage() {
     setShowFileModal(false);
   };
 
+  const handleCreateOrUpdateProduct = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const productData = {
+      nombre: formProductName,
+      precio: Number(formProductPrice),
+      descripcion: formProductDesc || null,
+      id_categoria: Number(formProductCategory),
+      imagen_url: formProductImageUrl || null,
+      activo: formProductActive,
+    };
+
+    try {
+      if (editingProduct) {
+        const res = await fetch(`/api/productos/${editingProduct.id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(productData),
+        });
+        if (res.ok) {
+          alert("Producto actualizado con éxito");
+          fetchProductos();
+        } else {
+          const err = await res.json();
+          alert(`Error: ${err.error || "No se pudo actualizar"}`);
+        }
+      } else {
+        const res = await fetch("/api/productos", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(productData),
+        });
+        if (res.ok) {
+          alert("Producto creado con éxito");
+          fetchProductos();
+        } else {
+          const err = await res.json();
+          alert(`Error: ${err.error || "No se pudo crear. Asegúrese de ser Admin."}`);
+        }
+      }
+      closeProductModal();
+    } catch (err) {
+      alert("Error de conexión al guardar el producto.");
+    }
+  };
+
+  const handleDeleteProduct = async (id: number) => {
+    if (!confirm("¿Está seguro de ocultar/eliminar este producto del catálogo?")) return;
+    try {
+      const res = await fetch(`/api/productos/${id}`, { method: "DELETE" });
+      if (res.ok) {
+        alert("Producto eliminado de la web");
+        fetchProductos();
+      } else {
+        const err = await res.json();
+        alert(`Error: ${err.error || "No se pudo eliminar"}`);
+      }
+    } catch (e) {
+      alert("Error de conexión.");
+    }
+  };
+
+  const openEditProductModal = (prod: Producto) => {
+    setEditingProduct(prod);
+    setFormProductName(prod.nombre);
+    setFormProductPrice(String(prod.precio));
+    setFormProductDesc(prod.descripcion || "");
+    setFormProductCategory(String(prod.id_categoria));
+    setFormProductImageUrl(prod.imagen_url || "");
+    setFormProductActive(prod.activo);
+    setShowProductModal(true);
+  };
+
+  const closeProductModal = () => {
+    setEditingProduct(null);
+    setFormProductName("");
+    setFormProductPrice("");
+    setFormProductDesc("");
+    setFormProductCategory("");
+    setFormProductImageUrl("");
+    setFormProductActive(true);
+    setShowProductModal(false);
+  };
+
   // Helper function to format date strings nicely
   const formatDate = (dateStr: string | null) => {
     if (!dateStr) return "Sin fecha";
@@ -347,6 +464,12 @@ export default function AdminDashboardPage() {
   const filteredArchivos = archivos.filter((a) =>
     a.nombre.toLowerCase().includes(searchQuery.toLowerCase()) ||
     (a.descripcion && a.descripcion.toLowerCase().includes(searchQuery.toLowerCase()))
+  );
+
+  const filteredProductos = productos.filter((p) =>
+    p.nombre.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (p.descripcion && p.descripcion.toLowerCase().includes(searchQuery.toLowerCase())) ||
+    (p.categoria?.nombre && p.categoria.nombre.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
   // Group files into categories
@@ -731,25 +854,62 @@ export default function AdminDashboardPage() {
                   <h2 className="text-xl font-bold text-on-surface">Productos del Catálogo Web</h2>
                   <p className="text-xs text-slate-500 mt-0.5">Control de ribbons, tintas, tarjetas y repuestos mostrados en el catálogo virtual.</p>
                 </div>
+                <button 
+                  onClick={() => {
+                    setEditingProduct(null);
+                    setFormProductName("");
+                    setFormProductPrice("");
+                    setFormProductDesc("");
+                    setFormProductCategory(categorias[0]?.id ? String(categorias[0].id) : "");
+                    setFormProductImageUrl("");
+                    setFormProductActive(true);
+                    setShowProductModal(true);
+                  }}
+                  className="bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-5 py-3 rounded-xl transition-all active:scale-95 shadow-md shadow-red-600/10 flex items-center gap-2"
+                >
+                  <span className="material-symbols-outlined text-base">add</span>
+                  Registrar Producto
+                </button>
               </div>
 
-              {/* Simple Products List */}
+              {/* Products List Table */}
               <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
                 <div className="overflow-x-auto">
                   <table className="w-full text-left border-collapse">
                     <thead>
                       <tr className="bg-slate-50 border-b border-slate-200">
                         <th className="px-6 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider">Producto</th>
+                        <th className="px-6 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider">Categoría</th>
                         <th className="px-6 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider">Precio</th>
                         <th className="px-6 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider">Descripción</th>
                         <th className="px-6 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider">Estado</th>
+                        <th className="px-6 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Acciones</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
-                      {productos.length > 0 ? (
-                        productos.map((prod) => (
+                      {filteredProductos.length > 0 ? (
+                        filteredProductos.map((prod) => (
                           <tr key={prod.id} className="hover:bg-slate-50/50 transition-colors">
-                            <td className="px-6 py-4 font-semibold text-sm text-on-surface">{prod.nombre}</td>
+                            <td className="px-6 py-4 flex items-center gap-3">
+                              {prod.imagen_url ? (
+                                <img 
+                                  src={prod.imagen_url} 
+                                  alt={prod.nombre} 
+                                  className="w-10 h-10 object-contain rounded-lg border border-slate-200 bg-slate-50"
+                                  onError={(e) => {
+                                    (e.target as HTMLImageElement).src = "/img/productos/placeholder.png";
+                                  }}
+                                />
+                              ) : (
+                                <div className="w-10 h-10 rounded-lg border border-slate-200 bg-slate-100 flex items-center justify-center text-slate-400">
+                                  <span className="material-symbols-outlined text-lg">image</span>
+                                </div>
+                              )}
+                              <span className="font-semibold text-sm text-on-surface">{prod.nombre}</span>
+                            </td>
+                            <td className="px-6 py-4 text-xs text-slate-600 font-semibold">
+                              {prod.categoria?.nombre || "Sin Categoría"}
+                            </td>
                             <td className="px-6 py-4 text-xs font-bold text-red-600">S/ {Number(prod.precio).toFixed(2)}</td>
                             <td className="px-6 py-4 text-xs text-slate-500 max-w-xs truncate">{prod.descripcion || "Sin descripción"}</td>
                             <td className="px-6 py-4">
@@ -763,11 +923,27 @@ export default function AdminDashboardPage() {
                                 </span>
                               )}
                             </td>
+                            <td className="px-6 py-4 text-right space-x-2">
+                              <button 
+                                onClick={() => openEditProductModal(prod)}
+                                className="text-slate-400 hover:text-red-600 p-1 transition-colors"
+                                title="Editar"
+                              >
+                                <span className="material-symbols-outlined text-[18px]">edit</span>
+                              </button>
+                              <button 
+                                onClick={() => handleDeleteProduct(prod.id)}
+                                className="text-slate-400 hover:text-red-700 p-1 transition-colors"
+                                title="Ocultar/Eliminar"
+                              >
+                                <span className="material-symbols-outlined text-[18px]">delete</span>
+                              </button>
+                            </td>
                           </tr>
                         ))
                       ) : (
                         <tr>
-                          <td colSpan={4} className="px-6 py-12 text-center text-xs text-slate-500">
+                          <td colSpan={6} className="px-6 py-12 text-center text-xs text-slate-500">
                             No hay productos registrados en el catálogo.
                           </td>
                         </tr>
@@ -985,6 +1161,119 @@ export default function AdminDashboardPage() {
                   className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold transition-all active:scale-95 shadow-md shadow-red-600/10"
                 >
                   Guardar Recurso
+                </button>
+              </footer>
+            </form>
+          </div>
+        </div>
+      )}
+      {/* MODAL 3: Create or Edit Product */}
+      {showProductModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
+          <div className="bg-white border border-slate-200 rounded-3xl w-full max-w-xl shadow-2xl relative overflow-hidden">
+            <header className="px-8 py-5 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+              <h3 className="font-bold text-base text-on-surface">
+                {editingProduct ? "Editar Producto del Catálogo" : "Registrar Nuevo Producto"}
+              </h3>
+              <button onClick={closeProductModal} className="text-slate-400 hover:text-slate-700 transition-colors">
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            </header>
+
+            <form onSubmit={handleCreateOrUpdateProduct} className="p-8 space-y-4 max-h-[70vh] overflow-y-auto custom-scrollbar">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Nombre del Producto</label>
+                  <input 
+                    type="text" 
+                    required
+                    value={formProductName}
+                    onChange={(e) => setFormProductName(e.target.value)}
+                    placeholder="Ribbon de Cera Zebra 110mm x 74m"
+                    className="w-full bg-slate-50 border border-slate-200 focus:border-red-600 focus:ring-1 focus:ring-red-600 focus:outline-none rounded-xl px-4 py-3 text-sm transition-all"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Precio (S/.)</label>
+                  <input 
+                    type="number" 
+                    step="0.01"
+                    min="0"
+                    required
+                    value={formProductPrice}
+                    onChange={(e) => setFormProductPrice(e.target.value)}
+                    placeholder="45.00"
+                    className="w-full bg-slate-50 border border-slate-200 focus:border-red-600 focus:ring-1 focus:ring-red-600 focus:outline-none rounded-xl px-4 py-3 text-sm transition-all"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Categoría</label>
+                  <select 
+                    required
+                    value={formProductCategory}
+                    onChange={(e) => setFormProductCategory(e.target.value)}
+                    className="w-full bg-slate-50 border border-slate-200 focus:border-red-600 focus:ring-1 focus:ring-red-600 focus:outline-none rounded-xl px-4 py-3 text-sm transition-all"
+                  >
+                    <option value="">Seleccione una categoría</option>
+                    {categorias.map((cat) => (
+                      <option key={cat.id} value={cat.id}>
+                        {cat.nombre}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Ruta de Imagen (Opcional)</label>
+                  <input 
+                    type="text" 
+                    value={formProductImageUrl}
+                    onChange={(e) => setFormProductImageUrl(e.target.value)}
+                    placeholder="/img/productos/ribbon-cera.jpg"
+                    className="w-full bg-slate-50 border border-slate-200 focus:border-red-600 focus:ring-1 focus:ring-red-600 focus:outline-none rounded-xl px-4 py-3 text-sm transition-all font-mono text-xs"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Descripción del Producto</label>
+                <textarea 
+                  value={formProductDesc}
+                  onChange={(e) => setFormProductDesc(e.target.value)}
+                  placeholder="Ribbon de cera de alta sensibilidad para impresoras de etiquetas Zebra..."
+                  rows={3}
+                  className="w-full bg-slate-50 border border-slate-200 focus:border-red-600 focus:ring-1 focus:ring-red-600 focus:outline-none rounded-xl px-4 py-3 text-sm transition-all"
+                />
+              </div>
+
+              <div className="flex items-center gap-2 py-2">
+                <input 
+                  type="checkbox" 
+                  id="formProductActive"
+                  checked={formProductActive}
+                  onChange={(e) => setFormProductActive(e.target.checked)}
+                  className="w-4 h-4 rounded text-red-600 border-slate-200 focus:ring-red-600 focus:outline-none"
+                />
+                <label htmlFor="formProductActive" className="text-xs font-semibold text-slate-700 select-none cursor-pointer">
+                  Producto activo y visible en el catálogo virtual público
+                </label>
+              </div>
+
+              <footer className="pt-4 border-t border-slate-100 flex justify-end gap-3">
+                <button 
+                  type="button" 
+                  onClick={closeProductModal}
+                  className="px-5 py-3 border border-slate-200 hover:bg-slate-50 rounded-xl text-xs font-bold transition-all"
+                >
+                  Cancelar
+                </button>
+                <button 
+                  type="submit" 
+                  className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold transition-all active:scale-95 shadow-md shadow-red-600/10"
+                >
+                  {editingProduct ? "Actualizar Cambios" : "Guardar Producto"}
                 </button>
               </footer>
             </form>

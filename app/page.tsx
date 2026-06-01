@@ -1,6 +1,45 @@
 import { prisma } from "@/lib/prisma";
 import Image from "next/image";
 
+const serviceVisuals: Record<string, { image: string; icon: string }> = {
+  "reparación": {
+    image: "https://images.unsplash.com/photo-1588508065123-287b28e013da?auto=format&fit=crop&w=600&q=80",
+    icon: "laptop_mac"
+  },
+  "microelectrónica": {
+    image: "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?auto=format&fit=crop&w=600&q=80",
+    icon: "memory"
+  },
+  "redes": {
+    image: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=600&q=80",
+    icon: "dns"
+  },
+  "soporte": {
+    image: "https://images.unsplash.com/photo-1531403009284-440f080d1e12?auto=format&fit=crop&w=600&q=80",
+    icon: "support_agent"
+  },
+  "correo": {
+    image: "https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=600&q=80",
+    icon: "mail"
+  },
+  "licencia": {
+    image: "https://images.unsplash.com/photo-1600132806370-bf17e65e942f?auto=format&fit=crop&w=600&q=80",
+    icon: "verified_user"
+  }
+};
+
+function getServiceVisuals(nombre: string, defaultIcon: string) {
+  const cleanName = nombre.toLowerCase();
+  for (const [key, val] of Object.entries(serviceVisuals)) {
+    if (cleanName.includes(key)) return val;
+  }
+  return {
+    image: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=600&q=80",
+    icon: defaultIcon
+  };
+}
+
+
 // Inline Custom SVG Logo based on the Dellcom brand (Brain + Circuits with Glowing Ring)
 function DellcomLogo({ className = "w-10 h-10" }: { className?: string }) {
   return (
@@ -137,6 +176,7 @@ export default async function Home() {
           <nav className="hidden md:flex gap-8 items-center">
             <a className="text-primary font-bold border-b-2 border-primary pb-0.5 text-sm font-semibold" href="#">Inicio</a>
             <a className="text-on-surface-variant hover:text-primary transition-colors text-sm font-semibold" href="/productos">Catálogo</a>
+            <a className="text-on-surface-variant hover:text-primary transition-colors text-sm font-semibold" href="/descargas">Descargas</a>
             <a className="text-on-surface-variant hover:text-primary transition-colors text-sm font-semibold" href="#servicios">Servicios</a>
             <a className="text-on-surface-variant hover:text-primary transition-colors text-sm font-semibold" href="#nosotros">Nosotros</a>
             <a className="text-on-surface-variant hover:text-primary transition-colors text-sm font-semibold" href="#contacto">Contacto</a>
@@ -223,15 +263,15 @@ export default async function Home() {
         {/* Stats Summary Section */}
         <section className="bg-surface-container-low py-12 px-margin-mobile md:px-margin-desktop">
           <div className="max-w-container-max mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="flex flex-col items-center text-center p-6 bg-white rounded-2xl border border-outline-variant/10 shadow-sm transition-transform hover:-translate-y-1">
+            <div className="scroll-reveal flex flex-col items-center text-center p-6 bg-white rounded-2xl border border-outline-variant/10 shadow-sm transition-transform hover:-translate-y-1" style={{ transitionDelay: "100ms" }}>
               <span className="text-4xl font-bold text-primary mb-1">10+ Años</span>
               <span className="text-xs font-semibold text-on-surface-variant uppercase tracking-widest">De trayectoria en Lima Norte</span>
             </div>
-            <div className="flex flex-col items-center text-center p-6 bg-white rounded-2xl border border-outline-variant/10 shadow-sm transition-transform hover:-translate-y-1">
+            <div className="scroll-reveal flex flex-col items-center text-center p-6 bg-white rounded-2xl border border-outline-variant/10 shadow-sm transition-transform hover:-translate-y-1" style={{ transitionDelay: "200ms" }}>
               <span className="text-4xl font-bold text-primary mb-1">15k+</span>
               <span className="text-xs font-semibold text-on-surface-variant uppercase tracking-widest">Soportes & Reparaciones Exitosas</span>
             </div>
-            <div className="flex flex-col items-center text-center p-6 bg-white rounded-2xl border border-outline-variant/10 shadow-sm transition-transform hover:-translate-y-1">
+            <div className="scroll-reveal flex flex-col items-center text-center p-6 bg-white rounded-2xl border border-outline-variant/10 shadow-sm transition-transform hover:-translate-y-1" style={{ transitionDelay: "300ms" }}>
               <span className="text-4xl font-bold text-primary mb-1">100% Original</span>
               <span className="text-xs font-semibold text-on-surface-variant uppercase tracking-widest">Licencias y Repuestos Certificados</span>
             </div>
@@ -241,7 +281,7 @@ export default async function Home() {
         {/* Services Section */}
         <section className="py-20 px-margin-mobile md:px-margin-desktop bg-white" id="servicios">
           <div className="max-w-container-max mx-auto">
-            <div className="text-center mb-16 space-y-3">
+            <div className="scroll-reveal text-center mb-16 space-y-3">
               <h2 className="font-headline text-3xl md:text-4xl font-bold text-on-surface">Servicios Técnicos de Alto Nivel</h2>
               <p className="text-sm md:text-base text-on-surface-variant max-w-2xl mx-auto">
                 Soluciones IT desarrolladas por expertos certificados en microelectrónica, ensamblaje de servidores e infraestructura corporativa.
@@ -249,20 +289,37 @@ export default async function Home() {
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
-              {servicios.map((service) => (
-                <div 
-                  key={service.id} 
-                  className="service-card group bg-surface-container-lowest p-8 rounded-2xl border border-outline-variant/30 transition-all duration-300 hover:border-primary/20"
-                >
-                  <div className="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center mb-6 transition-colors group-hover:bg-primary">
-                    <span className="material-symbols-outlined text-primary group-hover:text-white text-3xl">
-                      {service.icono_url}
-                    </span>
+              {servicios.map((service, index) => {
+                const visuals = getServiceVisuals(service.nombre, service.icono_url || "devices");
+                return (
+                  <div 
+                    key={service.id} 
+                    className="scroll-reveal service-card group bg-surface-container-lowest rounded-2xl border border-outline-variant/30 transition-all duration-300 hover:border-primary/20 overflow-hidden flex flex-col justify-between"
+                    style={{ transitionDelay: `${(index % 3) * 150}ms` }}
+                  >
+                    <div className="relative h-48 w-full overflow-hidden bg-slate-100">
+                      <img 
+                        src={visuals.image} 
+                        alt={service.nombre} 
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-75"></div>
+                      <div className="w-12 h-12 bg-primary text-white rounded-xl flex items-center justify-center absolute bottom-4 left-4 shadow-lg transition-transform group-hover:scale-110">
+                        <span className="material-symbols-outlined text-white text-2xl">
+                          {visuals.icon}
+                        </span>
+                      </div>
+                    </div>
+                    
+                    <div className="p-6 flex-1 flex flex-col justify-between">
+                      <div>
+                        <h3 className="font-headline text-lg font-bold text-on-surface mb-2.5 group-hover:text-primary transition-colors leading-tight">{service.nombre}</h3>
+                        <p className="text-xs text-on-surface-variant leading-relaxed">{service.descripcion}</p>
+                      </div>
+                    </div>
                   </div>
-                  <h3 className="font-headline text-xl font-bold text-on-surface mb-3">{service.nombre}</h3>
-                  <p className="text-sm text-on-surface-variant leading-relaxed">{service.descripcion}</p>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </section>
@@ -270,7 +327,7 @@ export default async function Home() {
         {/* Company About / Context Section */}
         <section className="py-20 px-margin-mobile md:px-margin-desktop bg-slate-50/50 border-t border-b border-outline-variant/10" id="nosotros">
           <div className="max-w-container-max mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-6">
+            <div className="scroll-reveal space-y-6">
               <h2 className="font-headline text-3xl md:text-4xl font-bold text-on-surface">De los USBs y Excels al Control Total</h2>
               <p className="text-base text-on-surface-variant leading-relaxed">
                 En Dellcom entendemos que el desorden administrativo ralentiza la eficiencia. Por eso, hemos diseñado esta plataforma interna para erradicar las licencias duplicadas, garantizar el acceso instantáneo de nuestros técnicos a las herramientas necesarias y exhibir un portafolio fotográfico de nuestros trabajos terminados.
@@ -292,7 +349,7 @@ export default async function Home() {
             </div>
             
             {/* Right stats cards/visual container */}
-            <div className="grid grid-cols-2 gap-4 bg-white p-8 rounded-3xl border border-outline-variant/20 shadow-sm relative overflow-hidden">
+            <div className="scroll-reveal grid grid-cols-2 gap-4 bg-white p-8 rounded-3xl border border-outline-variant/20 shadow-sm relative overflow-hidden" style={{ transitionDelay: "150ms" }}>
               <div className="absolute top-0 right-0 w-24 h-24 bg-primary/10 rounded-full blur-2xl"></div>
               <div className="p-5 bg-slate-50 rounded-2xl">
                 <span className="material-symbols-outlined text-primary text-3xl mb-2">devices</span>
@@ -322,7 +379,7 @@ export default async function Home() {
         <section className="py-20 px-margin-mobile md:px-margin-desktop bg-white border-b border-outline-variant/10">
           <div className="max-w-container-max mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             {/* Map Info Card */}
-            <div className="lg:col-span-4 space-y-6">
+            <div className="scroll-reveal lg:col-span-4 space-y-6">
               <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider">
                 <span className="material-symbols-outlined text-[16px]">location_on</span>
                 ¿Dónde encontrarnos?
@@ -378,7 +435,7 @@ export default async function Home() {
             </div>
 
             {/* Google Maps Iframe */}
-            <div className="lg:col-span-8 w-full h-[400px] bg-slate-100 rounded-3xl overflow-hidden border border-outline-variant/30 shadow-md relative group">
+            <div className="scroll-reveal lg:col-span-8 w-full h-[400px] bg-slate-100 rounded-3xl overflow-hidden border border-outline-variant/30 shadow-md relative group" style={{ transitionDelay: "150ms" }}>
               <iframe 
                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3903.1118432328766!2d-77.0756549242084!3d-11.95772378735626!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9105d04c4b69dcfb%3A0xd3b34bdf88ea4eb6!2sAv.%20Santa%20Elvira%2C%20Los%20Olivos%2015306!5e0!3m2!1ses!2spe!4v1717210000000!5m2!1ses!2spe" 
                 width="100%" 
@@ -397,7 +454,7 @@ export default async function Home() {
           Redesigned CTA Section (Light Theme with Crimson glowing accents for Year 2026) 
           Fixes the dark contrast mismatch and fits the clean branding theme.
         */}
-        <section className="py-24 px-margin-mobile md:px-margin-desktop relative" id="contacto">
+        <section className="scroll-reveal py-24 px-margin-mobile md:px-margin-desktop relative" id="contacto">
           {/* Subtle decorative glowing background circle (Year 2026 design trend) */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[550px] bg-primary/5 rounded-full blur-[140px] pointer-events-none"></div>
 
@@ -492,6 +549,7 @@ export default async function Home() {
               <li><a className="text-sm text-on-surface-variant hover:text-primary transition-transform hover:translate-x-1 inline-block" href="#nosotros">Sobre Nosotros</a></li>
               <li><a className="text-sm text-on-surface-variant hover:text-primary transition-transform hover:translate-x-1 inline-block" href="#servicios">Casos de Éxito</a></li>
               <li><a className="text-sm text-on-surface-variant hover:text-primary transition-transform hover:translate-x-1 inline-block" href="/productos">Nuestro Catálogo</a></li>
+              <li><a className="text-sm text-on-surface-variant hover:text-primary transition-transform hover:translate-x-1 inline-block" href="/descargas">Descargas y Drivers</a></li>
               <li><a className="text-sm text-on-surface-variant hover:text-primary transition-transform hover:translate-x-1 inline-block" href="/admin/login">Portal Interno</a></li>
             </ul>
           </div>
@@ -527,6 +585,35 @@ export default async function Home() {
           </div>
         </div>
       </footer>
+
+      {/* Intersection Observer Scroll Reveal Trigger Script */}
+      <script 
+        dangerouslySetInnerHTML={{ 
+          __html: `
+            (function() {
+              const initObserver = () => {
+                const observer = new IntersectionObserver((entries) => {
+                  entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                      entry.target.classList.add("reveal-active");
+                      observer.unobserve(entry.target);
+                    }
+                  });
+                }, { threshold: 0.1 });
+                
+                document.querySelectorAll(".scroll-reveal").forEach((el) => {
+                  observer.observe(el);
+                });
+              };
+              if (document.readyState === "loading") {
+                document.addEventListener("DOMContentLoaded", initObserver);
+              } else {
+                initObserver();
+              }
+            })();
+          ` 
+        }} 
+      />
     </>
   );
 }
