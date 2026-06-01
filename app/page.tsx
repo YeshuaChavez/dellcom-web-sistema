@@ -4,7 +4,7 @@ import ScrollRevealObserver from "./components/ScrollRevealObserver";
 
 const serviceVisuals: Record<string, { image: string; icon: string }> = {
   "reparación": {
-    image: "https://images.unsplash.com/photo-1601524909162-be87252be298?auto=format&fit=crop&w=600&q=80",
+    image: "/img/servicios/reparacion_laptop.jpg",
     icon: "laptop_mac"
   },
   "microelectrónica": {
