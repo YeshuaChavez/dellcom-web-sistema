@@ -12,7 +12,7 @@
   --font-mono: var(--font-geist-mono);
 
   /* Dellcom Custom Theme Colors */
-  --color-primary: #dc2626;
+  --color-primary: #ff0000;
   --color-on-primary: #ffffff;
   --color-on-background: #0b1c30;
   
@@ -27,6 +27,18 @@
   --color-surface-container-highest: #d3e4fe;
   
   --color-outline-variant: #bbc9ca;
+
+  /* Overriding standard red colors to be vibrant pure red, avoiding crimson */
+  --color-red-50: #fff5f5;
+  --color-red-100: #ffe3e3;
+  --color-red-200: #ffc9c9;
+  --color-red-300: #ffa8a8;
+  --color-red-400: #ff7878;
+  --color-red-500: #ff4d4d;
+  --color-red-600: #ff0000;
+  --color-red-700: #cc0000;
+  --color-red-800: #990000;
+  --color-red-900: #660000;
 
   /* Custom Spacings */
   --spacing-container-max: 1440px;
@@ -44,6 +56,9 @@
     color: var(--foreground);
     font-family: var(--font-headline);
   }
+  input, textarea, select, button {
+    font-family: inherit;
+  }
 }
 
 .material-symbols-outlined {
@@ -56,13 +71,13 @@
 }
 
 .hero-gradient {
-  background: radial-gradient(circle at top right, rgba(220, 38, 38, 0.05), transparent),
+  background: radial-gradient(circle at top right, rgba(255, 0, 0, 0.05), transparent),
               radial-gradient(circle at bottom left, rgba(15, 23, 42, 0.03), transparent);
 }
 
 .service-card:hover {
   transform: translateY(-8px);
-  box-shadow: 0 20px 40px rgba(220, 38, 38, 0.1);
+  box-shadow: 0 20px 40px rgba(255, 0, 0, 0.1);
 }
 
 @keyframes float {

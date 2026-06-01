@@ -32,7 +32,25 @@ export default withAuth(
   },
   {
     callbacks: {
-      authorized: ({ token }) => !!token,
+      authorized: ({ token, req }) => {
+        const path = req.nextUrl.pathname;
+        const method = req.method;
+
+        // Public GET API routes that do not require authentication
+        const isPublicGetApi =
+          (path.startsWith("/api/productos") ||
+            path.startsWith("/api/servicios") ||
+            path.startsWith("/api/trabajos") ||
+            path.startsWith("/api/categorias") ||
+            path.startsWith("/api/archivos")) &&
+          method === "GET";
+
+        if (isPublicGetApi) {
+          return true;
+        }
+
+        return !!token;
+      },
     },
   }
 );
