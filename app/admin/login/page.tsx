@@ -76,35 +76,32 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center px-4 relative overflow-hidden bg-slate-950">
-      {/* Background Video */}
-      <video
-        autoPlay
-        loop
-        muted
-        playsInline
-        className="absolute inset-0 w-full h-full object-cover z-0 opacity-40 filter brightness-40 contrast-125 saturate-50"
-      >
-        <source src="/vid/laptop_video.mp4" type="video/mp4" />
-        Your browser does not support the video tag.
-      </video>
-
-      {/* Cinematic dark gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-950/90 to-red-950/30 z-0"></div>
+    <div className="min-h-screen flex flex-col justify-center items-center px-4 relative overflow-hidden bg-slate-50 selection:bg-primary/20 selection:text-primary">
+      {/* Grid Pattern Background */}
+      <div 
+        className="absolute inset-0 pointer-events-none opacity-[0.25]"
+        style={{
+          backgroundImage: "radial-gradient(#94a3b8 1.5px, transparent 1.5px)",
+          backgroundSize: "24px 24px"
+        }}
+      />
+      
+      {/* Light Gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-tr from-white via-white/95 to-red-500/5 pointer-events-none z-0"></div>
 
       {/* Red Glowing Auroras in the background */}
-      <div className="absolute top-1/4 left-1/4 w-[350px] h-[350px] bg-red-600/10 rounded-full blur-[120px] pointer-events-none z-0"></div>
-      <div className="absolute bottom-1/4 right-1/4 w-[350px] h-[350px] bg-red-600/5 rounded-full blur-[150px] pointer-events-none z-0"></div>
+      <div className="absolute top-1/4 left-1/4 w-[350px] h-[350px] bg-primary/5 rounded-full blur-[100px] pointer-events-none z-0"></div>
+      <div className="absolute bottom-1/4 right-1/4 w-[350px] h-[350px] bg-primary/5 rounded-full blur-[120px] pointer-events-none z-0"></div>
 
-      <div className="w-full max-w-md bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-3xl p-8 shadow-2xl hover:border-red-600/20 transition-all duration-500 relative z-10">
+      <div className="w-full max-w-md bg-white border border-slate-200/80 rounded-3xl p-8 shadow-xl shadow-slate-100/50 hover:border-primary/20 transition-all duration-500 relative z-10">
         <div className="flex flex-col items-center mb-8">
           <DellcomLogo className="w-16 h-16 mb-4 hover:scale-105 transition-transform duration-300" />
-          <h2 className="font-headline text-2xl font-extrabold text-white tracking-tight">Portal de Gestión Interna</h2>
-          <p className="text-xs text-red-500 font-bold uppercase tracking-widest mt-1">DELLCOM SAC</p>
+          <h2 className="font-headline text-2xl font-black text-on-surface tracking-tight">Portal de Gestión Interna</h2>
+          <p className="text-xs text-primary font-bold uppercase tracking-widest mt-1">DELLCOM SAC</p>
         </div>
 
         {error && (
-          <div className="bg-red-500/10 border border-red-500/25 text-red-400 text-sm p-4 rounded-xl mb-6 flex items-start gap-2.5">
+          <div className="bg-red-50 border border-red-100 text-red-600 text-xs p-4 rounded-xl mb-6 flex items-start gap-2.5 font-semibold">
             <span className="material-symbols-outlined text-base mt-0.5">error</span>
             <span>{error}</span>
           </div>
@@ -112,7 +109,7 @@ export default function AdminLoginPage() {
 
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Usuario</label>
+            <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Usuario</label>
             <input 
               type="text" 
               required
@@ -120,12 +117,12 @@ export default function AdminLoginPage() {
               value={usuario}
               onChange={(e) => setUsuario(e.target.value)}
               placeholder="Ingresa tu usuario"
-              className="w-full bg-slate-950/60 border border-white/10 focus:border-red-600 focus:ring-1 focus:ring-red-600 focus:outline-none rounded-xl px-4 py-3.5 text-white text-sm transition-all placeholder:text-slate-600"
+              className="w-full bg-slate-50 border border-slate-200 focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none rounded-xl px-4 py-3.5 text-on-surface text-sm transition-all placeholder:text-slate-400"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Contraseña</label>
+            <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Contraseña</label>
             <input 
               type="password" 
               required
@@ -133,14 +130,14 @@ export default function AdminLoginPage() {
               value={contrasena}
               onChange={(e) => setContrasena(e.target.value)}
               placeholder="••••••••"
-              className="w-full bg-slate-950/60 border border-white/10 focus:border-red-600 focus:ring-1 focus:ring-red-600 focus:outline-none rounded-xl px-4 py-3.5 text-white text-sm transition-all placeholder:text-slate-600"
+              className="w-full bg-slate-50 border border-slate-200 focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none rounded-xl px-4 py-3.5 text-on-surface text-sm transition-all placeholder:text-slate-400"
             />
           </div>
 
           <button 
             type="submit" 
             disabled={loading}
-            className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-4 rounded-xl text-sm transition-all active:scale-98 shadow-lg shadow-red-600/10 flex items-center justify-center gap-2 mt-4"
+            className="w-full bg-primary hover:bg-primary/95 text-white font-bold py-4 px-4 rounded-xl text-sm transition-all active:scale-98 shadow-md shadow-primary/20 flex items-center justify-center gap-2 mt-4 cursor-pointer"
           >
             {loading ? (
               <span className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin"></span>
@@ -154,7 +151,7 @@ export default function AdminLoginPage() {
         </form>
 
         <div className="mt-8 text-center">
-          <Link href="/" className="text-xs text-slate-500 hover:text-red-500 transition-colors">
+          <Link href="/" className="text-xs text-slate-400 hover:text-primary transition-colors font-bold uppercase tracking-wider">
             Volver a la página principal
           </Link>
         </div>
