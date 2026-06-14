@@ -1,128 +1,154 @@
-# DELLCOM SAC - Portal Web y Dashboard Administrativo
+# DELLCOM SAC - Plataforma Corporativa y Sistema Administrativo IT
 
-Este repositorio contiene la plataforma web corporativa y el sistema de administracion tecnica de DELLCOM SAC. La aplicacion esta desarrollada con Next.js (App Router), Tailwind CSS version 4, Prisma ORM, MySQL y NextAuth.js para la gestion de identidades y accesos de los tecnicos.
+Este repositorio contiene la solucion de software integral para la corporacion DELLCOM SAC, un centro tecnologico especializado en soporte tecnico de computadoras, redes y suministros IT, ubicado en Los Olivos, Lima. El proyecto combina un portal publico de alta gama con un panel administrativo protegido de nivel empresarial para tecnicos y administradores.
 
-## Descripcion del Proyecto
+La solucion esta desarrollada utilizando Next.js con arquitectura App Router, Tailwind CSS v4 para el diseno visual, Prisma ORM con MySQL en Railway para la persistencia, y un conjunto de herramientas de ingenieria de software de alta calidad (Zod, Jest, GitHub Actions).
 
-El sitio web ofrece una interfaz publica optimizada para SEO y una experiencia premium donde se exponen los servicios de soporte tecnico, consultoria de infraestructura de TI, cableado estructurado, licenciamiento oficial de software y catalogo de suministros Zebra.
+---
 
-Ademas, incluye un area administrativa protegida para la gestion interna de la empresa, que permite a los tecnicos y administradores llevar un control riguroso de:
-* Licencias de software vendidas a clientes, incluyendo fechas de inicio y vencimiento.
-* Archivos tecnicos, drivers y instaladores de programas de soporte.
-* Mantenimiento de la base de datos de productos en el catalogo publico.
-* Actualizaciones en tiempo real del catalogo web, servicios y trabajos realizados.
+## Modulos y Funcionalidades Principales
 
-## Stack Tecnologico
+### 1. Portal Corporativo Publico (Frontend UX Premium)
+* **Pagina de Inicio (Hero & Bento Grid)**: Seccion de bienvenida cinemática con accesos a soporte instantaneo por WhatsApp y bento grid unificado 2-1 que expone la propuesta de valor.
+* **Servicios Corporativos (Filas Alternas)**: Visualizacion dinamica de los servicios (Soporte, Redes, Licenciamiento, Hardware) mediante layouts flexibles que alternan descripciones estructuradas y fotografias locales de alta calidad.
+* **Catalogo Virtual Activo**: Exposicion de suministros originales (SSDs, RAMs, ribbons Zebra, tintas HP) consumidos en tiempo real desde la API de base de datos, con fallbacks de datos estaticos en caso de problemas de red.
+* **Seccion de Descargas de Soporte**: Repositorio publico donde clientes y tecnicos pueden descargar drivers oficiales y manuales.
+* **Modulo de Soporte Remoto (/soporte)**: Interfaz de streaming cinemática con reproductor de video integrado para guias paso a paso de AnyDesk/RustDesk y consola interactiva de consulta de IDs de conexion.
+* **Formulario de Contacto Real (/contacto)**: Formulario estructurado con iconos vectoriales de Google Material Symbols. Valida datos en tiempo real y persiste las consultas directamente en la base de datos MySQL.
 
-* Frontend y SSR: Next.js version 16.2 (App Router con React 19)
-* Estilos: Tailwind CSS version 4
-* Persistencia de Datos: Prisma ORM con conector MySQL
-* Autenticacion: NextAuth.js con estrategia de credenciales
-* Seguridad: Bcryptjs para el hashing de contrasenas y Middleware de Next.js para la proteccion de rutas
-* Iconografia: Google Material Symbols Outlined
+### 2. Panel Administrativo Protegido (Dashboard)
+* **Area de Login Glassmorphic**: Interfaz de acceso limpia con un overlay translucido sobre un video tecnico de fondo, focos de acento en rojo puro (#ff0000) y proteccion por token JWT.
+* **Modulo de Licencias de Software**: Registro detallado de cuentas de correo, contrasenas, fechas de vigencia y observaciones de licencias (Windows, Office, Antivirus) vendidas a clientes, con codigos de color de alerta segun proximidad de vencimiento (urgente, por vencer, activo).
+* **Modulo de Archivos y Drivers**: Permite subir ejecutables y manuales asignandoles etiquetas de categoria (programa, driver, excel, link).
+* **Modulo de Catalogo de Productos**: Control de stock virtual para anadir, editar, desactivar o eliminar productos del catalogo publico.
+* **Modulo de Mensajes de Contacto**: Bandeja de entrada interna del taller donde los administradores pueden leer consultas de clientes, marcarlas como leidas/no leidas y eliminarlas tras su resolucion.
+* **Modulo de Gestion de Personal (CRUD Admin-Only)**: Panel de control exclusivo para usuarios con rol 'admin' que permite dar de alta a nuevos tecnicos/vendedores, editar sus perfiles y activar o desactivar su acceso general.
 
-## Requisitos Previos
+---
 
-* Node.js version 18 o superior
-* Gestor de paquetes npm (instalado por defecto con Node.js)
-* Servidor de base de datos MySQL
+## Calidad de Software e Ingenieria de Codigo
 
-## Configuracion del Entorno
+* **Validacion Estricta con Zod**: Todos los payloads y consultas que ingresan a las APIs administrativas son analizados con esquemas Zod en el servidor, garantizando que no se introduzcan valores nulos, correos invalidos o textos de longitud inapropiada.
+* **Seguridad Criptografica**: Las contrasenas de las cuentas de personal se procesan con hashes de seguridad mediante `bcryptjs` con salt rounds optimizados antes de ser persistidas.
+* **Control de Acceso basado en Roles (RBAC)**: Integracion de roles a traves de callbacks de JWT en NextAuth.js. El middleware restringe el acceso al CRUD de usuarios solo a administradores.
+* **Automatizacion de Licencias (Cron Job)**: Endpoint `/api/cron/check-licencias` configurado para actualizar automaticamente el estado de licencias vencidas basandose en la fecha del servidor, protegido por validacion de Bearer Token.
+* **Carga Fisica de Archivos (Hibrido AWS S3 / Local)**: Endpoint `/api/admin/upload` con logica de auto-deteccion. Si las variables de S3 estan en el archivo `.env`, envia el archivo de forma directa y asincrona al Bucket de AWS S3 mediante el SDK `@aws-sdk/client-s3`. Si no estan configuradas, escribe en el disco local (`public/uploads`) de forma transparente.
+* **Pruebas Automatizadas con Jest**: Suite de pruebas unitarias configurada con `ts-jest` en el directorio `__tests__/` para auditar la validez y consistencia del parseo de datos.
+* **Pipeline de Integracion Continua (CI)**: Flujo de trabajo automatizado en GitHub Actions (`.github/workflows/nextjs.yml`) ejecutado en cada push a main/master para instalar dependencias, auditar linter, correr tests unitarios, compilar tipos y validar el build final de Next.js.
 
-Para ejecutar el proyecto, cree un archivo llamado `.env` en la raiz del directorio y configure las siguientes variables de entorno:
+---
+
+## Requisitos de Sistema
+
+* Node.js version 20 o superior
+* Gestor de paquetes npm
+* Servidor MySQL (local o en la nube como Railway/PlanetScale)
+* Bucket de AWS S3 (opcional para almacenamiento en la nube)
+
+---
+
+## Variables de Entorno (.env)
+
+Cree un archivo `.env` en la raiz del proyecto con el siguiente formato:
 
 ```env
-# URL de conexion a la base de datos MySQL
-DATABASE_URL="mysql://usuario:contrasena@localhost:3306/nombre_bd"
+# 1. Base de Datos
+DATABASE_URL="mysql://usuario:contrasena@host:puerto/nombre_base_datos"
 
-# Secreto de NextAuth para cifrado de tokens de sesion
-NEXTAUTH_SECRET="un_secreto_seguro_de_32_caracteres"
-
-# URL base del sitio web (en desarrollo suele ser localhost)
+# 2. NextAuth Autenticacion
+NEXTAUTH_SECRET="escribe_aqui_una_clave_secreta_y_larga_de_minimo_32_caracteres"
 NEXTAUTH_URL="http://localhost:3000"
+
+# 3. AWS S3 (Opcional, de lo contrario se guardara en public/uploads/)
+AWS_ACCESS_KEY_ID="tu_access_key_id_de_iam"
+AWS_SECRET_ACCESS_KEY="tu_secret_access_key_de_iam"
+AWS_REGION="us-east-1"
+AWS_BUCKET_NAME="nombre_del_bucket_s3"
+
+# 4. Automatizacion (Cron Key)
+CRON_SECRET="dellcom-cron-secret-2026"
 ```
 
-## Instrucciones de Instalacion
+---
 
-Siga estos pasos para configurar y ejecutar el entorno de desarrollo:
+## Instrucciones de Instalacion y Despliegue Local
 
-1. Instalar las dependencias del proyecto:
+1. Clonar el repositorio e instalar las dependencias:
    ```bash
    npm install
    ```
 
-2. Generar el cliente de Prisma e inicializar el esquema de la base de datos:
+2. Generar el cliente de base de datos de Prisma:
    ```bash
    npx prisma generate
    ```
 
-3. Aplicar el esquema a su base de datos local:
+3. Sincronizar el esquema de Prisma con tu base de datos remota/local:
    ```bash
    npx prisma db push
    ```
 
-4. Ejecutar el script de seed para poblar la base de datos con un usuario administrador por defecto y los servicios iniciales:
+4. Poblar la base de datos con los servicios corporativos iniciales y el administrador por defecto:
    ```bash
    npx prisma db seed
    ```
-   *Nota: El usuario administrador por defecto creado tiene las credenciales especificadas en el archivo prisma/seed.ts (usuario: admin, contrasena: admin123).*
+   *Nota: Las credenciales por defecto son: usuario `admin` y contrasena `admin123`. Modificalas inmediatamente al ingresar.*
 
-5. Iniciar el servidor de desarrollo:
+5. Iniciar el servidor de desarrollo local:
    ```bash
    npm run dev
    ```
 
-El portal web estara disponible en http://localhost:3000 y el panel administrativo en http://localhost:3000/admin/login.
+El sitio web estara disponible en `http://localhost:3000`.
 
-## Estructura de Directorios
+---
 
-El codigo fuente sigue las convenciones del Next.js App Router:
+## Catalogo de Endpoints de la API
 
-* `app/`: Directorio principal de rutas de la aplicacion.
-  * `admin/`: Rutas protegidas de administracion.
-    * `login/`: Formulario de acceso de personal.
-    * `dashboard/`: Panel de control interactivo para gestionar licencias, archivos y catalogo.
-  * `api/`: Controladores API REST expuestos para peticiones internas y externas.
-  * `components/`: Componentes React modulares y reutilizables (cabecera, pie de pagina, consola remota).
-  * `contacto/`: Pagina de soporte y formulario de contacto.
-  * `descargas/`: Seccion publica de descarga de drivers, programas y herramientas.
-  * `nosotros/`: Pagina corporativa sobre la trayectoria y valores.
-  * `productos/`: Catalogo web interactivo de repuestos y suministros.
-  * `servicios/`: Exposicion detallada de servicios con diseno de filas alternas.
-  * `soporte/`: Pagina interactiva de conexion AnyDesk yRustDesk con guia paso a paso.
-* `lib/`: Configuracion de modulos compartidos, como la instancia cliente de Prisma.
-* `prisma/`: Archivos de configuracion del ORM, esquema del modelo de datos y script de seed.
-* `public/`: Archivos estaticos como imagenes de portafolio, logotipos de software e imagenes locales.
+### Servicios Publicos
+* `GET /api/productos` - Obtiene la lista de productos activos para el catalogo.
+* `GET /api/servicios` - Obtiene los servicios estructurados del taller.
+* `GET /api/trabajos` - Obtiene las imagenes del portafolio.
+* `GET /api/categorias` - Obtiene las categorias registradas.
+* `GET /api/archivos` - Obtiene los drivers y manuales disponibles para descarga.
+* `POST /api/contacto` - Guarda un mensaje de contacto enviado desde la web publica (Validado con Zod).
 
-## Modelos de Base de Datos
+### Modulo Administrativo (Requiere sesion activa)
+* `GET /api/admin/contacto` - Obtiene la lista completa de mensajes recibidos de clientes.
+* `PUT /api/admin/contacto` - Cambia el estado de lectura de un mensaje (`id` y `leido` en el body).
+* `DELETE /api/admin/contacto?id=X` - Elimina un mensaje del sistema.
+* `POST /api/admin/upload` - Procesa un archivo adjunto del dashboard y lo guarda en AWS S3 o carpeta local.
+* `GET /api/admin/usuarios` - Lista el personal registrado en DELLCOM SAC (Solo Administrador).
+* `POST /api/admin/usuarios` - Registra un nuevo tecnico/vendedor con password hash (Solo Administrador).
+* `PUT /api/admin/usuarios` - Actualiza perfil y rol de un miembro del personal (Solo Administrador).
+* `PATCH /api/admin/usuarios` - Activa o desactiva la cuenta de un tecnico (Solo Administrador).
 
-El esquema Prisma (`prisma/schema.prisma`) cuenta con los siguientes modelos principales:
+### Tareas de Automatizacion
+* `GET /api/cron/check-licencias` - Actualiza licencias activas cuya fecha de fin sea menor a hoy (Requiere `Authorization: Bearer <CRON_SECRET>`).
 
-### Sistema Administrativo
-* Usuario: Representa al personal tecnico con Roles (admin, tecnico, vendedor) y credenciales de acceso.
-* Licencia: Control de licencias de software asignadas a clientes finales, incluyendo estados de vigencia.
-* ArchivoTecnico: Registro de archivos cargados por los tecnicos para soporte interno y descargas.
+---
 
-### Sistema Web Publico
-* Servicio: Servicios de soporte y reparaciones mostrados en el portal.
-* Categoria: Clasificacion para organizar los productos del catalogo.
-* Producto: Articulos disponibles para venta y cotizacion (SSD, memorias, ribbons, consumibles).
-* TrabajoRealizado: Album de trabajos reales y proyectos ejecutados en la empresa para exposicion de portafolio.
+## Control de Calidad y Compilacion
 
-## Seguridad y Middleware
+### Ejecutar Pruebas Locales
+Para correr la suite de pruebas unitarias configuradas en Jest:
+```bash
+npm run test
+```
 
-El archivo `middleware.ts` protege las secciones criticas del sistema. Bloquea peticiones no autenticadas en la ruta `/admin/dashboard` y los metodos de escritura (`POST`, `PUT`, `DELETE`) en la API, mientras mantiene la lectura (`GET`) accesible de forma publica en los recursos compartidos, garantizando la continuidad operativa y protegiendo los datos estrategicos del negocio.
+### Comprobacion de Tipado de TypeScript
+Para verificar que el tipado estatico del proyecto sea correcto sin generar archivos de salida:
+```bash
+npx tsc --noEmit
+```
 
-## Compilacion para Produccion
-
-Para generar el build optimizado de Next.js:
-
+### Compilar Proyecto para Produccion
+Para empaquetar y compilar la aplicacion optimizada para produccion:
 ```bash
 npm run build
 ```
 
-Una vez construido el proyecto con exito, puede iniciarlo en produccion usando:
-
+Una vez finalizado, puedes levantar la aplicacion compilada localmente con:
 ```bash
 npm run start
 ```
