@@ -16,33 +16,58 @@ export default function ContactoPage() {
 
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string[]>>({});
+  const [errorMessage, setErrorMessage] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!nombre || !telefono || !email) {
-      alert("Por favor, completa al menos tu nombre, teléfono y correo electrónico.");
-      return;
-    }
-
     setLoading(true);
+    setSuccess(false);
+    setErrors({});
+    setErrorMessage("");
 
-    // Simulate submission
-    setTimeout(() => {
-      setLoading(false);
+    try {
+      const response = await fetch("/api/contacto", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          nombre,
+          correo: email,
+          telefono: telefono || null,
+          asunto,
+          mensaje,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        if (data.errors) {
+          setErrors(data.errors);
+        } else {
+          setErrorMessage(data.error || "Ocurrio un error al enviar el mensaje.");
+        }
+        return;
+      }
+
       setSuccess(true);
-      
-      // Reset form
       setNombre("");
-      setEmpresa("");
       setAsunto("Soporte Técnico");
       setTelefono("");
       setEmail("");
       setMensaje("");
+      setEmpresa("");
 
-      // Hide success message after 5 seconds
+      // Desaparecer el mensaje de éxito tras 5 segundos
       setTimeout(() => setSuccess(false), 5000);
-    }, 1800);
+    } catch (err) {
+      console.error(err);
+      setErrorMessage("Error de conexion con el servidor. Intentelo mas tarde.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -102,6 +127,11 @@ export default function ContactoPage() {
                       className="w-full py-3.5 bg-transparent border-none text-xs font-semibold focus:outline-none text-on-surface placeholder:text-slate-300"
                     />
                   </div>
+                  {errors.nombre && (
+                    <p className="text-red-600 text-[10px] font-bold uppercase tracking-wider mt-1 px-1">
+                      {errors.nombre[0]}
+                    </p>
+                  )}
                 </div>
 
                 {/* Empresa */}
@@ -139,6 +169,11 @@ export default function ContactoPage() {
                       className="w-full py-3.5 bg-transparent border-none text-xs font-semibold focus:outline-none text-on-surface placeholder:text-slate-300"
                     />
                   </div>
+                  {errors.telefono && (
+                    <p className="text-red-600 text-[10px] font-bold uppercase tracking-wider mt-1 px-1">
+                      {errors.telefono[0]}
+                    </p>
+                  )}
                 </div>
 
                 {/* Correo */}
@@ -157,6 +192,11 @@ export default function ContactoPage() {
                       className="w-full py-3.5 bg-transparent border-none text-xs font-semibold focus:outline-none text-on-surface placeholder:text-slate-300"
                     />
                   </div>
+                  {errors.correo && (
+                    <p className="text-red-600 text-[10px] font-bold uppercase tracking-wider mt-1 px-1">
+                      {errors.correo[0]}
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -179,6 +219,11 @@ export default function ContactoPage() {
                     <option value="Infraestructura de Redes">Infraestructura de Redes</option>
                   </select>
                 </div>
+                {errors.asunto && (
+                  <p className="text-red-600 text-[10px] font-bold uppercase tracking-wider mt-1 px-1">
+                    {errors.asunto[0]}
+                  </p>
+                )}
               </div>
 
               {/* Mensaje */}
@@ -196,6 +241,11 @@ export default function ContactoPage() {
                     className="w-full bg-transparent border-none text-xs font-semibold focus:outline-none text-on-surface placeholder:text-slate-400 leading-relaxed resize-none"
                   />
                 </div>
+                {errors.mensaje && (
+                  <p className="text-red-600 text-[10px] font-bold uppercase tracking-wider mt-1 px-1">
+                    {errors.mensaje[0]}
+                  </p>
+                )}
               </div>
 
               {/* Status messages & Submit */}
@@ -222,6 +272,13 @@ export default function ContactoPage() {
                   <div className="bg-emerald-50 border border-emerald-100 text-emerald-800 text-xs font-bold rounded-2xl px-4 py-3.5 flex items-center gap-2 animate-fade-in-up">
                     <span className="material-symbols-outlined text-emerald-500">check_circle</span>
                     ¡Solicitud enviada! Nos pondremos en contacto contigo en breve.
+                  </div>
+                )}
+
+                {errorMessage && (
+                  <div className="bg-red-50 border border-red-100 text-red-800 text-xs font-bold rounded-2xl px-4 py-3.5 flex items-center gap-2 animate-fade-in-up">
+                    <span className="material-symbols-outlined text-red-500">error</span>
+                    {errorMessage}
                   </div>
                 )}
               </div>

@@ -46,6 +46,27 @@ interface Producto {
   imagen_url: string | null;
 }
 
+interface MensajeContacto {
+  id: number;
+  nombre: string;
+  correo: string;
+  telefono: string | null;
+  asunto: string;
+  mensaje: string;
+  leido: boolean;
+  fecha: string;
+}
+
+interface Usuario {
+  id: number;
+  nombre: string;
+  usuario: string;
+  email: string;
+  rol: string;
+  activo: boolean;
+  createdAt: string;
+}
+
 
 // Vector SVG Dellcom Logo Component
 function DellcomLogo({ className = "w-10 h-10" }: { className?: string }) {
@@ -92,19 +113,23 @@ export default function AdminDashboardPage() {
   const router = useRouter();
 
   // Navigation and data states
-  const [activeTab, setActiveTab] = useState("licenses"); // licenses, files, products
+  const [activeTab, setActiveTab] = useState("licenses"); // licenses, files, products, messages, users
   const [licencias, setLicencias] = useState<Licencia[]>([]);
   const [archivos, setArchivos] = useState<ArchivoTecnico[]>([]);
   const [productos, setProductos] = useState<Producto[]>([]);
   const [categorias, setCategorias] = useState<Categoria[]>([]);
+  const [mensajes, setMensajes] = useState<MensajeContacto[]>([]);
+  const [usuarios, setUsuarios] = useState<Usuario[]>([]);
   
   // Search & Modals state
   const [searchQuery, setSearchQuery] = useState("");
   const [showLicenseModal, setShowLicenseModal] = useState(false);
   const [showFileModal, setShowFileModal] = useState(false);
   const [showProductModal, setShowProductModal] = useState(false);
+  const [showUserModal, setShowUserModal] = useState(false);
   const [editingLicense, setEditingLicense] = useState<Licencia | null>(null);
   const [editingProduct, setEditingProduct] = useState<Producto | null>(null);
+  const [editingUser, setEditingUser] = useState<Usuario | null>(null);
 
   // Form states for License Creation/Editing
   const [formSoftware, setFormSoftware] = useState("");
@@ -130,6 +155,15 @@ export default function AdminDashboardPage() {
   const [formProductImageUrl, setFormProductImageUrl] = useState("");
   const [formProductActive, setFormProductActive] = useState(true);
 
+  // Form states for User CRUD (Admin)
+  const [formUserNombre, setFormUserNombre] = useState("");
+  const [formUserUsuario, setFormUserUsuario] = useState("");
+  const [formUserEmail, setFormUserEmail] = useState("");
+  const [formUserContrasena, setFormUserContrasena] = useState("");
+  const [formUserRol, setFormUserRol] = useState("tecnico"); // admin, tecnico, vendedor
+
+  const [uploading, setUploading] = useState(false);
+
   // Redirect if unauthorized
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -144,8 +178,12 @@ export default function AdminDashboardPage() {
       fetchArchivos();
       fetchProductos();
       fetchCategorias();
+      fetchMensajes();
+      if ((session?.user as any)?.role === "admin") {
+        fetchUsuarios();
+      }
     }
-  }, [status]);
+  }, [status, session]);
 
   const fetchLicencias = async () => {
     try {
@@ -181,6 +219,178 @@ export default function AdminDashboardPage() {
     } catch (e) {
       console.error(e);
     }
+  };
+
+  const fetchMensajes = async () => {
+    try {
+      const res = await fetch("/api/admin/contacto");
+      if (res.ok) setMensajes(await res.json());
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const fetchUsuarios = async () => {
+    try {
+      const res = await fetch("/api/admin/usuarios");
+      if (res.ok) setUsuarios(await res.json());
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const handleUploadFile = async (e: React.ChangeEvent<HTMLInputElement>, target: "product" | "file") => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const res = await fetch("/api/admin/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!res.ok) {
+        throw new Error("No se pudo cargar el archivo");
+      }
+
+      const data = await res.json();
+      if (target === "product") {
+        setFormProductImageUrl(data.url);
+      } else {
+        setFormFileUrl(data.url);
+      }
+      alert("Archivo cargado y guardado fisicamente con exito.");
+    } catch (err) {
+      console.error(err);
+      alert("Error al intentar subir el archivo.");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const toggleMensajeLeido = async (id: number, currentRead: boolean) => {
+    try {
+      const res = await fetch("/api/admin/contacto", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, leido: !currentRead }),
+      });
+      if (res.ok) {
+        fetchMensajes();
+      } else {
+        alert("No se pudo actualizar el estado del mensaje.");
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const handleDeleteMensaje = async (id: number) => {
+    if (!confirm("¿Esta seguro de eliminar este mensaje?")) return;
+    try {
+      const res = await fetch(`/api/admin/contacto?id=${id}`, { method: "DELETE" });
+      if (res.ok) {
+        fetchMensajes();
+      } else {
+        alert("No se pudo eliminar el mensaje.");
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const handleCreateOrUpdateUser = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const userData: any = {
+      nombre: formUserNombre,
+      usuario: formUserUsuario,
+      email: formUserEmail,
+      rol: formUserRol,
+    };
+
+    if (editingUser) {
+      userData.id = editingUser.id;
+      if (formUserContrasena) {
+        userData.contrasena = formUserContrasena;
+      }
+    } else {
+      if (!formUserContrasena) {
+        alert("La contrasena es obligatoria para nuevos usuarios.");
+        return;
+      }
+      userData.contrasena = formUserContrasena;
+    }
+
+    try {
+      const method = editingUser ? "PUT" : "POST";
+      const res = await fetch("/api/admin/usuarios", {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(userData),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        alert(editingUser ? "Usuario actualizado con exito" : "Usuario creado con exito");
+        fetchUsuarios();
+        closeUserModal();
+      } else {
+        if (data.errors) {
+          const errorsStr = Object.entries(data.errors)
+            .map(([field, msgs]: any) => `${field}: ${msgs.join(", ")}`)
+            .join("\n");
+          alert(`Errores de validacion:\n${errorsStr}`);
+        } else {
+          alert(`Error: ${data.error || "No se pudo guardar el usuario"}`);
+        }
+      }
+    } catch (err) {
+      alert("Error de conexion al guardar el usuario.");
+    }
+  };
+
+  const handleToggleUserStatus = async (id: number, currentStatus: boolean) => {
+    try {
+      const res = await fetch("/api/admin/usuarios", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, activo: !currentStatus }),
+      });
+      if (res.ok) {
+        fetchUsuarios();
+      } else {
+        const data = await res.json();
+        alert(`Error: ${data.error || "No se pudo cambiar el estado"}`);
+      }
+    } catch (e) {
+      alert("Error de conexion.");
+    }
+  };
+
+  const openEditUserModal = (user: Usuario) => {
+    setEditingUser(user);
+    setFormUserNombre(user.nombre);
+    setFormUserUsuario(user.usuario);
+    setFormUserEmail(user.email);
+    setFormUserContrasena("");
+    setFormUserRol(user.rol);
+    setShowUserModal(true);
+  };
+
+  const closeUserModal = () => {
+    setEditingUser(null);
+    setFormUserNombre("");
+    setFormUserUsuario("");
+    setFormUserEmail("");
+    setFormUserContrasena("");
+    setFormUserRol("tecnico");
+    setShowUserModal(false);
   };
 
   const handleCreateOrUpdateLicense = async (e: React.FormEvent) => {
@@ -472,6 +682,20 @@ export default function AdminDashboardPage() {
     (p.categoria?.nombre && p.categoria.nombre.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
+  const filteredMensajes = mensajes.filter((m) =>
+    m.nombre.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    m.asunto.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    m.mensaje.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    m.correo.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const filteredUsuarios = usuarios.filter((u) =>
+    u.nombre.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    u.usuario.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    u.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    u.rol.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   // Group files into categories
   const fileCountByType = (type: string) => archivos.filter(a => a.tipo === type).length;
 
@@ -524,6 +748,32 @@ export default function AdminDashboardPage() {
             <span className={`material-symbols-outlined text-[20px] ${activeTab === "products" ? "text-primary" : "text-slate-400"}`}>inventory_2</span>
             <span className="text-sm">Catálogo de Suministros</span>
           </button>
+
+          <button 
+            onClick={() => { setActiveTab("messages"); setSearchQuery(""); }}
+            className={`w-full flex items-center gap-3 px-6 py-3.5 transition-colors duration-200 border-l-4 cursor-pointer ${
+              activeTab === "messages"
+                ? "text-primary font-extrabold border-primary bg-primary/5"
+                : "text-slate-500 border-transparent hover:text-on-surface hover:bg-slate-50"
+            }`}
+          >
+            <span className={`material-symbols-outlined text-[20px] ${activeTab === "messages" ? "text-primary" : "text-slate-400"}`}>mail</span>
+            <span className="text-sm">Mensajes de Contacto</span>
+          </button>
+
+          {(session?.user as any)?.role === "admin" && (
+            <button 
+              onClick={() => { setActiveTab("users"); setSearchQuery(""); }}
+              className={`w-full flex items-center gap-3 px-6 py-3.5 transition-colors duration-200 border-l-4 cursor-pointer ${
+                activeTab === "users"
+                  ? "text-primary font-extrabold border-primary bg-primary/5"
+                  : "text-slate-500 border-transparent hover:text-on-surface hover:bg-slate-50"
+              }`}
+            >
+              <span className={`material-symbols-outlined text-[20px] ${activeTab === "users" ? "text-primary" : "text-slate-400"}`}>group</span>
+              <span className="text-sm">Gestión de Personal</span>
+            </button>
+          )}
         </nav>
 
         {/* Support & Logout links in sidebar footer */}
@@ -559,7 +809,11 @@ export default function AdminDashboardPage() {
                     ? "Buscar licencias por cliente, software..." 
                     : activeTab === "files"
                     ? "Buscar archivos y manuales..."
-                    : "Buscar productos..."
+                    : activeTab === "products"
+                    ? "Buscar productos..."
+                    : activeTab === "messages"
+                    ? "Buscar mensajes por remitente, asunto o cuerpo..."
+                    : "Buscar personal por nombre, usuario o rol..."
                 } 
                 type="text"
                 value={searchQuery}
@@ -957,6 +1211,179 @@ export default function AdminDashboardPage() {
             </section>
           )}
 
+          {activeTab === "messages" && (
+            <section className="animate-fade-in-up">
+              <div className="flex justify-between items-end mb-6">
+                <div>
+                  <h2 className="text-xl font-bold text-on-surface">Mensajes de Contacto</h2>
+                  <p className="text-xs text-slate-500 mt-0.5">Mensajes enviados por clientes a través del formulario de contacto público.</p>
+                </div>
+              </div>
+
+              <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left border-collapse">
+                    <thead>
+                      <tr className="bg-slate-50 border-b border-slate-200">
+                        <th className="px-6 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider">Fecha</th>
+                        <th className="px-6 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider">Remitente</th>
+                        <th className="px-6 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider">Asunto</th>
+                        <th className="px-6 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider">Mensaje</th>
+                        <th className="px-6 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider">Estado</th>
+                        <th className="px-6 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Acciones</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {filteredMensajes.length > 0 ? (
+                        filteredMensajes.map((msg) => (
+                          <tr key={msg.id} className={`transition-colors hover:bg-slate-50/50 ${!msg.leido ? "bg-red-50/30 font-semibold" : ""}`}>
+                            <td className="px-6 py-4 text-xs text-slate-500">{formatDate(msg.fecha)}</td>
+                            <td className="px-6 py-4 text-xs text-on-surface">
+                              <div>{msg.nombre}</div>
+                              <div className="text-[10px] text-slate-400">{msg.correo}</div>
+                              {msg.telefono && <div className="text-[10px] text-slate-400">{msg.telefono}</div>}
+                            </td>
+                            <td className="px-6 py-4 text-xs text-slate-600 font-semibold">{msg.asunto}</td>
+                            <td className="px-6 py-4 text-xs text-slate-500 max-w-xs truncate" title={msg.mensaje}>{msg.mensaje}</td>
+                            <td className="px-6 py-4">
+                              {msg.leido ? (
+                                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 text-[10px] font-bold">
+                                  Leído
+                                </span>
+                              ) : (
+                                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-red-100 text-red-800 text-[10px] font-bold">
+                                  Nuevo
+                                </span>
+                              )}
+                            </td>
+                            <td className="px-6 py-4 text-right space-x-2">
+                              <button
+                                onClick={() => toggleMensajeLeido(msg.id, msg.leido)}
+                                className="text-slate-400 hover:text-red-600 p-1 transition-colors"
+                                title={msg.leido ? "Marcar como no leído" : "Marcar como leído"}
+                              >
+                                <span className="material-symbols-outlined text-[18px]">
+                                  {msg.leido ? "mark_email_unread" : "mark_email_read"}
+                                </span>
+                              </button>
+                              <button
+                                onClick={() => handleDeleteMensaje(msg.id)}
+                                className="text-slate-400 hover:text-red-700 p-1 transition-colors"
+                                title="Eliminar"
+                              >
+                                <span className="material-symbols-outlined text-[18px]">delete</span>
+                              </button>
+                            </td>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td colSpan={6} className="px-6 py-12 text-center text-xs text-slate-500">
+                            No se encontraron mensajes de contacto.
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </section>
+          )}
+
+          {activeTab === "users" && (session?.user as any)?.role === "admin" && (
+            <section className="animate-fade-in-up">
+              <div className="flex justify-between items-end mb-6">
+                <div>
+                  <h2 className="text-xl font-bold text-on-surface">Gestión de Personal y Cuentas</h2>
+                  <p className="text-xs text-slate-500 mt-0.5">Creación y control de acceso para técnicos y vendedores de DELLCOM SAC.</p>
+                </div>
+                <button 
+                  onClick={() => setShowUserModal(true)}
+                  className="bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-5 py-3 rounded-xl transition-all active:scale-95 shadow-md shadow-red-600/10 flex items-center gap-2"
+                >
+                  <span className="material-symbols-outlined text-base">person_add</span>
+                  Registrar Personal
+                </button>
+              </div>
+
+              <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left border-collapse">
+                    <thead>
+                      <tr className="bg-slate-50 border-b border-slate-200">
+                        <th className="px-6 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider">Nombre Completo</th>
+                        <th className="px-6 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider">Usuario</th>
+                        <th className="px-6 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider">Email</th>
+                        <th className="px-6 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider">Rol</th>
+                        <th className="px-6 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider">Estado</th>
+                        <th className="px-6 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Acciones</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {filteredUsuarios.length > 0 ? (
+                        filteredUsuarios.map((u) => (
+                          <tr key={u.id} className="transition-colors hover:bg-slate-50/50">
+                            <td className="px-6 py-4 text-xs font-semibold text-on-surface">{u.nombre}</td>
+                            <td className="px-6 py-4 text-xs text-slate-600">{u.usuario}</td>
+                            <td className="px-6 py-4 text-xs text-slate-500">{u.email}</td>
+                            <td className="px-6 py-4 text-xs">
+                              <span className={`inline-flex px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${
+                                u.rol === "admin" 
+                                  ? "bg-red-100 text-red-800" 
+                                  : u.rol === "tecnico" 
+                                  ? "bg-blue-100 text-blue-800" 
+                                  : "bg-slate-100 text-slate-800"
+                              }`}>
+                                {u.rol}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4">
+                              {u.activo ? (
+                                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold">
+                                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+                                  Activo
+                                </span>
+                              ) : (
+                                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 text-slate-400 text-[10px] font-bold">
+                                  <span className="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+                                  Desactivado
+                                </span>
+                              )}
+                            </td>
+                            <td className="px-6 py-4 text-right space-x-2">
+                              <button
+                                onClick={() => openEditUserModal(u)}
+                                className="text-slate-400 hover:text-red-600 p-1 transition-colors"
+                                title="Editar"
+                              >
+                                <span className="material-symbols-outlined text-[18px]">edit</span>
+                              </button>
+                              <button
+                                onClick={() => handleToggleUserStatus(u.id, u.activo)}
+                                className="text-slate-400 hover:text-red-700 p-1 transition-colors"
+                                title={u.activo ? "Desactivar Cuenta" : "Activar Cuenta"}
+                              >
+                                <span className="material-symbols-outlined text-[18px]">
+                                  {u.activo ? "block" : "check_circle"}
+                                </span>
+                              </button>
+                            </td>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td colSpan={6} className="px-6 py-12 text-center text-xs text-slate-500">
+                            No se encontraron usuarios registrados.
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </section>
+          )}
+
         </main>
       </div>
 
@@ -1129,7 +1556,7 @@ export default function AdminDashboardPage() {
                 <div>
                   <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">URL / Link de Descarga</label>
                   <input 
-                    type="url" 
+                    type="text" 
                     required
                     value={formFileUrl}
                     onChange={(e) => setFormFileUrl(e.target.value)}
@@ -1137,6 +1564,17 @@ export default function AdminDashboardPage() {
                     className="w-full bg-slate-50 border border-slate-200 focus:border-red-600 focus:ring-1 focus:ring-red-600 focus:outline-none rounded-xl px-4 py-3 text-sm transition-all font-mono text-xs"
                   />
                 </div>
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1 font-bold">Subir Archivo de Soporte (Carga Física)</label>
+                <input 
+                  type="file" 
+                  onChange={(e) => handleUploadFile(e, "file")}
+                  disabled={uploading}
+                  className="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200 cursor-pointer"
+                />
+                {uploading && <p className="text-[10px] text-primary font-bold mt-1 animate-pulse">Subiendo archivo...</p>}
               </div>
 
               <div>
@@ -1169,6 +1607,7 @@ export default function AdminDashboardPage() {
           </div>
         </div>
       )}
+
       {/* MODAL 3: Create or Edit Product */}
       {showProductModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
@@ -1228,14 +1667,24 @@ export default function AdminDashboardPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Ruta de Imagen (Opcional)</label>
-                  <input 
-                    type="text" 
-                    value={formProductImageUrl}
-                    onChange={(e) => setFormProductImageUrl(e.target.value)}
-                    placeholder="/img/productos/ribbon-cera.jpg"
-                    className="w-full bg-slate-50 border border-slate-200 focus:border-red-600 focus:ring-1 focus:ring-red-600 focus:outline-none rounded-xl px-4 py-3 text-sm transition-all font-mono text-xs"
-                  />
+                  <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1 font-bold">Imagen del Producto</label>
+                  <div className="flex flex-col gap-2">
+                    <input 
+                      type="text" 
+                      value={formProductImageUrl}
+                      onChange={(e) => setFormProductImageUrl(e.target.value)}
+                      placeholder="/img/productos/ribbon-cera.jpg"
+                      className="w-full bg-slate-50 border border-slate-200 focus:border-red-600 focus:ring-1 focus:ring-red-600 focus:outline-none rounded-xl px-4 py-3 text-sm transition-all font-mono text-xs"
+                    />
+                    <input 
+                      type="file" 
+                      accept="image/*"
+                      onChange={(e) => handleUploadFile(e, "product")}
+                      disabled={uploading}
+                      className="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200 cursor-pointer"
+                    />
+                    {uploading && <p className="text-[10px] text-primary font-bold animate-pulse">Subiendo imagen...</p>}
+                  </div>
                 </div>
               </div>
 
@@ -1276,6 +1725,104 @@ export default function AdminDashboardPage() {
                   className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold transition-all active:scale-95 shadow-md shadow-red-600/10"
                 >
                   {editingProduct ? "Actualizar Cambios" : "Guardar Producto"}
+                </button>
+              </footer>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 4: Create or Edit User */}
+      {showUserModal && (session?.user as any)?.role === "admin" && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
+          <div className="bg-white border border-slate-200 rounded-3xl w-full max-w-lg shadow-2xl relative overflow-hidden">
+            <header className="px-8 py-5 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+              <h3 className="font-bold text-base text-on-surface">
+                {editingUser ? "Editar Personal / Usuario" : "Registrar Nuevo Personal"}
+              </h3>
+              <button onClick={closeUserModal} className="text-slate-400 hover:text-slate-700 transition-colors">
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            </header>
+
+            <form onSubmit={handleCreateOrUpdateUser} className="p-8 space-y-4">
+              <div>
+                <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Nombre Completo</label>
+                <input 
+                  type="text" 
+                  required
+                  value={formUserNombre}
+                  onChange={(e) => setFormUserNombre(e.target.value)}
+                  placeholder="Ej. Juan Pérez"
+                  className="w-full bg-slate-50 border border-slate-200 focus:border-red-600 focus:ring-1 focus:ring-red-600 focus:outline-none rounded-xl px-4 py-3 text-sm transition-all"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Nombre de Usuario</label>
+                  <input 
+                    type="text" 
+                    required
+                    value={formUserUsuario}
+                    onChange={(e) => setFormUserUsuario(e.target.value)}
+                    placeholder="Ej. jperez"
+                    className="w-full bg-slate-50 border border-slate-200 focus:border-red-600 focus:ring-1 focus:ring-red-600 focus:outline-none rounded-xl px-4 py-3 text-sm transition-all"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Rol</label>
+                  <select 
+                    value={formUserRol}
+                    onChange={(e) => setFormUserRol(e.target.value)}
+                    className="w-full bg-slate-50 border border-slate-200 focus:border-red-600 focus:ring-1 focus:ring-red-600 focus:outline-none rounded-xl px-4 py-3 text-sm transition-all"
+                  >
+                    <option value="tecnico">Técnico</option>
+                    <option value="vendedor">Vendedor</option>
+                    <option value="admin">Administrador</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Correo Electrónico</label>
+                <input 
+                  type="email" 
+                  required
+                  value={formUserEmail}
+                  onChange={(e) => setFormUserEmail(e.target.value)}
+                  placeholder="Ej. jperez@dellcom.pe"
+                  className="w-full bg-slate-50 border border-slate-200 focus:border-red-600 focus:ring-1 focus:ring-red-600 focus:outline-none rounded-xl px-4 py-3 text-sm transition-all"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">
+                  Contraseña {editingUser && "(Dejar en blanco para conservar actual)"}
+                </label>
+                <input 
+                  type="password" 
+                  required={!editingUser}
+                  value={formUserContrasena}
+                  onChange={(e) => setFormUserContrasena(e.target.value)}
+                  placeholder="Mínimo 6 caracteres"
+                  className="w-full bg-slate-50 border border-slate-200 focus:border-red-600 focus:ring-1 focus:ring-red-600 focus:outline-none rounded-xl px-4 py-3 text-sm transition-all"
+                />
+              </div>
+
+              <footer className="pt-4 border-t border-slate-100 flex justify-end gap-3">
+                <button 
+                  type="button" 
+                  onClick={closeUserModal}
+                  className="px-5 py-3 border border-slate-200 hover:bg-slate-50 rounded-xl text-xs font-bold transition-all"
+                >
+                  Cancelar
+                </button>
+                <button 
+                  type="submit" 
+                  className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold transition-all active:scale-95 shadow-md shadow-red-600/10"
+                >
+                  {editingUser ? "Actualizar Cambios" : "Guardar Personal"}
                 </button>
               </footer>
             </form>

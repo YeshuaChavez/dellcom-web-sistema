@@ -107,3 +107,14 @@ model TrabajoRealizado {
   imagen_url   String
   fecha        DateTime @default(now())
 }
+
+model MensajeContacto {
+  id        Int      @id @default(autoincrement()) @map("id_mensaje")
+  nombre    String
+  correo    String
+  telefono  String?
+  asunto    String
+  mensaje   String   @db.Text
+  leido     Boolean  @default(false)
+  fecha     DateTime @default(now())
+}
