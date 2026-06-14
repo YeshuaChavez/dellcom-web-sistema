@@ -3,6 +3,16 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
+import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+
+// Configurar cliente de AWS S3
+const s3Client = new S3Client({
+  region: process.env.AWS_REGION || "us-east-1",
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID || "",
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || "",
+  },
+});
 
 export async function POST(req: NextRequest) {
   try {
@@ -28,22 +38,55 @@ export async function POST(req: NextRequest) {
     const originalName = path.basename(file.name, fileExtension).replace(/[^a-zA-Z0-9]/g, "_");
     const filename = `${originalName}-${uniqueSuffix}${fileExtension}`;
 
-    const uploadDir = path.join(process.cwd(), "public", "uploads");
+    // Validar si las credenciales de AWS S3 están configuradas
+    const hasS3Config =
+      process.env.AWS_ACCESS_KEY_ID &&
+      process.env.AWS_SECRET_ACCESS_KEY &&
+      process.env.AWS_BUCKET_NAME;
 
-    // Asegurar que la carpeta de destino exista
-    await mkdir(uploadDir, { recursive: true });
+    if (hasS3Config) {
+      const bucketName = process.env.AWS_BUCKET_NAME!;
+      const region = process.env.AWS_REGION || "us-east-1";
+      const key = `uploads/${filename}`;
 
-    const filePath = path.join(uploadDir, filename);
-    await writeFile(filePath, buffer);
+      await s3Client.send(
+        new PutObjectCommand({
+          Bucket: bucketName,
+          Key: key,
+          Body: buffer,
+          ContentType: file.type || "application/octet-stream",
+        })
+      );
 
-    const relativeUrl = `/uploads/${filename}`;
+      const s3Url = `https://${bucketName}.s3.${region}.amazonaws.com/${key}`;
 
-    return NextResponse.json({
-      success: true,
-      url: relativeUrl,
-      name: file.name,
-      size: file.size,
-    });
+      return NextResponse.json({
+        success: true,
+        url: s3Url,
+        name: file.name,
+        size: file.size,
+        storage: "s3",
+      });
+    } else {
+      // Fallback local en caso de no contar con variables de entorno de S3
+      const uploadDir = path.join(process.cwd(), "public", "uploads");
+
+      // Asegurar que la carpeta de destino exista
+      await mkdir(uploadDir, { recursive: true });
+
+      const filePath = path.join(uploadDir, filename);
+      await writeFile(filePath, buffer);
+
+      const relativeUrl = `/uploads/${filename}`;
+
+      return NextResponse.json({
+        success: true,
+        url: relativeUrl,
+        name: file.name,
+        size: file.size,
+        storage: "local",
+      });
+    }
   } catch (error) {
     console.error("[API Admin Upload Error]:", error);
     return NextResponse.json(
