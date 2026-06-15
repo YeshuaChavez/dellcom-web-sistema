@@ -438,7 +438,7 @@ export default function ProductosPage() {
       <div className="space-y-8">
         {/* Search */}
         <div>
-          <h4 className="font-headline font-bold text-xs uppercase text-slate-450 tracking-wider mb-3">Buscar Producto</h4>
+          <h4 className="font-headline font-bold text-xs uppercase text-slate-500 tracking-wider mb-3">Buscar Producto</h4>
           <div className="relative bg-slate-50 border border-slate-200 rounded-xl overflow-hidden focus-within:border-primary/50 focus-within:ring-2 focus-within:ring-primary/10 transition-all">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4 pointer-events-none" />
             <input 
@@ -461,7 +461,7 @@ export default function ProductosPage() {
 
         {/* Categories Checkboxes */}
         <div>
-          <h4 className="font-headline font-bold text-xs uppercase text-slate-450 tracking-wider mb-3">Categorías</h4>
+          <h4 className="font-headline font-bold text-xs uppercase text-slate-500 tracking-wider mb-3">Categorías</h4>
           <div className="space-y-2 max-h-60 overflow-y-auto pr-1 no-scrollbar">
             {categorias.map((cat) => {
               const isSelected = selectedCategory.toLowerCase() === cat.nombre.toLowerCase();
@@ -475,7 +475,7 @@ export default function ProductosPage() {
                   }}
                   className={`w-full flex items-center justify-between text-left py-2 px-3 rounded-xl transition-all cursor-pointer border-none text-xs font-semibold ${
                     isSelected 
-                      ? "bg-primary/5 text-primary animate-pulse-subtle" 
+                      ? "bg-primary/5 text-primary"
                       : "bg-transparent text-slate-600 hover:bg-slate-50 hover:text-slate-800"
                   }`}
                 >
@@ -501,7 +501,7 @@ export default function ProductosPage() {
         {/* Price Slider */}
         {maxPrice > 0 && (
           <div>
-            <h4 className="font-headline font-bold text-xs uppercase text-slate-450 tracking-wider mb-2">Filtrar por Precio</h4>
+            <h4 className="font-headline font-bold text-xs uppercase text-slate-500 tracking-wider mb-2">Filtrar por Precio</h4>
             <div className="space-y-3 pt-2">
               <input 
                 type="range"
@@ -555,7 +555,7 @@ export default function ProductosPage() {
               Catálogo Virtual Oficial 2026
             </span>
             <h1 className="font-headline text-3xl md:text-5xl font-black text-white leading-tight tracking-tight">
-              Shop Our <span className="text-primary">Products</span>
+              Nuestro <span className="text-primary">Catálogo</span>
             </h1>
             <p className="text-xs md:text-sm text-slate-300 max-w-xl mx-auto mt-3 leading-relaxed font-semibold">
               Filtra y cotiza suministros originales Zebra, repuestos de hardware premium, componentes de microelectrónica y licenciamiento oficial.
@@ -583,7 +583,7 @@ export default function ProductosPage() {
                 <div className="flex items-center justify-between sm:justify-start gap-4 w-full sm:w-auto">
                   <button
                     onClick={() => setIsMobileFiltersOpen(true)}
-                    className="flex lg:hidden items-center gap-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer border-none shadow-sm"
+                    className="flex lg:hidden items-center gap-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer shadow-sm"
                   >
                     <span className="material-symbols-outlined text-sm">filter_alt</span>
                     Filtros
