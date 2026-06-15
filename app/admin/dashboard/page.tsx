@@ -335,6 +335,7 @@ export default function AdminDashboardPage() {
 
     const formData = new FormData();
     formData.append("file", file);
+    formData.append("folder", target === "product" ? "productos" : target === "portfolio" ? "portfolio" : "uploads");
 
     try {
       const res = await fetch("/api/admin/upload", {
