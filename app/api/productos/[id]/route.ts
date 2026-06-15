@@ -2,6 +2,16 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { z } from "zod";
+
+const ProductoUpdateSchema = z.object({
+  nombre: z.string().min(1, "El nombre del producto es requerido").optional(),
+  precio: z.number({ invalid_type_error: "El precio debe ser un número" }).positive().optional(),
+  descripcion: z.string().nullable().optional(),
+  id_categoria: z.number().int().positive().optional(),
+  imagen_url: z.string().nullable().optional(),
+  activo: z.boolean().optional(),
+});
 
 export async function GET(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -19,9 +29,14 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 
   const { id } = await params;
   const body = await req.json();
+  const result = ProductoUpdateSchema.safeParse(body);
+  if (!result.success) {
+    return NextResponse.json({ errors: result.error.flatten().fieldErrors }, { status: 400 });
+  }
+
   const producto = await prisma.producto.update({
     where: { id: Number(id) },
-    data: body,
+    data: result.data,
   });
   return NextResponse.json(producto);
 }
@@ -33,7 +48,7 @@ export async function DELETE(_: NextRequest, { params }: { params: Promise<{ id:
   const { id } = await params;
   await prisma.producto.update({
     where: { id: Number(id) },
-    data: { activo: false }, // soft delete
+    data: { activo: false },
   });
   return NextResponse.json({ ok: true });
 }
