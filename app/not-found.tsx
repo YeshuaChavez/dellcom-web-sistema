@@ -1,3 +1,8 @@
+/**
+ * Página 404 personalizada de Next.js App Router.
+ * Se muestra automáticamente cuando ninguna ruta coincide con la URL.
+ * Estilo consistente con el branding DELLCOM (rojo, Material Symbols).
+ */
 import Link from "next/link";
 import type { Metadata } from "next";
 

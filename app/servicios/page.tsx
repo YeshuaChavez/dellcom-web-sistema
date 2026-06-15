@@ -1,3 +1,10 @@
+/**
+ * Página de servicios: /servicios
+ * Server Component que obtiene los servicios activos de la base de datos
+ * y los muestra en tarjetas con imagen, icono y especificaciones técnicas.
+ * Si la DB no responde, usa datos de fallback estáticos (FALLBACK_SERVICES).
+ * Enriquece cada servicio con visuals (imagen + specs) desde serviceVisuals.
+ */
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import StatusHeader from "../components/StatusHeader";

@@ -1,3 +1,8 @@
+/**
+ * Layout de la sección de catálogo (/productos).
+ * Define los metadatos SEO de la sección. No añade estructura visual propia
+ * porque la página es un Client Component que gestiona su propio layout.
+ */
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {

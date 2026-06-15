@@ -1,3 +1,17 @@
+/**
+ * Panel de administración principal: /admin/dashboard
+ * Client Component que consume las APIs internas con fetch del lado del cliente.
+ * Módulos incluidos (gestionados con tabs):
+ *  - Licencias de software (CRUD completo)
+ *  - Productos del catálogo (CRUD + upload de imagen a S3/local)
+ *  - Archivos técnicos (CRUD)
+ *  - Servicios ofrecidos (CRUD)
+ *  - Trabajos del portfolio (CRUD + upload de imagen)
+ *  - Categorías de productos (CRUD)
+ *  - Mensajes de contacto (lectura + marcar leído + eliminar)
+ *  - Gestión de usuarios (solo admin): CRUD + activar/desactivar
+ * El acceso se protege en dos niveles: middleware RBAC y useSession() client-side.
+ */
 "use client";
 
 import { useSession, signOut } from "next-auth/react";

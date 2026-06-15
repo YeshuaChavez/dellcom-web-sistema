@@ -1,3 +1,10 @@
+/**
+ * Página de soporte remoto: /soporte
+ * Es un Server Component (sin "use client") porque solo renderiza contenido estático
+ * más el componente interactivo AnyDeskConsole (que sí es cliente).
+ * Secciones: Hero, botones de descarga AnyDesk/RustDesk, videotutorial
+ * y la consola de envío de código para iniciar la sesión remota.
+ */
 import StatusHeader from "../components/StatusHeader";
 import CleanFooter from "../components/CleanFooter";
 import AnyDeskConsole from "../components/AnyDeskConsole";

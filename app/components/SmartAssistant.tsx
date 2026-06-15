@@ -1,3 +1,9 @@
+/**
+ * Asistente virtual de atención al cliente (chatbot flotante).
+ * Responde preguntas frecuentes usando coincidencia de palabras clave (sin IA externa).
+ * Se oculta automáticamente en las rutas /admin/* para no interferir con el panel.
+ * El botón de WhatsApp abre un mensaje prefabricado en wa.me para derivar consultas.
+ */
 "use client";
 
 import { useState, useEffect, useRef } from "react";

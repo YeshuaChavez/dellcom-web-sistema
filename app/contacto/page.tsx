@@ -1,3 +1,10 @@
+/**
+ * Página de contacto: /contacto
+ * Formulario conversacional que envía un mensaje a la API /api/contacto (POST).
+ * Maneja estados de carga, éxito y errores de validación (devueltos por Zod).
+ * Incluye mapa de ubicación con iframe de Google Maps y tabs para seleccionar
+ * entre la sede Los Olivos y la sede Santa Anita.
+ */
 "use client";
 
 import { useState } from "react";

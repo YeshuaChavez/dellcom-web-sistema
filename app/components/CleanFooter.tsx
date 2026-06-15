@@ -1,3 +1,8 @@
+/**
+ * Footer corporativo de la landing page.
+ * Organizado en 4 columnas: marca, servicios, compañía y contacto.
+ * Es un Server Component (sin "use client") porque no necesita interactividad.
+ */
 import Link from "next/link";
 import { Globe, MapPin, Phone, Mail } from "lucide-react";
 

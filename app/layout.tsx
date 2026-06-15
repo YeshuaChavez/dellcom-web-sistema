@@ -1,3 +1,9 @@
+/**
+ * Layout raíz de la aplicación.
+ * Se aplica a todas las rutas públicas y del panel.
+ * Carga las fuentes Outfit (tipografía principal) y Material Symbols (íconos).
+ * El SmartAssistant se monta globalmente pero se oculta solo en /admin.
+ */
 import type { Metadata } from "next";
 import "./globals.css";
 import SmartAssistant from "./components/SmartAssistant";
