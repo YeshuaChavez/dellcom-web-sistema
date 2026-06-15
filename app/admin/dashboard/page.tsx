@@ -30,7 +30,9 @@ interface ArchivoTecnico {
 interface Categoria {
   id: number;
   nombre: string;
+  activo: boolean;
 }
+
 
 interface Producto {
   id: number;
@@ -65,6 +67,24 @@ interface Usuario {
   rol: string;
   activo: boolean;
   createdAt: string;
+}
+
+interface Servicio {
+  id: number;
+  nombre: string;
+  descripcion: string;
+  icono_url: string | null;
+  activo: boolean;
+}
+
+interface TrabajoRealizado {
+  id: number;
+  id_servicio: number | null;
+  servicio?: Servicio | null;
+  titulo: string;
+  descripcion: string | null;
+  imagen_url: string;
+  fecha: string;
 }
 
 
@@ -113,13 +133,15 @@ export default function AdminDashboardPage() {
   const router = useRouter();
 
   // Navigation and data states
-  const [activeTab, setActiveTab] = useState("licenses"); // licenses, files, products, messages, users
+  const [activeTab, setActiveTab] = useState("licenses"); // licenses, files, products, messages, users, services, portfolio, categories
   const [licencias, setLicencias] = useState<Licencia[]>([]);
   const [archivos, setArchivos] = useState<ArchivoTecnico[]>([]);
   const [productos, setProductos] = useState<Producto[]>([]);
   const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [mensajes, setMensajes] = useState<MensajeContacto[]>([]);
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
+  const [servicios, setServicios] = useState<Servicio[]>([]);
+  const [trabajos, setTrabajos] = useState<TrabajoRealizado[]>([]);
   
   // Search & Modals state
   const [searchQuery, setSearchQuery] = useState("");
@@ -127,9 +149,16 @@ export default function AdminDashboardPage() {
   const [showFileModal, setShowFileModal] = useState(false);
   const [showProductModal, setShowProductModal] = useState(false);
   const [showUserModal, setShowUserModal] = useState(false);
+  const [showServiceModal, setShowServiceModal] = useState(false);
+  const [showPortfolioModal, setShowPortfolioModal] = useState(false);
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
+
   const [editingLicense, setEditingLicense] = useState<Licencia | null>(null);
   const [editingProduct, setEditingProduct] = useState<Producto | null>(null);
   const [editingUser, setEditingUser] = useState<Usuario | null>(null);
+  const [editingService, setEditingService] = useState<Servicio | null>(null);
+  const [editingPortfolio, setEditingPortfolio] = useState<TrabajoRealizado | null>(null);
+  const [editingCategory, setEditingCategory] = useState<Categoria | null>(null);
 
   // Form states for License Creation/Editing
   const [formSoftware, setFormSoftware] = useState("");
@@ -162,6 +191,22 @@ export default function AdminDashboardPage() {
   const [formUserContrasena, setFormUserContrasena] = useState("");
   const [formUserRol, setFormUserRol] = useState("tecnico"); // admin, tecnico, vendedor
 
+  // Form states for Service CRUD
+  const [formServiceName, setFormServiceName] = useState("");
+  const [formServiceDesc, setFormServiceDesc] = useState("");
+  const [formServiceIcon, setFormServiceIcon] = useState("laptop_mac");
+  const [formServiceActive, setFormServiceActive] = useState(true);
+
+  // Form states for Portfolio CRUD
+  const [formPortfolioTitle, setFormPortfolioTitle] = useState("");
+  const [formPortfolioDesc, setFormPortfolioDesc] = useState("");
+  const [formPortfolioImgUrl, setFormPortfolioImgUrl] = useState("");
+  const [formPortfolioServiceId, setFormPortfolioServiceId] = useState("");
+
+  // Form states for Category CRUD
+  const [formCategoryName, setFormCategoryName] = useState("");
+  const [formCategoryActive, setFormCategoryActive] = useState(true);
+  
   const [uploading, setUploading] = useState(false);
 
   // Redirect if unauthorized
@@ -179,6 +224,8 @@ export default function AdminDashboardPage() {
       fetchProductos();
       fetchCategorias();
       fetchMensajes();
+      fetchServicios();
+      fetchTrabajos();
       if ((session?.user as any)?.role === "admin") {
         fetchUsuarios();
       }
@@ -239,7 +286,25 @@ export default function AdminDashboardPage() {
     }
   };
 
-  const handleUploadFile = async (e: React.ChangeEvent<HTMLInputElement>, target: "product" | "file") => {
+  const fetchServicios = async () => {
+    try {
+      const res = await fetch("/api/servicios");
+      if (res.ok) setServicios(await res.json());
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const fetchTrabajos = async () => {
+    try {
+      const res = await fetch("/api/trabajos");
+      if (res.ok) setTrabajos(await res.json());
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const handleUploadFile = async (e: React.ChangeEvent<HTMLInputElement>, target: "product" | "file" | "portfolio") => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -260,6 +325,8 @@ export default function AdminDashboardPage() {
       const data = await res.json();
       if (target === "product") {
         setFormProductImageUrl(data.url);
+      } else if (target === "portfolio") {
+        setFormPortfolioImgUrl(data.url);
       } else {
         setFormFileUrl(data.url);
       }
@@ -621,6 +688,200 @@ export default function AdminDashboardPage() {
     setShowProductModal(false);
   };
 
+  // --- SERVICIOS CRUD ---
+  const handleCreateOrUpdateService = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const serviceData = {
+      nombre: formServiceName,
+      descripcion: formServiceDesc,
+      icono_url: formServiceIcon || "laptop_mac",
+      activo: formServiceActive,
+    };
+
+    try {
+      const method = editingService ? "PUT" : "POST";
+      const url = editingService ? `/api/servicios/${editingService.id}` : "/api/servicios";
+      const res = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(serviceData),
+      });
+
+      if (res.ok) {
+        alert(editingService ? "Servicio actualizado con éxito" : "Servicio creado con éxito");
+        fetchServicios();
+        closeServiceModal();
+      } else {
+        const err = await res.json();
+        alert(`Error: ${err.error || "No se pudo guardar el servicio"}`);
+      }
+    } catch (e) {
+      alert("Error de conexión al guardar el servicio.");
+    }
+  };
+
+  const handleDeleteService = async (id: number) => {
+    if (!confirm("¿Está seguro de ocultar/desactivar este servicio de la web?")) return;
+    try {
+      const res = await fetch(`/api/servicios/${id}`, { method: "DELETE" });
+      if (res.ok) {
+        alert("Servicio desactivado");
+        fetchServicios();
+      } else {
+        alert("No se pudo desactivar el servicio");
+      }
+    } catch (e) {
+      alert("Error de conexión.");
+    }
+  };
+
+  const openEditServiceModal = (srv: Servicio) => {
+    setEditingService(srv);
+    setFormServiceName(srv.nombre);
+    setFormServiceDesc(srv.descripcion);
+    setFormServiceIcon(srv.icono_url || "laptop_mac");
+    setFormServiceActive(srv.activo);
+    setShowServiceModal(true);
+  };
+
+  const closeServiceModal = () => {
+    setEditingService(null);
+    setFormServiceName("");
+    setFormServiceDesc("");
+    setFormServiceIcon("laptop_mac");
+    setFormServiceActive(true);
+    setShowServiceModal(false);
+  };
+
+  // --- PORTAFOLIO CRUD ---
+  const handleCreateOrUpdatePortfolio = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formPortfolioImgUrl) {
+      alert("Debe subir una imagen para el trabajo de portafolio.");
+      return;
+    }
+
+    const portfolioData = {
+      titulo: formPortfolioTitle,
+      descripcion: formPortfolioDesc || null,
+      imagen_url: formPortfolioImgUrl,
+      id_servicio: formPortfolioServiceId ? Number(formPortfolioServiceId) : null,
+    };
+
+    try {
+      const method = editingPortfolio ? "PUT" : "POST";
+      const url = editingPortfolio ? `/api/trabajos/${editingPortfolio.id}` : "/api/trabajos";
+      const res = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(portfolioData),
+      });
+
+      if (res.ok) {
+        alert(editingPortfolio ? "Trabajo actualizado con éxito" : "Trabajo registrado con éxito");
+        fetchTrabajos();
+        closePortfolioModal();
+      } else {
+        const err = await res.json();
+        alert(`Error: ${err.error || "No se pudo guardar el trabajo"}`);
+      }
+    } catch (e) {
+      alert("Error de conexión al guardar el trabajo.");
+    }
+  };
+
+  const handleDeletePortfolio = async (id: number) => {
+    if (!confirm("¿Está seguro de eliminar permanentemente este trabajo del portafolio?")) return;
+    try {
+      const res = await fetch(`/api/trabajos/${id}`, { method: "DELETE" });
+      if (res.ok) {
+        alert("Trabajo eliminado de la web");
+        fetchTrabajos();
+      } else {
+        alert("No se pudo eliminar el trabajo");
+      }
+    } catch (e) {
+      alert("Error de conexión.");
+    }
+  };
+
+  const openEditPortfolioModal = (job: TrabajoRealizado) => {
+    setEditingPortfolio(job);
+    setFormPortfolioTitle(job.titulo);
+    setFormPortfolioDesc(job.descripcion || "");
+    setFormPortfolioImgUrl(job.imagen_url);
+    setFormPortfolioServiceId(job.id_servicio ? String(job.id_servicio) : "");
+    setShowPortfolioModal(true);
+  };
+
+  const closePortfolioModal = () => {
+    setEditingPortfolio(null);
+    setFormPortfolioTitle("");
+    setFormPortfolioDesc("");
+    setFormPortfolioImgUrl("");
+    setFormPortfolioServiceId("");
+    setShowPortfolioModal(false);
+  };
+
+  // --- CATEGORÍAS CRUD ---
+  const handleCreateOrUpdateCategory = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const categoryData = {
+      nombre: formCategoryName,
+      activo: formCategoryActive,
+    };
+
+    try {
+      const method = editingCategory ? "PUT" : "POST";
+      const url = editingCategory ? `/api/categorias/${editingCategory.id}` : "/api/categorias";
+      const res = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(categoryData),
+      });
+
+      if (res.ok) {
+        alert(editingCategory ? "Categoría actualizada con éxito" : "Categoría creada con éxito");
+        fetchCategorias();
+        closeCategoryModal();
+      } else {
+        const err = await res.json();
+        alert(`Error: ${err.error || "No se pudo guardar la categoría"}`);
+      }
+    } catch (e) {
+      alert("Error de conexión al guardar la categoría.");
+    }
+  };
+
+  const handleDeleteCategory = async (id: number) => {
+    if (!confirm("¿Está seguro de ocultar/desactivar esta categoría del catálogo?")) return;
+    try {
+      const res = await fetch(`/api/categorias/${id}`, { method: "DELETE" });
+      if (res.ok) {
+        alert("Categoría desactivada");
+        fetchCategorias();
+      } else {
+        alert("No se pudo desactivar la categoría");
+      }
+    } catch (e) {
+      alert("Error de conexión.");
+    }
+  };
+
+  const openEditCategoryModal = (cat: Categoria) => {
+    setEditingCategory(cat);
+    setFormCategoryName(cat.nombre);
+    setFormCategoryActive(cat.activo);
+    setShowCategoryModal(true);
+  };
+
+  const closeCategoryModal = () => {
+    setEditingCategory(null);
+    setFormCategoryName("");
+    setFormCategoryActive(true);
+    setShowCategoryModal(false);
+  };
+
   // Helper function to format date strings nicely
   const formatDate = (dateStr: string | null) => {
     if (!dateStr) return "Sin fecha";
@@ -696,6 +957,21 @@ export default function AdminDashboardPage() {
     u.rol.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const filteredServicios = servicios.filter((s) =>
+    s.nombre.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    s.descripcion.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const filteredTrabajos = trabajos.filter((t) =>
+    t.titulo.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (t.descripcion && t.descripcion.toLowerCase().includes(searchQuery.toLowerCase())) ||
+    (t.servicio?.nombre && t.servicio.nombre.toLowerCase().includes(searchQuery.toLowerCase()))
+  );
+
+  const filteredCategorias = categorias.filter((c) =>
+    c.nombre.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   // Group files into categories
   const fileCountByType = (type: string) => archivos.filter(a => a.tipo === type).length;
 
@@ -712,7 +988,7 @@ export default function AdminDashboardPage() {
           </div>
         </div>
         
-        <nav className="flex-1 space-y-1">
+        <nav className="flex-1 space-y-1 overflow-y-auto max-h-[calc(100vh-180px)] no-scrollbar">
           <button 
             onClick={() => { setActiveTab("licenses"); setSearchQuery(""); }}
             className={`w-full flex items-center gap-3 px-6 py-3.5 transition-colors duration-200 border-l-4 cursor-pointer ${
@@ -747,6 +1023,42 @@ export default function AdminDashboardPage() {
           >
             <span className={`material-symbols-outlined text-[20px] ${activeTab === "products" ? "text-primary" : "text-slate-400"}`}>inventory_2</span>
             <span className="text-sm">Catálogo de Suministros</span>
+          </button>
+
+          <button 
+            onClick={() => { setActiveTab("categories"); setSearchQuery(""); }}
+            className={`w-full flex items-center gap-3 px-6 py-3.5 transition-colors duration-200 border-l-4 cursor-pointer ${
+              activeTab === "categories"
+                ? "text-primary font-extrabold border-primary bg-primary/5"
+                : "text-slate-500 border-transparent hover:text-on-surface hover:bg-slate-50"
+            }`}
+          >
+            <span className={`material-symbols-outlined text-[20px] ${activeTab === "categories" ? "text-primary" : "text-slate-400"}`}>category</span>
+            <span className="text-sm">Categorías Catálogo</span>
+          </button>
+
+          <button 
+            onClick={() => { setActiveTab("services"); setSearchQuery(""); }}
+            className={`w-full flex items-center gap-3 px-6 py-3.5 transition-colors duration-200 border-l-4 cursor-pointer ${
+              activeTab === "services"
+                ? "text-primary font-extrabold border-primary bg-primary/5"
+                : "text-slate-500 border-transparent hover:text-on-surface hover:bg-slate-50"
+            }`}
+          >
+            <span className={`material-symbols-outlined text-[20px] ${activeTab === "services" ? "text-primary" : "text-slate-400"}`}>build</span>
+            <span className="text-sm">Gestión de Servicios</span>
+          </button>
+
+          <button 
+            onClick={() => { setActiveTab("portfolio"); setSearchQuery(""); }}
+            className={`w-full flex items-center gap-3 px-6 py-3.5 transition-colors duration-200 border-l-4 cursor-pointer ${
+              activeTab === "portfolio"
+                ? "text-primary font-extrabold border-primary bg-primary/5"
+                : "text-slate-500 border-transparent hover:text-on-surface hover:bg-slate-50"
+            }`}
+          >
+            <span className={`material-symbols-outlined text-[20px] ${activeTab === "portfolio" ? "text-primary" : "text-slate-400"}`}>photo_library</span>
+            <span className="text-sm">Trabajos Realizados</span>
           </button>
 
           <button 
@@ -811,6 +1123,12 @@ export default function AdminDashboardPage() {
                     ? "Buscar archivos y manuales..."
                     : activeTab === "products"
                     ? "Buscar productos..."
+                    : activeTab === "categories"
+                    ? "Buscar categorías..."
+                    : activeTab === "services"
+                    ? "Buscar servicios..."
+                    : activeTab === "portfolio"
+                    ? "Buscar trabajos del portafolio..."
                     : activeTab === "messages"
                     ? "Buscar mensajes por remitente, asunto o cuerpo..."
                     : "Buscar personal por nombre, usuario o rol..."
@@ -1384,6 +1702,247 @@ export default function AdminDashboardPage() {
             </section>
           )}
 
+          {/* TAB 6: Services Management */}
+          {activeTab === "services" && (
+            <section className="animate-fade-in-up">
+              <div className="flex justify-between items-end mb-6">
+                <div>
+                  <h2 className="text-xl font-bold text-on-surface">Gestión de Servicios de TI</h2>
+                  <p className="text-xs text-slate-500 mt-0.5">Control del catálogo público de servicios que se ofrecen al cliente.</p>
+                </div>
+                <button 
+                  onClick={() => setShowServiceModal(true)}
+                  className="bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-5 py-3 rounded-xl transition-all active:scale-95 shadow-md shadow-red-600/10 flex items-center gap-2 cursor-pointer"
+                >
+                  <span className="material-symbols-outlined text-base">add</span>
+                  Crear Servicio
+                </button>
+              </div>
+
+              <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left border-collapse">
+                    <thead>
+                      <tr className="bg-slate-50 border-b border-slate-200">
+                        <th className="px-6 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider">Nombre del Servicio</th>
+                        <th className="px-6 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider">Descripción</th>
+                        <th className="px-6 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider">Icono (Google)</th>
+                        <th className="px-6 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider">Estado</th>
+                        <th className="px-6 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Acciones</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {filteredServicios.length > 0 ? (
+                        filteredServicios.map((srv) => (
+                          <tr key={srv.id} className="transition-colors hover:bg-slate-50/50">
+                            <td className="px-6 py-4 text-xs font-semibold text-on-surface">{srv.nombre}</td>
+                            <td className="px-6 py-4 text-xs text-slate-600 max-w-xs truncate">{srv.descripcion}</td>
+                            <td className="px-6 py-4 text-xs text-slate-500 font-mono">
+                              <span className="flex items-center gap-1.5">
+                                <span className="material-symbols-outlined text-sm">{srv.icono_url || "laptop_mac"}</span>
+                                {srv.icono_url || "laptop_mac"}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4">
+                              {srv.activo ? (
+                                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold">
+                                  Activo
+                                </span>
+                              ) : (
+                                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 text-slate-400 text-[10px] font-bold">
+                                  Inactivo
+                                </span>
+                              )}
+                            </td>
+                            <td className="px-6 py-4 text-right space-x-2">
+                              <button
+                                onClick={() => openEditServiceModal(srv)}
+                                className="text-slate-400 hover:text-red-600 p-1 transition-colors cursor-pointer"
+                                title="Editar"
+                              >
+                                <span className="material-symbols-outlined text-[18px]">edit</span>
+                              </button>
+                              <button
+                                onClick={() => handleDeleteService(srv.id)}
+                                className="text-slate-400 hover:text-red-700 p-1 transition-colors cursor-pointer"
+                                title="Desactivar"
+                              >
+                                <span className="material-symbols-outlined text-[18px]">block</span>
+                              </button>
+                            </td>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td colSpan={5} className="px-6 py-12 text-center text-xs text-slate-500">
+                            No se encontraron servicios registrados.
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </section>
+          )}
+
+          {/* TAB 7: Portfolio Management */}
+          {activeTab === "portfolio" && (
+            <section className="animate-fade-in-up">
+              <div className="flex justify-between items-end mb-6">
+                <div>
+                  <h2 className="text-xl font-bold text-on-surface">Trabajos Realizados (Portafolio)</h2>
+                  <p className="text-xs text-slate-500 mt-0.5">Galería de imágenes de trabajos reales del taller y en campo.</p>
+                </div>
+                <button 
+                  onClick={() => setShowPortfolioModal(true)}
+                  className="bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-5 py-3 rounded-xl transition-all active:scale-95 shadow-md shadow-red-600/10 flex items-center gap-2 cursor-pointer"
+                >
+                  <span className="material-symbols-outlined text-base">add_a_photo</span>
+                  Registrar Trabajo
+                </button>
+              </div>
+
+              <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left border-collapse">
+                    <thead>
+                      <tr className="bg-slate-50 border-b border-slate-200">
+                        <th className="px-6 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider">Imagen</th>
+                        <th className="px-6 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider">Título del Trabajo</th>
+                        <th className="px-6 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider">Asociado a Servicio</th>
+                        <th className="px-6 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider">Fecha Registro</th>
+                        <th className="px-6 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Acciones</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {filteredTrabajos.length > 0 ? (
+                        filteredTrabajos.map((job) => (
+                          <tr key={job.id} className="transition-colors hover:bg-slate-50/50">
+                            <td className="px-6 py-3">
+                              <div className="w-12 h-12 rounded-xl overflow-hidden border border-slate-200 bg-slate-50 flex items-center justify-center">
+                                <img src={job.imagen_url} alt={job.titulo} className="w-full h-full object-cover" />
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 text-xs font-semibold text-on-surface">
+                              <div>
+                                <p className="font-bold">{job.titulo}</p>
+                                <p className="text-[10px] text-slate-400 font-normal mt-0.5 line-clamp-1">{job.descripcion}</p>
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 text-xs text-slate-600">
+                              {job.servicio?.nombre || <span className="text-slate-400 italic">Ninguno</span>}
+                            </td>
+                            <td className="px-6 py-4 text-xs text-slate-500">
+                              {formatDate(job.fecha)}
+                            </td>
+                            <td className="px-6 py-4 text-right space-x-2">
+                              <button
+                                onClick={() => openEditPortfolioModal(job)}
+                                className="text-slate-400 hover:text-red-600 p-1 transition-colors cursor-pointer"
+                                title="Editar"
+                              >
+                                <span className="material-symbols-outlined text-[18px]">edit</span>
+                              </button>
+                              <button
+                                onClick={() => handleDeletePortfolio(job.id)}
+                                className="text-slate-400 hover:text-red-700 p-1 transition-colors cursor-pointer"
+                                title="Eliminar"
+                              >
+                                <span className="material-symbols-outlined text-[18px]">delete</span>
+                              </button>
+                            </td>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td colSpan={5} className="px-6 py-12 text-center text-xs text-slate-500">
+                            No se encontraron trabajos de portafolio registrados.
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </section>
+          )}
+
+          {/* TAB 8: Category Management */}
+          {activeTab === "categories" && (
+            <section className="animate-fade-in-up">
+              <div className="flex justify-between items-end mb-6">
+                <div>
+                  <h2 className="text-xl font-bold text-on-surface">Categorías de Productos</h2>
+                  <p className="text-xs text-slate-500 mt-0.5">Gestión de las categorías del catálogo virtual de suministros y hardware.</p>
+                </div>
+                <button 
+                  onClick={() => setShowCategoryModal(true)}
+                  className="bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-5 py-3 rounded-xl transition-all active:scale-95 shadow-md shadow-red-600/10 flex items-center gap-2 cursor-pointer"
+                >
+                  <span className="material-symbols-outlined text-base">add</span>
+                  Crear Categoría
+                </button>
+              </div>
+
+              <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm max-w-2xl">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left border-collapse">
+                    <thead>
+                      <tr className="bg-slate-50 border-b border-slate-200">
+                        <th className="px-6 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider">Nombre de la Categoría</th>
+                        <th className="px-6 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider">Estado</th>
+                        <th className="px-6 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Acciones</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {filteredCategorias.length > 0 ? (
+                        filteredCategorias.map((cat) => (
+                          <tr key={cat.id} className="transition-colors hover:bg-slate-50/50">
+                            <td className="px-6 py-4 text-xs font-semibold text-on-surface">{cat.nombre}</td>
+                            <td className="px-6 py-4 text-xs">
+                              {cat.activo ? (
+                                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold">
+                                  Activo
+                                </span>
+                              ) : (
+                                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 text-slate-400 text-[10px] font-bold">
+                                  Inactivo
+                                </span>
+                              )}
+                            </td>
+                            <td className="px-6 py-4 text-right space-x-2">
+                              <button
+                                onClick={() => openEditCategoryModal(cat)}
+                                className="text-slate-400 hover:text-red-600 p-1 transition-colors cursor-pointer"
+                                title="Editar"
+                              >
+                                <span className="material-symbols-outlined text-[18px]">edit</span>
+                              </button>
+                              <button
+                                onClick={() => handleDeleteCategory(cat.id)}
+                                className="text-slate-400 hover:text-red-700 p-1 transition-colors cursor-pointer"
+                                title="Desactivar"
+                              >
+                                <span className="material-symbols-outlined text-[18px]">block</span>
+                              </button>
+                            </td>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td colSpan={3} className="px-6 py-12 text-center text-xs text-slate-500">
+                            No se encontraron categorías registradas.
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </section>
+          )}
+
         </main>
       </div>
 
@@ -1823,6 +2382,247 @@ export default function AdminDashboardPage() {
                   className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold transition-all active:scale-95 shadow-md shadow-red-600/10"
                 >
                   {editingUser ? "Actualizar Cambios" : "Guardar Personal"}
+                </button>
+              </footer>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 5: Create or Edit Service */}
+      {showServiceModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
+          <div className="bg-white border border-slate-200 rounded-3xl w-full max-w-xl shadow-2xl relative overflow-hidden">
+            <header className="px-8 py-5 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+              <h3 className="font-bold text-base text-on-surface">
+                {editingService ? "Editar Servicio" : "Registrar Nuevo Servicio"}
+              </h3>
+              <button onClick={closeServiceModal} className="text-slate-400 hover:text-slate-700 transition-colors border-none bg-transparent cursor-pointer">
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            </header>
+
+            <form onSubmit={handleCreateOrUpdateService} className="p-8 space-y-4 max-h-[70vh] overflow-y-auto custom-scrollbar">
+              <div>
+                <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Nombre del Servicio</label>
+                <input 
+                  type="text" 
+                  required
+                  value={formServiceName}
+                  onChange={(e) => setFormServiceName(e.target.value)}
+                  placeholder="Ej: Mantenimiento Electrónico"
+                  className="w-full bg-slate-50 border border-slate-200 focus:border-red-600 focus:ring-1 focus:ring-red-600 focus:outline-none rounded-xl px-4 py-3 text-sm transition-all"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Descripción del Servicio</label>
+                <textarea 
+                  required
+                  value={formServiceDesc}
+                  onChange={(e) => setFormServiceDesc(e.target.value)}
+                  placeholder="Detalle estructurado del servicio técnico..."
+                  rows={4}
+                  className="w-full bg-slate-50 border border-slate-200 focus:border-red-600 focus:ring-1 focus:ring-red-600 focus:outline-none rounded-xl px-4 py-3 text-sm transition-all resize-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Nombre del Icono (Google Material Icon)</label>
+                <input 
+                  type="text" 
+                  required
+                  value={formServiceIcon}
+                  onChange={(e) => setFormServiceIcon(e.target.value)}
+                  placeholder="Ej: computer, router, memory, print, security"
+                  className="w-full bg-slate-50 border border-slate-200 focus:border-red-600 focus:ring-1 focus:ring-red-600 focus:outline-none rounded-xl px-4 py-3 text-sm transition-all font-mono"
+                />
+                <span className="text-[10px] text-slate-400 mt-1 block">Ingresa un nombre de Material Symbols válido.</span>
+              </div>
+
+              <div className="flex items-center gap-2 pt-2">
+                <input 
+                  type="checkbox"
+                  id="formServiceActive"
+                  checked={formServiceActive}
+                  onChange={(e) => setFormServiceActive(e.target.checked)}
+                  className="h-4 w-4 rounded border-slate-300 text-red-600 focus:ring-red-600"
+                />
+                <label htmlFor="formServiceActive" className="text-xs font-bold text-slate-600 cursor-pointer">Servicio Activo (Visible al Público)</label>
+              </div>
+
+              <footer className="pt-4 border-t border-slate-100 flex justify-end gap-3">
+                <button 
+                  type="button" 
+                  onClick={closeServiceModal}
+                  className="px-5 py-3 border border-slate-200 hover:bg-slate-50 rounded-xl text-xs font-bold transition-all cursor-pointer"
+                >
+                  Cancelar
+                </button>
+                <button 
+                  type="submit" 
+                  className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold transition-all active:scale-95 shadow-md shadow-red-600/10 cursor-pointer"
+                >
+                  {editingService ? "Actualizar Servicio" : "Guardar Servicio"}
+                </button>
+              </footer>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 6: Create or Edit Portfolio Job */}
+      {showPortfolioModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
+          <div className="bg-white border border-slate-200 rounded-3xl w-full max-w-xl shadow-2xl relative overflow-hidden">
+            <header className="px-8 py-5 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+              <h3 className="font-bold text-base text-on-surface">
+                {editingPortfolio ? "Editar Trabajo de Portafolio" : "Registrar Trabajo en Portafolio"}
+              </h3>
+              <button onClick={closePortfolioModal} className="text-slate-400 hover:text-slate-700 transition-colors border-none bg-transparent cursor-pointer">
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            </header>
+
+            <form onSubmit={handleCreateOrUpdatePortfolio} className="p-8 space-y-4 max-h-[70vh] overflow-y-auto custom-scrollbar">
+              <div>
+                <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Título del Trabajo</label>
+                <input 
+                  type="text" 
+                  required
+                  value={formPortfolioTitle}
+                  onChange={(e) => setFormPortfolioTitle(e.target.value)}
+                  placeholder="Ej: Cableado Estructurado en Laboratorio"
+                  className="w-full bg-slate-50 border border-slate-200 focus:border-red-600 focus:ring-1 focus:ring-red-600 focus:outline-none rounded-xl px-4 py-3 text-sm transition-all"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Descripción corta</label>
+                <textarea 
+                  value={formPortfolioDesc}
+                  onChange={(e) => setFormPortfolioDesc(e.target.value)}
+                  placeholder="Detalles sobre lo realizado en este proyecto técnico..."
+                  rows={3}
+                  className="w-full bg-slate-50 border border-slate-200 focus:border-red-600 focus:ring-1 focus:ring-red-600 focus:outline-none rounded-xl px-4 py-3 text-sm transition-all resize-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Asociar a un Servicio de la Web</label>
+                <select 
+                  value={formPortfolioServiceId}
+                  onChange={(e) => setFormPortfolioServiceId(e.target.value)}
+                  className="w-full bg-slate-50 border border-slate-200 focus:border-red-600 focus:ring-1 focus:ring-red-600 focus:outline-none rounded-xl px-4 py-3 text-sm transition-all"
+                >
+                  <option value="">Ninguno / General</option>
+                  {servicios.map((s) => (
+                    <option key={s.id} value={s.id}>{s.nombre}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Imagen del Trabajo (AWS S3)</label>
+                <div className="flex gap-3 items-center">
+                  <input 
+                    type="text" 
+                    required
+                    value={formPortfolioImgUrl}
+                    onChange={(e) => setFormPortfolioImgUrl(e.target.value)}
+                    placeholder="https://..."
+                    className="flex-1 bg-slate-50 border border-slate-200 focus:border-red-600 focus:ring-1 focus:ring-red-600 focus:outline-none rounded-xl px-4 py-3 text-sm transition-all"
+                  />
+                  <div className="relative">
+                    <input 
+                      type="file" 
+                      id="formPortfolioImgFile"
+                      onChange={(e) => handleUploadFile(e, "portfolio")}
+                      className="hidden"
+                      accept="image/*"
+                    />
+                    <label 
+                      htmlFor="formPortfolioImgFile"
+                      className="px-4 py-3 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-bold transition-all cursor-pointer inline-flex items-center gap-1.5"
+                    >
+                      <span className="material-symbols-outlined text-sm">upload</span>
+                      Subir
+                    </label>
+                  </div>
+                </div>
+                {uploading && <span className="text-[10px] text-red-600 font-bold block mt-1">Cargando archivo...</span>}
+              </div>
+
+              <footer className="pt-4 border-t border-slate-100 flex justify-end gap-3">
+                <button 
+                  type="button" 
+                  onClick={closePortfolioModal}
+                  className="px-5 py-3 border border-slate-200 hover:bg-slate-50 rounded-xl text-xs font-bold transition-all cursor-pointer"
+                >
+                  Cancelar
+                </button>
+                <button 
+                  type="submit" 
+                  className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold transition-all active:scale-95 shadow-md shadow-red-600/10 cursor-pointer"
+                >
+                  {editingPortfolio ? "Actualizar Cambios" : "Registrar Trabajo"}
+                </button>
+              </footer>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 7: Create or Edit Category */}
+      {showCategoryModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
+          <div className="bg-white border border-slate-200 rounded-3xl w-full max-w-md shadow-2xl relative overflow-hidden">
+            <header className="px-8 py-5 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+              <h3 className="font-bold text-base text-on-surface">
+                {editingCategory ? "Editar Categoría" : "Crear Nueva Categoría"}
+              </h3>
+              <button onClick={closeCategoryModal} className="text-slate-400 hover:text-slate-700 transition-colors border-none bg-transparent cursor-pointer">
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            </header>
+
+            <form onSubmit={handleCreateOrUpdateCategory} className="p-8 space-y-4">
+              <div>
+                <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Nombre de la Categoría</label>
+                <input 
+                  type="text" 
+                  required
+                  value={formCategoryName}
+                  onChange={(e) => setFormCategoryName(e.target.value)}
+                  placeholder="Ej: Tintas Originales"
+                  className="w-full bg-slate-50 border border-slate-200 focus:border-red-600 focus:ring-1 focus:ring-red-600 focus:outline-none rounded-xl px-4 py-3 text-sm transition-all"
+                />
+              </div>
+
+              <div className="flex items-center gap-2 pt-2">
+                <input 
+                  type="checkbox"
+                  id="formCategoryActive"
+                  checked={formCategoryActive}
+                  onChange={(e) => setFormCategoryActive(e.target.checked)}
+                  className="h-4 w-4 rounded border-slate-300 text-red-600 focus:ring-red-600"
+                />
+                <label htmlFor="formCategoryActive" className="text-xs font-bold text-slate-600 cursor-pointer">Categoría Activa (Visible al Público)</label>
+              </div>
+
+              <footer className="pt-4 border-t border-slate-100 flex justify-end gap-3">
+                <button 
+                  type="button" 
+                  onClick={closeCategoryModal}
+                  className="px-5 py-3 border border-slate-200 hover:bg-slate-50 rounded-xl text-xs font-bold transition-all cursor-pointer"
+                >
+                  Cancelar
+                </button>
+                <button 
+                  type="submit" 
+                  className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold transition-all active:scale-95 shadow-md shadow-red-600/10 cursor-pointer"
+                >
+                  {editingCategory ? "Actualizar Categoría" : "Guardar Categoría"}
                 </button>
               </footer>
             </form>
