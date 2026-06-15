@@ -22,6 +22,15 @@ interface Categoria {
   nombre: string;
 }
 
+interface CartItem {
+  id: number;
+  nombre: string;
+  precio: number;
+  cantidad: number;
+  imagen_url: string;
+  categoriaNombre: string;
+}
+
 // Custom Component for Product Images with dynamic fallback icons
 function ProductImage({ src, alt, categoryName }: { src?: string; alt: string; categoryName: string }) {
   const [error, setError] = useState(false);
@@ -198,6 +207,28 @@ export default function ProductosPage() {
   const [selectedCategory, setSelectedCategory] = useState("Todos");
   const [searchQuery, setSearchQuery] = useState("");
 
+  // Carrito de Cotización
+  const [cart, setCart] = useState<CartItem[]>([]);
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isAnimatingCartButton, setIsAnimatingCartButton] = useState(false);
+
+  // Load cart from localStorage after mount (Hydration-safe)
+  useEffect(() => {
+    const savedCart = localStorage.getItem("dellcom_cart");
+    if (savedCart) {
+      try {
+        setCart(JSON.parse(savedCart));
+      } catch (e) {
+        console.error("Error parsing cart data from localStorage", e);
+      }
+    }
+  }, []);
+
+  // Save cart to localStorage when it changes
+  useEffect(() => {
+    localStorage.setItem("dellcom_cart", JSON.stringify(cart));
+  }, [cart]);
+
   // Fetch categories & products from DB APIs
   useEffect(() => {
     async function loadData() {
@@ -243,6 +274,70 @@ export default function ProductosPage() {
     loadData();
   }, []);
 
+  // Cart Management Functions
+  const addToCart = (product: Producto) => {
+    setCart((prevCart) => {
+      const existingItem = prevCart.find((item) => item.id === product.id);
+      if (existingItem) {
+        return prevCart.map((item) =>
+          item.id === product.id ? { ...item, cantidad: item.cantidad + 1 } : item
+        );
+      }
+      return [
+        ...prevCart,
+        {
+          id: product.id,
+          nombre: product.nombre,
+          precio: Number(product.precio),
+          cantidad: 1,
+          imagen_url: product.imagen_url || "",
+          categoriaNombre: product.categoria?.nombre || "General",
+        },
+      ];
+    });
+    // Trigger pulse animation
+    setIsAnimatingCartButton(true);
+    setTimeout(() => setIsAnimatingCartButton(false), 300);
+  };
+
+  const updateQuantity = (id: number, delta: number) => {
+    setCart((prevCart) => {
+      return prevCart
+        .map((item) => {
+          if (item.id === id) {
+            const newQty = item.cantidad + delta;
+            return { ...item, cantidad: newQty };
+          }
+          return item;
+        })
+        .filter((item) => item.cantidad > 0);
+    });
+  };
+
+  const clearCart = () => {
+    if (window.confirm("¿Está seguro de vaciar su lista de cotización?")) {
+      setCart([]);
+    }
+  };
+
+  const cartItemCount = cart.reduce((total, item) => total + item.cantidad, 0);
+  const cartTotal = cart.reduce((total, item) => total + item.precio * item.cantidad, 0);
+
+  const getWhatsAppUrl = () => {
+    let message = "Hola DELLCOM SAC, deseo solicitar una cotización para los siguientes productos:\n\n";
+    
+    cart.forEach((item) => {
+      message += `• *${item.cantidad}x* ${item.nombre}\n`;
+      message += `  Categoría: ${item.categoriaNombre}\n`;
+      message += `  Precio aprox: S/ ${item.precio.toFixed(2)} c/u | Subtotal: S/ ${(item.precio * item.cantidad).toFixed(2)}\n\n`;
+    });
+    
+    message += `*Total Estimado: S/ ${cartTotal.toFixed(2)}*\n\n`;
+    message += "Agradezco su pronta respuesta para confirmar la disponibilidad y coordinar la entrega/instalación.";
+    
+    return `https://wa.me/51925981741?text=${encodeURIComponent(message)}`;
+  };
+
   // Filter products by query search and selected tab
   const filteredProducts = productos.filter((p) => {
     const matchesSearch = 
@@ -256,10 +351,8 @@ export default function ProductosPage() {
     return matchesSearch && matchesCategory;
   });
 
-
-
   return (
-    <div className="bg-white min-h-screen flex flex-col justify-between text-on-surface selection:bg-primary/20 selection:text-primary">
+    <div className="bg-white min-h-screen flex flex-col justify-between text-on-surface selection:bg-primary/20 selection:text-primary relative overflow-x-hidden">
       
       {/* Reusable Status Header */}
       <StatusHeader />
@@ -297,85 +390,265 @@ export default function ProductosPage() {
             />
           </div>
 
-        {/* Dynamic Category Navigation Tabs */}
-        <section className="mb-8">
-          <div className="flex overflow-x-auto no-scrollbar gap-3 pb-3">
-            {categorias.map((cat) => (
-              <button 
-                key={cat.id}
-                className={`px-5 py-2 rounded-full font-headline text-xs font-bold tracking-wide uppercase transition-all whitespace-nowrap border cursor-pointer select-none ${
-                  selectedCategory.toLowerCase() === cat.nombre.toLowerCase()
-                    ? "bg-primary border-primary text-white shadow-md shadow-primary/20"
-                    : "bg-white border-slate-200 text-slate-500 hover:bg-slate-50 hover:text-slate-800"
-                }`}
-                onClick={() => setSelectedCategory(cat.nombre)}
-              >
-                {cat.nombre}
-              </button>
-            ))}
-          </div>
-        </section>
+          {/* Dynamic Category Navigation Tabs */}
+          <section className="mb-8">
+            <div className="flex overflow-x-auto no-scrollbar gap-3 pb-3">
+              {categorias.map((cat) => (
+                <button 
+                  key={cat.id}
+                  className={`px-5 py-2 rounded-full font-headline text-xs font-bold tracking-wide uppercase transition-all whitespace-nowrap border cursor-pointer select-none ${
+                    selectedCategory.toLowerCase() === cat.nombre.toLowerCase()
+                      ? "bg-primary border-primary text-white shadow-md shadow-primary/20"
+                      : "bg-white border-slate-200 text-slate-500 hover:bg-slate-50 hover:text-slate-800"
+                  }`}
+                  onClick={() => setSelectedCategory(cat.nombre)}
+                >
+                  {cat.nombre}
+                </button>
+              ))}
+            </div>
+          </section>
 
-        {/* Dynamic Products Grid */}
-        <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filteredProducts.length > 0 ? (
-            filteredProducts.map((prod) => (
-              <article 
-                key={prod.id} 
-                className="bg-white rounded-3xl overflow-hidden border border-slate-200/80 hover:shadow-lg transition-all duration-300 group flex flex-col justify-between"
+          {/* Dynamic Products Grid */}
+          <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {filteredProducts.length > 0 ? (
+              filteredProducts.map((prod) => {
+                const cartItem = cart.find((item) => item.id === prod.id);
+
+                return (
+                  <article 
+                    key={prod.id} 
+                    className="bg-white rounded-3xl overflow-hidden border border-slate-200/80 hover:shadow-lg transition-all duration-300 group flex flex-col justify-between"
+                  >
+                    {/* Product Image Container with Fallbacks */}
+                    <div className="aspect-square bg-slate-50/50 p-6 flex items-center justify-center border-b border-slate-100 relative overflow-hidden select-none">
+                      <ProductImage 
+                        src={prod.imagen_url} 
+                        alt={prod.nombre} 
+                        categoryName={prod.categoria?.nombre || "General"} 
+                      />
+                    </div>
+                    
+                    {/* Product Details Section */}
+                    <div className="p-5 flex flex-col justify-between flex-1 space-y-4">
+                      <div className="space-y-2">
+                        <span className="inline-block px-2.5 py-0.5 rounded-md bg-slate-100 text-[10px] text-slate-500 font-bold uppercase tracking-wider">
+                          {prod.categoria?.nombre || "General"}
+                        </span>
+                        <h3 className="font-headline text-base font-bold text-on-surface line-clamp-2 group-hover:text-primary transition-colors leading-snug">
+                          {prod.nombre}
+                        </h3>
+                        <p className="text-xs text-on-surface-variant line-clamp-3 leading-relaxed">
+                          {prod.descripcion || "Consúltanos especificaciones, disponibilidad y compatibilidad de este producto."}
+                        </p>
+                      </div>
+
+                      <div className="flex items-center justify-between pt-4 border-t border-slate-100 mt-auto">
+                        <div className="flex flex-col">
+                          <span className="text-[10px] text-slate-400 font-bold uppercase leading-none">Precio Aprox.</span>
+                          <span className="font-headline text-lg font-extrabold text-primary mt-1">
+                            S/ {Number(prod.precio).toFixed(2)}
+                          </span>
+                        </div>
+
+                        {cartItem ? (
+                          /* Quantity selector if already in cart */
+                          <div className="flex items-center bg-slate-100 rounded-xl border border-slate-200/60 p-0.5">
+                            <button 
+                              onClick={() => updateQuantity(prod.id, -1)}
+                              className="w-7 h-7 flex items-center justify-center text-slate-600 hover:text-primary active:scale-90 transition-all font-bold cursor-pointer"
+                            >
+                              <span className="material-symbols-outlined text-sm font-bold">remove</span>
+                            </button>
+                            <span className="w-7 text-center text-xs font-bold text-slate-800">
+                              {cartItem.cantidad}
+                            </span>
+                            <button 
+                              onClick={() => updateQuantity(prod.id, 1)}
+                              className="w-7 h-7 flex items-center justify-center text-slate-600 hover:text-primary active:scale-90 transition-all font-bold cursor-pointer"
+                            >
+                              <span className="material-symbols-outlined text-sm font-bold">add</span>
+                            </button>
+                          </div>
+                        ) : (
+                          /* Add button if not in cart */
+                          <button 
+                            onClick={() => addToCart(prod)}
+                            className="flex items-center gap-1.5 bg-primary hover:bg-primary/95 text-white px-4 py-2.5 rounded-xl text-[11px] font-bold transition-all active:scale-95 shadow-md shadow-primary/10 cursor-pointer select-none border-none"
+                          >
+                            <span className="material-symbols-outlined text-sm">add_shopping_cart</span>
+                            Añadir
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </article>
+                );
+              })
+            ) : (
+              <div className="col-span-full py-20 text-center text-on-surface-variant font-headline text-base bg-slate-50 border border-slate-200 rounded-3xl">
+                <span className="material-symbols-outlined text-5xl text-slate-300 mb-3 block">inventory_2</span>
+                No se encontraron productos en esta categoría o búsqueda.
+              </div>
+            )}
+          </section>
+        </div>
+      </main>
+
+      {/* Floating Cart Badge Button */}
+      {cartItemCount > 0 && (
+        <button
+          onClick={() => setIsCartOpen(true)}
+          className={`fixed bottom-24 right-6 z-40 flex items-center gap-3 bg-primary hover:bg-primary/95 text-white px-5 py-4 rounded-2xl shadow-xl shadow-primary/20 transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer border-none ${
+            isAnimatingCartButton ? "scale-110 animate-pulse" : ""
+          }`}
+        >
+          <div className="relative flex items-center justify-center">
+            <span className="material-symbols-outlined text-2xl">shopping_bag</span>
+            <span className="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-slate-900 text-[10px] font-black text-white">
+              {cartItemCount}
+            </span>
+          </div>
+          <div className="hidden sm:flex flex-col items-start leading-none text-left">
+            <span className="text-[9px] uppercase tracking-wider font-bold opacity-80">Lista de Cotización</span>
+            <span className="text-sm font-extrabold mt-0.5">S/ {cartTotal.toFixed(2)}</span>
+          </div>
+        </button>
+      )}
+
+      {/* Cart Drawer / Slide-Over Modal */}
+      <div 
+        className={`fixed inset-0 z-50 transition-opacity duration-300 ${
+          isCartOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+        }`}
+      >
+        {/* Dark Backdrop Overlay */}
+        <div 
+          onClick={() => setIsCartOpen(false)}
+          className="absolute inset-0 bg-slate-900/40 backdrop-blur-[2px] transition-opacity"
+        />
+
+        {/* Drawer Slide Panel */}
+        <div className="absolute inset-y-0 right-0 max-w-full flex">
+          <div 
+            className={`w-screen max-w-md bg-white shadow-2xl flex flex-col justify-between transform transition-transform duration-300 ease-in-out border-l border-slate-100 ${
+              isCartOpen ? "translate-x-0" : "translate-x-full"
+            }`}
+          >
+            {/* Header */}
+            <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="material-symbols-outlined text-primary text-2xl">shopping_bag</span>
+                <div>
+                  <h2 className="font-headline text-lg font-bold text-on-surface">Tu Cotización</h2>
+                  <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider leading-none mt-1">
+                    {cartItemCount} {cartItemCount === 1 ? "artículo" : "artículos"}
+                  </p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setIsCartOpen(false)}
+                className="w-9 h-9 flex items-center justify-center rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors cursor-pointer border-none"
               >
-                {/* Product Image Container with Fallbacks */}
-                <div className="aspect-square bg-slate-50/50 p-6 flex items-center justify-center border-b border-slate-100 relative overflow-hidden select-none">
-                  <ProductImage 
-                    src={prod.imagen_url} 
-                    alt={prod.nombre} 
-                    categoryName={prod.categoria?.nombre || "General"} 
-                  />
+                <span className="material-symbols-outlined text-lg">close</span>
+              </button>
+            </div>
+
+            {/* List Body */}
+            <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4 no-scrollbar">
+              {cart.length > 0 ? (
+                cart.map((item) => (
+                  <div key={item.id} className="flex gap-4 p-3 bg-slate-50/60 rounded-2xl border border-slate-100 hover:border-slate-200/60 transition-all">
+                    {/* Item Thumbnail */}
+                    <div className="w-16 h-16 bg-white rounded-xl border border-slate-200 p-2 flex items-center justify-center shrink-0 overflow-hidden relative">
+                      {item.imagen_url && !item.imagen_url.includes("placeholder") ? (
+                        <img 
+                          src={item.imagen_url} 
+                          alt={item.nombre} 
+                          className="w-full h-full object-contain"
+                        />
+                      ) : (
+                        <span className="material-symbols-outlined text-slate-300 text-3xl">
+                          {item.categoriaNombre.toLowerCase().includes("impres") ? "print" :
+                           item.categoriaNombre.toLowerCase().includes("red") ? "router" :
+                           item.categoriaNombre.toLowerCase().includes("memor") ? "memory" :
+                           item.categoriaNombre.toLowerCase().includes("licenc") ? "verified_user" : "devices"}
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Item Info */}
+                    <div className="flex-1 flex flex-col justify-between min-w-0">
+                      <div>
+                        <h4 className="text-xs font-bold text-slate-800 line-clamp-1 leading-snug">{item.nombre}</h4>
+                        <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wide">{item.categoriaNombre}</span>
+                      </div>
+                      <div className="flex items-center justify-between mt-2">
+                        <span className="text-xs font-extrabold text-primary">S/ {(item.precio * item.cantidad).toFixed(2)}</span>
+                        
+                        {/* Selector de cantidad */}
+                        <div className="flex items-center bg-white rounded-lg border border-slate-200 p-0.5">
+                          <button 
+                            onClick={() => updateQuantity(item.id, -1)}
+                            className="w-6 h-6 flex items-center justify-center text-slate-500 hover:text-primary transition-colors font-bold cursor-pointer border-none bg-transparent"
+                          >
+                            <span className="material-symbols-outlined text-xs font-bold">remove</span>
+                          </button>
+                          <span className="w-6 text-center text-[11px] font-bold text-slate-700">{item.cantidad}</span>
+                          <button 
+                            onClick={() => updateQuantity(item.id, 1)}
+                            className="w-6 h-6 flex items-center justify-center text-slate-500 hover:text-primary transition-colors font-bold cursor-pointer border-none bg-transparent"
+                          >
+                            <span className="material-symbols-outlined text-xs font-bold">add</span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="h-full flex flex-col items-center justify-center text-center text-slate-400 py-16">
+                  <span className="material-symbols-outlined text-[64px] text-slate-200 mb-2">shopping_basket</span>
+                  <p className="text-sm font-semibold">Tu lista de cotización está vacía</p>
+                  <p className="text-xs text-slate-400 mt-1">Explora nuestro catálogo y añade suministros o licencias.</p>
+                </div>
+              )}
+            </div>
+
+            {/* Footer */}
+            {cart.length > 0 && (
+              <div className="p-6 border-t border-slate-100 bg-slate-50/50 space-y-4">
+                <div className="flex justify-between items-center text-slate-800 font-bold">
+                  <span className="text-xs uppercase tracking-wider text-slate-400 font-bold">Total Estimado</span>
+                  <span className="font-headline text-xl font-extrabold text-slate-900">S/ {cartTotal.toFixed(2)}</span>
                 </div>
                 
-                {/* Product Details Section */}
-                <div className="p-5 flex flex-col justify-between flex-1 space-y-4">
-                  <div className="space-y-2">
-                    <span className="inline-block px-2.5 py-0.5 rounded-md bg-slate-100 text-[10px] text-slate-500 font-bold uppercase tracking-wider">
-                      {prod.categoria?.nombre || "General"}
-                    </span>
-                    <h3 className="font-headline text-base font-bold text-on-surface line-clamp-2 group-hover:text-primary transition-colors leading-snug">
-                      {prod.nombre}
-                    </h3>
-                    <p className="text-xs text-on-surface-variant line-clamp-3 leading-relaxed">
-                      {prod.descripcion || "Consúltanos especificaciones, disponibilidad y compatibilidad de este producto."}
-                    </p>
-                  </div>
-
-                  <div className="flex items-center justify-between pt-4 border-t border-slate-100 mt-auto">
-                    <div className="flex flex-col">
-                      <span className="text-[10px] text-slate-400 font-bold uppercase leading-none">Precio Aprox.</span>
-                      <span className="font-headline text-lg font-extrabold text-primary mt-1">
-                        S/ {Number(prod.precio).toFixed(2)}
-                      </span>
-                    </div>
-                    <a 
-                      className="flex items-center gap-1.5 bg-primary hover:bg-primary/95 text-white px-4 py-2.5 rounded-xl text-[11px] font-bold transition-all active:scale-95 shadow-md shadow-primary/10 cursor-pointer" 
-                      href={`https://wa.me/51925981741?text=Hola%20Dellcom%20SAC,%20deseo%20cotizar%20el%20producto%20${encodeURIComponent(prod.nombre)}.`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <span className="material-symbols-outlined text-sm">chat</span>
-                      Cotizar
-                    </a>
-                  </div>
+                <div className="grid grid-cols-5 gap-2">
+                  <button 
+                    onClick={clearCart}
+                    className="col-span-1 flex items-center justify-center bg-white hover:bg-slate-100 text-slate-500 hover:text-primary border border-slate-200 rounded-xl py-3.5 transition-colors cursor-pointer"
+                    title="Vaciar Lista"
+                  >
+                    <span className="material-symbols-outlined text-lg">delete</span>
+                  </button>
+                  <a 
+                    href={getWhatsAppUrl()}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="col-span-4 flex items-center justify-center gap-2 bg-primary hover:bg-primary/95 text-white font-bold text-xs uppercase tracking-wider py-3.5 rounded-xl transition-all shadow-md shadow-primary/10 active:scale-95 cursor-pointer text-center no-underline"
+                  >
+                    <span className="material-symbols-outlined text-lg">chat</span>
+                    Enviar Cotización por WhatsApp
+                  </a>
                 </div>
-              </article>
-            ))
-          ) : (
-            <div className="col-span-full py-20 text-center text-on-surface-variant font-headline text-base bg-slate-50 border border-slate-200 rounded-3xl">
-              <span className="material-symbols-outlined text-5xl text-slate-300 mb-3 block">inventory_2</span>
-              No se encontraron productos en esta categoría o búsqueda.
-            </div>
-          )}
-        </section>
+                <p className="text-[9px] text-slate-400 font-medium text-center leading-relaxed">
+                  *Los precios mostrados son aproximados y pueden variar según stock y tipo de cambio. Un técnico se contactará para confirmar su solicitud.
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
-    </main>
 
       {/* Reusable Clean Footer */}
       <CleanFooter />

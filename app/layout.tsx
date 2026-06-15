@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import SmartAssistant from "./components/SmartAssistant";
 
 export const metadata: Metadata = {
   title: "DELLCOM SAC | Tu centro de confianza",
@@ -20,7 +21,9 @@ export default function RootLayout({
       </head>
       <body className="min-h-screen flex flex-col bg-background text-on-background antialiased selection:bg-primary/20">
         {children}
+        <SmartAssistant />
       </body>
     </html>
   );
 }
+

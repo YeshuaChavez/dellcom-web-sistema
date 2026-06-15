@@ -111,10 +111,12 @@ DELLCOM-WEB/
 ### 1. Portal Corporativo Publico (Frontend UX Premium)
 * **Pagina de Inicio (Hero & Bento Grid)**: Seccion de bienvenida cinemática con accesos a soporte instantaneo por WhatsApp y bento grid unificado 2-1 que expone la propuesta de valor.
 * **Servicios Corporativos (Filas Alternas)**: Visualizacion dinamica de los servicios (Soporte, Redes, Licenciamiento, Hardware) mediante layouts flexibles que alternan descripciones estructuradas y fotografias locales de alta calidad.
-* **Catalogo Virtual Activo**: Exposicion de suministros originales (SSDs, RAMs, ribbons Zebra, tintas HP) consumidos en tiempo real desde la API de base de datos, con fallbacks de datos estaticos en caso de problemas de red.
+* **Catalogo Virtual Activo y Carrito de Cotización**: Exposición de suministros y licencias con filtros por categoría y búsqueda en tiempo real. Incorpora un **Carrito de Cotización Dinámico** que almacena localmente los ítems seleccionados por el cliente (vía `localStorage`) y genera una solicitud de cotización consolidada enviada por WhatsApp en un solo mensaje formateado.
 * **Seccion de Descargas de Soporte**: Repositorio publico donde clientes y tecnicos pueden descargar drivers oficiales y manuales.
 * **Modulo de Soporte Remoto (/soporte)**: Interfaz de streaming cinemática con reproductor de video integrado para guias paso a paso de AnyDesk/RustDesk y consola interactiva de consulta de IDs de conexion.
 * **Formulario de Contacto Real (/contacto)**: Formulario estructurado con iconos vectoriales de Google Material Symbols. Valida datos en tiempo real y persiste las consultas directamente en la base de datos MySQL.
+* **Asistente Virtual Inteligente (Chatbot)**: Asistente interactivo en la esquina inferior derecha (con ocultación inteligente en secciones de administración `/admin/*`) que ofrece botones rápidos y responde automáticamente consultas libres buscando palabras clave sobre horarios, localización, soporte remoto AnyDesk y servicios.
+
 
 ### 2. Panel Administrativo Protegido (Dashboard)
 * **Area de Login Glassmorphic**: Interfaz de acceso limpia con un overlay translúcido sobre un video tecnico de fondo, focos de acento en rojo puro (#ff0000) y proteccion por token JWT.
