@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
+import { createPortal } from "react-dom";
 
 interface Servicio {
   nombre: string;
@@ -23,6 +24,14 @@ export default function PortfolioGallery({ trabajos = [] }: PortfolioGalleryProp
   const [selectedCategory, setSelectedCategory] = useState("Todos");
   const [visibleCount, setVisibleCount] = useState(6);
   const [activeTrabajo, setActiveTrabajo] = useState<Trabajo | null>(null);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [mounted, setMounted] = useState(false);
+
+  // Mount check for client-side rendering (prevent SSR hydration mismatch with Portal)
+  useEffect(() => {
+    setMounted(true);
+    return () => setMounted(false);
+  }, []);
 
   // Extract unique category names from works list dynamically
   const categories = useMemo(() => {
@@ -51,8 +60,8 @@ export default function PortfolioGallery({ trabajos = [] }: PortfolioGalleryProp
   };
 
   const handleOpenLightbox = (trabajo: Trabajo) => {
+    setCurrentImageIndex(0); // Reset slider to first image
     setActiveTrabajo(trabajo);
-    // Prevent background scrolling when modal is open
     document.body.style.overflow = "hidden";
   };
 
@@ -74,16 +83,42 @@ export default function PortfolioGallery({ trabajos = [] }: PortfolioGalleryProp
     }
   };
 
+  // Parse description and optional slider images from description field
+  const parsedData = useMemo(() => {
+    if (!activeTrabajo) return { text: "", images: [] as string[] };
+    
+    const parts = activeTrabajo.descripcion?.split("||") || [];
+    const text = parts[0] || "";
+    const extraImagesString = parts[1] || "";
+    
+    // Fallback if no extra images: use the main imagen_url
+    const imagesList = extraImagesString
+      ? extraImagesString.split(",")
+      : [activeTrabajo.imagen_url];
+      
+    return { text, images: imagesList };
+  }, [activeTrabajo]);
+
+  const handleNextImage = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setCurrentImageIndex((prev) => (prev + 1) % parsedData.images.length);
+  };
+
+  const handlePrevImage = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setCurrentImageIndex((prev) => (prev - 1 + parsedData.images.length) % parsedData.images.length);
+  };
+
   const getWhatsAppLink = (trabajo: Trabajo) => {
     const message = `Hola DELLCOM, vi su trabajo de "${trabajo.titulo}" en su portafolio y me gustaría cotizar un servicio similar.`;
     return `https://wa.me/51925981741?text=${encodeURIComponent(message)}`;
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full animate-fade-in">
       {/* Category Tabs */}
       {categories.length > 2 && (
-        <div className="flex flex-wrap justify-center gap-2 md:gap-3 mb-12 max-w-4xl mx-auto px-4 animate-fade-in">
+        <div className="flex flex-wrap justify-center gap-2 md:gap-3 mb-12 max-w-4xl mx-auto px-4">
           {categories.map((cat) => {
             const isActive = selectedCategory === cat;
             return (
@@ -116,66 +151,72 @@ export default function PortfolioGallery({ trabajos = [] }: PortfolioGalleryProp
       ) : (
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
-            {visibleTrabajos.map((trabajo, index) => (
-              <article
-                key={trabajo.id}
-                onClick={() => handleOpenLightbox(trabajo)}
-                className="group bg-white rounded-[2rem] border border-slate-200/60 overflow-hidden hover:shadow-xl hover:border-primary/20 transition-all duration-500 flex flex-col justify-between cursor-pointer h-full relative"
-                style={{
-                  animationDelay: `${(index % 3) * 100}ms`,
-                }}
-              >
-                {/* Image Area */}
-                <div className="relative h-52 w-full overflow-hidden bg-slate-50 border-b border-slate-100">
-                  <img
-                    src={trabajo.imagen_url}
-                    alt={trabajo.titulo}
-                    className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-700"
-                    loading="lazy"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  
-                  {/* Category Badge */}
-                  <div className="absolute top-4 left-4 bg-black/60 backdrop-blur-sm text-white px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider">
-                    {trabajo.servicio?.nombre || "Servicio Técnico"}
-                  </div>
-                </div>
+            {visibleTrabajos.map((trabajo, index) => {
+              // Parse out only the text for card preview
+              const cardParts = trabajo.descripcion?.split("||") || [];
+              const cardDesc = cardParts[0] || "";
 
-                {/* Content Area */}
-                <div className="p-6 flex-1 flex flex-col justify-between space-y-4 bg-white">
-                  <div className="space-y-2">
-                    <div className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">
-                      Completado el {formatDate(trabajo.fecha)}
+              return (
+                <article
+                  key={trabajo.id}
+                  onClick={() => handleOpenLightbox(trabajo)}
+                  className="group bg-white rounded-[2rem] border border-slate-200/60 overflow-hidden hover:shadow-xl hover:border-primary/20 transition-all duration-500 flex flex-col justify-between cursor-pointer h-full relative"
+                  style={{
+                    animationDelay: `${(index % 3) * 100}ms`,
+                  }}
+                >
+                  {/* Image Area */}
+                  <div className="relative h-52 w-full overflow-hidden bg-slate-50 border-b border-slate-100">
+                    <img
+                      src={trabajo.imagen_url}
+                      alt={trabajo.titulo}
+                      className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-700"
+                      loading="lazy"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    
+                    {/* Category Badge */}
+                    <div className="absolute top-4 left-4 bg-black/60 backdrop-blur-sm text-white px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider">
+                      {trabajo.servicio?.nombre || "Servicio Técnico"}
                     </div>
-                    <h3 className="font-headline text-sm md:text-base font-bold text-on-surface group-hover:text-primary transition-colors duration-300 leading-snug line-clamp-2">
-                      {trabajo.titulo}
-                    </h3>
-                    {trabajo.descripcion && (
-                      <p className="text-xs text-on-surface-variant leading-relaxed line-clamp-2 font-medium">
-                        {trabajo.descripcion}
-                      </p>
-                    )}
                   </div>
 
-                  {/* Action Row */}
-                  <div className="pt-4 border-t border-slate-100 flex justify-between items-center text-[9px] font-bold tracking-wider uppercase">
-                    <span className="text-emerald-600 flex items-center gap-1 font-semibold">
-                      <span className="material-symbols-outlined text-sm font-bold">check_circle</span>
-                      Operativo
-                    </span>
-                    <span className="text-primary flex items-center gap-0.5 group-hover:translate-x-1 transition-transform duration-300">
-                      Ver detalles
-                      <span className="material-symbols-outlined text-[12px] font-bold">chevron_right</span>
-                    </span>
+                  {/* Content Area */}
+                  <div className="p-6 flex-1 flex flex-col justify-between space-y-4 bg-white">
+                    <div className="space-y-2">
+                      <div className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">
+                        Completado el {formatDate(trabajo.fecha)}
+                      </div>
+                      <h3 className="font-headline text-sm md:text-base font-bold text-on-surface group-hover:text-primary transition-colors duration-300 leading-snug line-clamp-2">
+                        {trabajo.titulo}
+                      </h3>
+                      {cardDesc && (
+                        <p className="text-xs text-on-surface-variant leading-relaxed line-clamp-2 font-medium">
+                          {cardDesc}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Action Row */}
+                    <div className="pt-4 border-t border-slate-100 flex justify-between items-center text-[9px] font-bold tracking-wider uppercase">
+                      <span className="text-emerald-600 flex items-center gap-1 font-semibold">
+                        <span className="material-symbols-outlined text-sm font-bold">check_circle</span>
+                        Operativo
+                      </span>
+                      <span className="text-primary flex items-center gap-0.5 group-hover:translate-x-1 transition-transform duration-300">
+                        Ver detalles
+                        <span className="material-symbols-outlined text-[12px] font-bold">chevron_right</span>
+                      </span>
+                    </div>
                   </div>
-                </div>
-              </article>
-            ))}
+                </article>
+              );
+            })}
           </div>
 
           {/* Pagination Button */}
           {filteredTrabajos.length > visibleCount && (
-            <div className="text-center mt-12 animate-fade-in">
+            <div className="text-center mt-12">
               <button
                 onClick={loadMore}
                 className="inline-flex items-center gap-2 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200/80 hover:border-primary/40 px-8 py-3.5 rounded-2xl text-xs font-bold uppercase tracking-wider transition-all duration-300 shadow-sm active:scale-95 cursor-pointer"
@@ -188,10 +229,10 @@ export default function PortfolioGallery({ trabajos = [] }: PortfolioGalleryProp
         </>
       )}
 
-      {/* Lightbox Modal */}
-      {activeTrabajo && (
+      {/* Lightbox Modal rendered via Portal */}
+      {activeTrabajo && mounted && createPortal(
         <div 
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md animate-fade-in"
+          className="fixed inset-0 z-[999] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md animate-fade-in"
           onClick={handleCloseLightbox}
         >
           <div 
@@ -201,18 +242,55 @@ export default function PortfolioGallery({ trabajos = [] }: PortfolioGalleryProp
             {/* Close Button */}
             <button
               onClick={handleCloseLightbox}
-              className="absolute top-4 right-4 z-10 w-9 h-9 bg-white/90 backdrop-blur-sm border border-slate-100 rounded-full flex items-center justify-center text-slate-500 hover:text-primary hover:scale-105 transition-all shadow-md cursor-pointer"
+              className="absolute top-4 right-4 z-20 w-9 h-9 bg-white/90 backdrop-blur-sm border border-slate-100 rounded-full flex items-center justify-center text-slate-500 hover:text-primary hover:scale-105 transition-all shadow-md cursor-pointer"
             >
               <span className="material-symbols-outlined text-[20px] font-bold">close</span>
             </button>
 
-            {/* Left Side: Large Image */}
-            <div className="w-full md:w-1/2 relative bg-slate-50 min-h-[240px] md:min-h-[420px] flex items-center justify-center">
+            {/* Left Side: Image Carousel */}
+            <div className="w-full md:w-1/2 relative bg-slate-50 min-h-[280px] md:min-h-[460px] flex items-center justify-center select-none overflow-hidden">
               <img
-                src={activeTrabajo.imagen_url}
-                alt={activeTrabajo.titulo}
-                className="w-full h-full object-cover absolute inset-0"
+                src={parsedData.images[currentImageIndex]}
+                alt={`${activeTrabajo.titulo} - Imagen ${currentImageIndex + 1}`}
+                className="w-full h-full object-cover absolute inset-0 transition-opacity duration-300"
               />
+              
+              {/* Carousel Controls */}
+              {parsedData.images.length > 1 && (
+                <>
+                  {/* Left Arrow */}
+                  <button
+                    onClick={handlePrevImage}
+                    className="absolute left-4 top-1/2 -translate-y-1/2 z-10 w-9 h-9 bg-white/80 hover:bg-white backdrop-blur-sm border border-slate-100 rounded-full flex items-center justify-center text-slate-700 hover:text-primary transition-all shadow-md active:scale-95 cursor-pointer"
+                  >
+                    <span className="material-symbols-outlined text-[20px] font-bold">chevron_left</span>
+                  </button>
+
+                  {/* Right Arrow */}
+                  <button
+                    onClick={handleNextImage}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 z-10 w-9 h-9 bg-white/80 hover:bg-white backdrop-blur-sm border border-slate-100 rounded-full flex items-center justify-center text-slate-700 hover:text-primary transition-all shadow-md active:scale-95 cursor-pointer"
+                  >
+                    <span className="material-symbols-outlined text-[20px] font-bold">chevron_right</span>
+                  </button>
+
+                  {/* Indicator dots */}
+                  <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 flex gap-1.5 bg-black/35 backdrop-blur-sm px-3.5 py-2 rounded-full">
+                    {parsedData.images.map((_, idx) => (
+                      <button
+                        key={idx}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setCurrentImageIndex(idx);
+                        }}
+                        className={`w-2 h-2 rounded-full transition-all duration-300 cursor-pointer ${
+                          idx === currentImageIndex ? "bg-primary w-4" : "bg-white/60 hover:bg-white"
+                        }`}
+                      ></button>
+                    ))}
+                  </div>
+                </>
+              )}
             </div>
 
             {/* Right Side: Details */}
@@ -238,7 +316,7 @@ export default function PortfolioGallery({ trabajos = [] }: PortfolioGalleryProp
                     Descripción del Trabajo
                   </h4>
                   <p className="text-xs md:text-sm text-on-surface-variant leading-relaxed font-semibold">
-                    {activeTrabajo.descripcion || "Mantenimiento y soporte especializado realizado por técnicos certificados de DELLCOM."}
+                    {parsedData.text || "Mantenimiento y soporte especializado realizado por técnicos certificados de DELLCOM."}
                   </p>
                 </div>
 
@@ -269,7 +347,8 @@ export default function PortfolioGallery({ trabajos = [] }: PortfolioGalleryProp
               </div>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

@@ -3,7 +3,6 @@ import Link from "next/link";
 import StatusHeader from "../components/StatusHeader";
 import CleanFooter from "../components/CleanFooter";
 import ScrollRevealObserver from "../components/ScrollRevealObserver";
-import PortfolioGallery from "../components/PortfolioGallery";
 
 export const metadata = {
   title: "Servicios — DELLCOM SAC | Soporte de TI y Hardware en Lima Norte",
@@ -154,31 +153,8 @@ async function getServices() {
   ];
 }
 
-async function getTrabajos() {
-  try {
-    const dbTrabajos = await prisma.trabajoRealizado.findMany({
-      include: { servicio: true },
-      orderBy: { fecha: "desc" },
-    });
-    if (dbTrabajos && dbTrabajos.length > 0) {
-      return dbTrabajos.map(t => ({
-        id: t.id,
-        titulo: t.titulo,
-        descripcion: t.descripcion,
-        imagen_url: t.imagen_url,
-        fecha: t.fecha,
-        servicio: t.servicio ? { nombre: t.servicio.nombre } : null
-      }));
-    }
-  } catch (error) {
-    console.warn("Prisma DB connection failed for trabajos. Using empty array fallback.");
-  }
-  return [];
-}
-
 export default async function ServiciosPage() {
   const servicios = await getServices();
-  const trabajos = await getTrabajos();
 
   return (
     <div className="selection:bg-primary/20 selection:text-primary min-h-screen bg-white">
@@ -275,25 +251,6 @@ export default async function ServiciosPage() {
                 </div>
               );
             })}
-          </div>
-        </section>
-        {/* Success Stories / Trabajos Realizados Section */}
-        <section className="py-24 px-margin-mobile md:px-margin-desktop bg-slate-50/50 border-t border-slate-100" id="portafolio">
-          <div className="max-w-container-max mx-auto">
-            <div className="scroll-reveal text-center mb-16 space-y-3">
-              <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider mb-2">
-                <span className="material-symbols-outlined text-[16px]">verified</span>
-                Casos de Éxito y Garantía IT
-              </div>
-              <h2 className="font-headline text-3xl md:text-4xl font-bold text-on-surface">Trabajos Técnicos <span className="text-primary">Realizados</span></h2>
-              <p className="text-sm md:text-base text-on-surface-variant max-w-2xl mx-auto leading-relaxed font-semibold">
-                Nuestra experiencia demostrada en reparaciones de microelectrónica, cableado estructurado y soporte preventivo.
-              </p>
-            </div>
-
-            <div className="scroll-reveal">
-              <PortfolioGallery trabajos={trabajos} />
-            </div>
           </div>
         </section>
       </main>
