@@ -206,7 +206,7 @@ export default function DescargasPage() {
                       <span className="inline-block px-2 py-0.5 rounded bg-slate-100 text-[9px] text-slate-500 font-bold uppercase tracking-wider">
                         {getLabelForType(file.tipo)}
                       </span>
-                      <span className="text-[10px] text-slate-400 font-semibold">
+                      <span suppressHydrationWarning className="text-[10px] text-slate-400 font-semibold">
                         Subido el {formatDate(file.fecha_subida)}
                       </span>
                     </div>

@@ -194,7 +194,7 @@ export default function PortfolioGallery({ trabajos = [] }: PortfolioGalleryProp
                   {/* Content Area */}
                   <div className="p-6 flex-1 flex flex-col justify-between space-y-4 bg-white">
                     <div className="space-y-2">
-                      <div className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">
+                      <div suppressHydrationWarning className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">
                         Completado el {formatDate(trabajo.fecha)}
                       </div>
                       <h3 className="font-headline text-sm md:text-base font-bold text-on-surface group-hover:text-primary transition-colors duration-300 leading-snug line-clamp-2">
