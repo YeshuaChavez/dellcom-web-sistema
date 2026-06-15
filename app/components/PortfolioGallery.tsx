@@ -236,24 +236,32 @@ export default function PortfolioGallery({ trabajos = [] }: PortfolioGalleryProp
           onClick={handleCloseLightbox}
         >
           <div 
-            className="bg-white rounded-[2.5rem] border border-slate-200/60 shadow-2xl max-w-4xl w-full overflow-hidden flex flex-col md:flex-row relative max-h-[90vh] md:max-h-[85vh] animate-scale-up"
+            className="bg-white rounded-[2.5rem] border border-slate-900/15 shadow-2xl max-w-4xl w-full overflow-hidden flex flex-col md:flex-row relative max-h-[90vh] md:max-h-[85vh] animate-scale-up"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Close Button */}
             <button
               onClick={handleCloseLightbox}
-              className="absolute top-4 right-4 z-20 w-9 h-9 bg-white/90 backdrop-blur-sm border border-slate-100 rounded-full flex items-center justify-center text-slate-500 hover:text-primary hover:scale-105 transition-all shadow-md cursor-pointer"
+              className="absolute top-4 right-4 z-20 w-9 h-9 bg-white/90 backdrop-blur-sm border border-slate-200/50 rounded-full flex items-center justify-center text-slate-500 hover:text-primary hover:scale-105 transition-all shadow-md cursor-pointer"
             >
               <span className="material-symbols-outlined text-[20px] font-bold">close</span>
             </button>
 
             {/* Left Side: Image Carousel */}
-            <div className="w-full md:w-1/2 relative bg-slate-50 min-h-[280px] md:min-h-[460px] flex items-center justify-center select-none overflow-hidden">
-              <img
-                src={parsedData.images[currentImageIndex]}
-                alt={`${activeTrabajo.titulo} - Imagen ${currentImageIndex + 1}`}
-                className="w-full h-full object-cover absolute inset-0 transition-opacity duration-300"
-              />
+            <div className="w-full md:w-1/2 relative bg-slate-950 min-h-[280px] md:min-h-[460px] flex items-center justify-center select-none overflow-hidden">
+              {parsedData.images.map((imgUrl, idx) => (
+                <img
+                  key={idx}
+                  src={imgUrl}
+                  alt={`${activeTrabajo.titulo} - Imagen ${idx + 1}`}
+                  className={`w-full h-full object-cover absolute inset-0 transition-all duration-700 ease-in-out ${
+                    idx === currentImageIndex 
+                      ? "opacity-100 scale-100 pointer-events-auto" 
+                      : "opacity-0 scale-95 pointer-events-none"
+                  }`}
+                  loading="lazy"
+                />
+              ))}
               
               {/* Carousel Controls */}
               {parsedData.images.length > 1 && (
@@ -261,7 +269,7 @@ export default function PortfolioGallery({ trabajos = [] }: PortfolioGalleryProp
                   {/* Left Arrow */}
                   <button
                     onClick={handlePrevImage}
-                    className="absolute left-4 top-1/2 -translate-y-1/2 z-10 w-9 h-9 bg-white/80 hover:bg-white backdrop-blur-sm border border-slate-100 rounded-full flex items-center justify-center text-slate-700 hover:text-primary transition-all shadow-md active:scale-95 cursor-pointer"
+                    className="absolute left-4 top-1/2 -translate-y-1/2 z-10 w-9 h-9 bg-white/80 hover:bg-white backdrop-blur-sm border border-slate-200/50 rounded-full flex items-center justify-center text-slate-700 hover:text-primary transition-all shadow-md active:scale-95 cursor-pointer"
                   >
                     <span className="material-symbols-outlined text-[20px] font-bold">chevron_left</span>
                   </button>
@@ -269,7 +277,7 @@ export default function PortfolioGallery({ trabajos = [] }: PortfolioGalleryProp
                   {/* Right Arrow */}
                   <button
                     onClick={handleNextImage}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 z-10 w-9 h-9 bg-white/80 hover:bg-white backdrop-blur-sm border border-slate-100 rounded-full flex items-center justify-center text-slate-700 hover:text-primary transition-all shadow-md active:scale-95 cursor-pointer"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 z-10 w-9 h-9 bg-white/80 hover:bg-white backdrop-blur-sm border border-slate-200/50 rounded-full flex items-center justify-center text-slate-700 hover:text-primary transition-all shadow-md active:scale-95 cursor-pointer"
                   >
                     <span className="material-symbols-outlined text-[20px] font-bold">chevron_right</span>
                   </button>
