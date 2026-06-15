@@ -107,7 +107,7 @@ export default function AdminLoginPage() {
         <div className="relative z-10 my-auto py-12 space-y-6">
           <h1 className="font-headline text-4xl md:text-5xl lg:text-6xl font-black text-slate-800 leading-none tracking-tight">
             ¡Hola <br />
-            <span className="text-primary">Dellcom!</span> 👋
+            <span className="text-primary">Dellcom!</span>
           </h1>
           <p className="text-xs md:text-sm lg:text-base text-slate-500 leading-relaxed font-semibold max-w-sm">
             Soporte IT de primer nivel, repuestos y licencias originales. Gestiona los servicios técnicos de forma eficiente y segura.
