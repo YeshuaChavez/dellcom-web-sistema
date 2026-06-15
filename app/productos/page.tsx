@@ -45,7 +45,6 @@ interface CartItem {
 import { Printer, Network, Cpu, ShieldCheck, Monitor, Search, Plus, Minus, ShoppingCart, ShoppingBag, X, Trash2, MessageCircle, Eye } from "lucide-react";
 
 // Custom Component for Product Images with dynamic fallback icons
-// Custom Component for Product Images with dynamic fallback icons
 function ProductImage({ 
   src, 
   alt, 
@@ -132,7 +131,7 @@ function ZoomableImage({ src, alt, categoryName }: { src?: string; alt: string; 
 
   return (
     <div 
-      className="relative w-full h-full overflow-hidden flex items-center justify-center cursor-zoom-in select-none"
+      className={`relative w-full h-full overflow-hidden flex items-center justify-center select-none ${isZoomed ? "cursor-zoom-out" : "cursor-zoom-in"}`}
       onMouseMove={isZoomed ? undefined : handleMouseMove}
       onMouseLeave={handleMouseLeave}
       onClick={handleClick}
