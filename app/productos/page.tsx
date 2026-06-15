@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import StatusHeader from "../components/StatusHeader";
 import CleanFooter from "../components/CleanFooter";
@@ -31,29 +32,29 @@ interface CartItem {
   categoriaNombre: string;
 }
 
+import { Printer, Network, Cpu, ShieldCheck, Monitor, Search, Plus, Minus, ShoppingCart, ShoppingBag, X, Trash2, MessageCircle, Eye } from "lucide-react";
+
 // Custom Component for Product Images with dynamic fallback icons
 function ProductImage({ src, alt, categoryName }: { src?: string; alt: string; categoryName: string }) {
   const [error, setError] = useState(false);
 
-  // Helper to determine the best material icon based on category name
+  // Helper to determine the best lucide icon component based on category name
   const getIconForCategory = (cat: string) => {
     const name = cat.toLowerCase();
-    if (name.includes("impres") || name.includes("ribbon") || name.includes("tint") || name.includes("suministr")) return "print";
-    if (name.includes("red") || name.includes("connect") || name.includes("router") || name.includes("cable")) return "router";
-    if (name.includes("almacen") || name.includes("memor") || name.includes("disco") || name.includes("ssd") || name.includes("ram")) return "memory";
-    if (name.includes("accesorio") || name.includes("mouse") || name.includes("teclad")) return "keyboard";
-    if (name.includes("licenc") || name.includes("soft")) return "verified_user";
-    return "devices";
+    if (name.includes("impres") || name.includes("ribbon") || name.includes("tint") || name.includes("suministr")) return Printer;
+    if (name.includes("red") || name.includes("connect") || name.includes("router") || name.includes("cable")) return Network;
+    if (name.includes("almacen") || name.includes("memor") || name.includes("disco") || name.includes("ssd") || name.includes("ram")) return Cpu;
+    if (name.includes("accesorio") || name.includes("mouse") || name.includes("teclad")) return Monitor;
+    if (name.includes("licenc") || name.includes("soft")) return ShieldCheck;
+    return Monitor;
   };
 
-  const iconName = getIconForCategory(categoryName);
+  const IconComponent = getIconForCategory(categoryName);
 
   if (error || !src || src.includes("placeholder.png")) {
     return (
       <div className="w-full h-full flex flex-col items-center justify-center bg-slate-100/60 text-slate-400 select-none p-4 min-h-[200px]">
-        <span className="material-symbols-outlined text-[56px] text-slate-300 mb-2 group-hover:scale-110 group-hover:text-primary transition-all duration-300">
-          {iconName}
-        </span>
+        <IconComponent className="w-14 h-14 text-slate-300 mb-2 group-hover:scale-110 group-hover:text-primary transition-all duration-300" />
         <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest text-center">Dellcom Stock</span>
       </div>
     );
@@ -72,63 +73,96 @@ function ProductImage({ src, alt, categoryName }: { src?: string; alt: string; c
 const fallbackCategories = [
   { id: 0, nombre: "Todos" },
   { id: 1, nombre: "Ribbons y Tintas" },
-  { id: 2, nombre: "Memorias y Discos" },
-  { id: 3, nombre: "Redes y Conectividad" },
-  { id: 4, nombre: "Periféricos y Accesorios" },
-  { id: 5, nombre: "Licencias de Software" }
+  { id: 2, nombre: "Memorias y Discos Externos" },
+  { id: 3, nombre: "Tarjetas ZEBRA" },
+  { id: 4, nombre: "Redes y Conectividad" },
+  { id: 5, nombre: "Periféricos y Accesorios" },
+  { id: 6, nombre: "Licencias de Software" }
 ];
 
 const fallbackProducts: Producto[] = [
   {
-    id: 1,
-    nombre: "Disco SSD Kingston A400 480GB SATA",
-    descripcion: "Unidad de estado sólido SATA III de 2.5 pulgadas. Increíble velocidad de lectura (hasta 500MB/s) y escritura (450MB/s) para repotenciar laptops y PCs de escritorio.",
-    precio: 180.00,
-    imagen_url: "/img/productos/ssd-480gb.jpg",
-    categoria: { nombre: "Memorias y Discos" }
-  },
-  {
-    id: 2,
-    nombre: "Disco Duro Externo Adata HD330 1TB",
-    descripcion: "Disco duro externo resistente a impactos y caídas con carcasa de silicona amortiguadora. Conexión USB 3.2 rápida y cifrado seguro AES de 256 bits.",
-    precio: 245.00,
-    imagen_url: "/img/productos/disco-externo-1tb.jpg",
-    categoria: { nombre: "Memorias y Discos" }
-  },
-  {
-    id: 3,
-    nombre: "Memoria RAM Kingston Valueram 8GB DDR4 3200MHz",
-    descripcion: "Memoria RAM DDR4 de alto rendimiento y bajo consumo energético. Ideal para repotenciar laptops y mejorar la capacidad multitarea.",
-    precio: 120.00,
-    imagen_url: "/img/productos/ram-8gb-ddr4.jpg",
-    categoria: { nombre: "Memorias y Discos" }
-  },
-  {
-    id: 4,
-    nombre: "Cinta Ribbon Zebra YMCKO 800300-350LA",
-    descripcion: "Cinta ribbon de color original YMCKO de alto rendimiento para impresoras de tarjetas Zebra ZC100 y ZC300. Produce hasta 350 impresiones de alta definición.",
-    precio: 290.00,
-    imagen_url: "/img/productos/ribbon-zebra-800300-350la.jpg",
-    categoria: { nombre: "Ribbons y Tintas" }
-  },
-  {
-    id: 5,
-    nombre: "Ribbon de Cera Zebra 110mm x 74m",
+    id: 50,
+    nombre: "Ribbon de Cera Zebra 110x74",
     descripcion: "Rollo de cinta ribbon de cera de alta calidad para impresoras térmicas industriales y de escritorio. Transferencia térmica nítida en etiquetas de papel.",
-    precio: 25.00,
+    precio: 45.00,
     imagen_url: "/img/productos/ribbon-cera.jpg",
     categoria: { nombre: "Ribbons y Tintas" }
   },
   {
-    id: 6,
-    nombre: "Tinta HP 664 Negra Original",
-    descripcion: "Cartucho de tinta negra original HP 664. Diseñado para imprimir con calidad profesional constante, evitando impresiones borrosas o fallas.",
-    precio: 65.00,
+    id: 51,
+    nombre: "Tinta Original HP GT53 Negra",
+    descripcion: "Botella de tinta negra original HP GT53. Diseñado para imprimir con calidad profesional constante, evitando impresiones borrosas o fallas.",
+    precio: 39.00,
     imagen_url: "/img/productos/tinta-hp-664.jpg",
     categoria: { nombre: "Ribbons y Tintas" }
   },
   {
-    id: 7,
+    id: 52,
+    nombre: "Disco Externo 2TB Toshiba",
+    descripcion: "Disco duro externo portátil de 2TB de almacenamiento. Conexión USB 3.0 de alta velocidad y diseño ultra compacto resistente a impactos.",
+    precio: 289.00,
+    imagen_url: "/img/productos/disco-externo-1tb.jpg",
+    categoria: { nombre: "Memorias y Discos Externos" }
+  },
+  {
+    id: 53,
+    nombre: "Memoria RAM DDR4 8GB Crucial Laptop",
+    descripcion: "Memoria RAM DDR4 de alto rendimiento y bajo consumo energético. Ideal para repotenciar laptops y mejorar la capacidad multitarea.",
+    precio: 115.00,
+    imagen_url: "/img/productos/ram-8gb-ddr4.jpg",
+    categoria: { nombre: "Memorias y Discos Externos" }
+  },
+  {
+    id: 54,
+    nombre: "Tarjeta de Limpieza Zebra",
+    descripcion: "Tarjetas de limpieza originales para cabezal de impresión e rodillo de arrastre en impresoras de tarjetas Zebra. Alarga la vida útil de tu equipo.",
+    precio: 75.00,
+    imagen_url: "/img/productos/ribbon-zebra-800300-350la.jpg",
+    categoria: { nombre: "Tarjetas ZEBRA" }
+  },
+  {
+    id: 55,
+    nombre: "Licencia Windows 11 Pro OEM",
+    descripcion: "Clave de activación digital original OEM de Windows 11 Professional. Activación permanente en un equipo, vinculable a cuenta Microsoft.",
+    precio: 149.00,
+    imagen_url: "/img/productos/licencias_software.png",
+    categoria: { nombre: "Licencias de Software" }
+  },
+  {
+    id: 56,
+    nombre: "Licencia Office 2021 Home & Business",
+    descripcion: "Clave digital original de activación de la suite Office 2021 Home & Business. Incluye Word, Excel, PowerPoint y Outlook. Licencia permanente.",
+    precio: 349.00,
+    imagen_url: "/img/productos/licencias_software.png",
+    categoria: { nombre: "Licencias de Software" }
+  },
+  {
+    id: 57,
+    nombre: "Disco SSD Kingston A400 480GB SATA",
+    descripcion: "Unidad de estado sólido SATA III de 2.5 pulgadas. Increíble velocidad de lectura (hasta 500MB/s) y escritura (450MB/s) para repotenciar laptops y PCs de escritorio.",
+    precio: 180.00,
+    imagen_url: "/img/productos/ssd-480gb.jpg",
+    categoria: { nombre: "Memorias y Discos Externos" }
+  },
+  {
+    id: 58,
+    nombre: "Memoria USB 3.2 Kingston Exodia 32GB",
+    descripcion: "Memoria USB portátil Kingston DataTraveler Exodia con conexión USB 3.2 Gen 1 rápida. Diseño práctico con capuchón protector y llavero colorido.",
+    precio: 29.00,
+    imagen_url: "/img/productos/memoria-usb-32gb.jpg",
+    categoria: { nombre: "Memorias y Discos Externos" }
+  },
+  {
+    id: 59,
+    nombre: "Cinta Ribbon Zebra YMCKO 800300-350LA",
+    descripcion: "Cinta ribbon de color original YMCKO de alto rendimiento para impresoras de tarjetas Zebra ZC100 y ZC300. Produce hasta 350 impresiones de alta definición.",
+    precio: 290.00,
+    imagen_url: "/img/productos/ribbon-zebra-800300-350la.jpg",
+    categoria: { nombre: "Tarjetas ZEBRA" }
+  },
+  {
+    id: 60,
     nombre: "Etiquetas Térmicas Directas 102x152mm",
     descripcion: "Rollo de etiquetas térmicas autoadhesivas de alta adherencia. Ideales para despacho de mercadería, Courier, y rotulado de cajas (500 etiquetas).",
     precio: 45.00,
@@ -136,7 +170,7 @@ const fallbackProducts: Producto[] = [
     categoria: { nombre: "Ribbons y Tintas" }
   },
   {
-    id: 8,
+    id: 61,
     nombre: "Router Inalámbrico TP-Link TL-WR840N N300",
     descripcion: "Router de banda única de 2.4GHz a 300Mbps. Cuenta con 4 puertos LAN de 10/100Mbps y 2 antenas fijas de alto alcance. Modos router, repetidor y access point.",
     precio: 75.00,
@@ -144,7 +178,7 @@ const fallbackProducts: Producto[] = [
     categoria: { nombre: "Redes y Conectividad" }
   },
   {
-    id: 9,
+    id: 62,
     nombre: "Cable de Red Cat6 UTP Dixon 100% Cobre (Caja 305m)",
     descripcion: "Caja de cable UTP categoría 6 Dixon de cobre puro. Excelente rendimiento de transmisión Gigabit, conductor multifilar ideal para tendido estructurado.",
     precio: 480.00,
@@ -152,7 +186,7 @@ const fallbackProducts: Producto[] = [
     categoria: { nombre: "Redes y Conectividad" }
   },
   {
-    id: 10,
+    id: 63,
     nombre: "Adaptador USB 3.0 a Ethernet RJ45 Gigabit TP-Link",
     descripcion: "Adaptador de red portátil USB a RJ45 hembra. Proporciona conectividad a internet de alta velocidad de hasta 1000Mbps para laptops sin puerto ethernet.",
     precio: 65.00,
@@ -160,7 +194,7 @@ const fallbackProducts: Producto[] = [
     categoria: { nombre: "Redes y Conectividad" }
   },
   {
-    id: 11,
+    id: 64,
     nombre: "Mouse Inalámbrico Logitech M170",
     descripcion: "Mouse inalámbrico de 2.4GHz ergonómico y ambidiestro. Receptor USB plug and play con alcance de hasta 10 metros y batería de larga duración.",
     precio: 45.00,
@@ -168,7 +202,7 @@ const fallbackProducts: Producto[] = [
     categoria: { nombre: "Periféricos y Accesorios" }
   },
   {
-    id: 12,
+    id: 65,
     nombre: "Teclado Logitech K120 USB",
     descripcion: "Teclado cableado estándar USB resistente a salpicaduras. Teclas silenciosas, perfil plano y patas ajustables para una escritura cómoda.",
     precio: 38.00,
@@ -176,28 +210,12 @@ const fallbackProducts: Producto[] = [
     categoria: { nombre: "Periféricos y Accesorios" }
   },
   {
-    id: 13,
+    id: 66,
     nombre: "Mousepad Ergonómico con Apoya Muñeca de Gel",
     descripcion: "Mousepad con diseño ergonómico de base antideslizante. Relleno de gel suave que reduce la tensión en la muñeca durante largas jornadas.",
     precio: 25.00,
     imagen_url: "/img/productos/mousepad.jpg",
     categoria: { nombre: "Periféricos y Accesorios" }
-  },
-  {
-    id: 14,
-    nombre: "Licencia Windows 11 Pro Retail 64-bit",
-    descripcion: "Clave de activación digital original Retail de Windows 11 Professional. Activación permanente en un equipo, vinculable a cuenta Microsoft.",
-    precio: 120.00,
-    imagen_url: "", // No image, uses fallback verified_user icon
-    categoria: { nombre: "Licencias de Software" }
-  },
-  {
-    id: 15,
-    nombre: "Licencia Office 2021 Professional Plus",
-    descripcion: "Clave digital original de activación de la suite Office 2021 Professional Plus. Incluye Word, Excel, PowerPoint y Outlook. Licencia permanente.",
-    precio: 280.00,
-    imagen_url: "",
-    categoria: { nombre: "Licencias de Software" }
   }
 ];
 
@@ -206,6 +224,13 @@ export default function ProductosPage() {
   const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [selectedCategory, setSelectedCategory] = useState("Todos");
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedProductDetails, setSelectedProductDetails] = useState<Producto | null>(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    return () => setMounted(false);
+  }, []);
 
   // Carrito de Cotización
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -380,14 +405,22 @@ export default function ProductosPage() {
         <div className="py-20 max-w-container-max mx-auto w-full px-margin-mobile md:px-margin-desktop space-y-12">
           {/* Search box (Centered) */}
           <div className="relative max-w-2xl mx-auto bg-slate-50 border border-slate-200 rounded-2xl shadow-sm overflow-hidden focus-within:border-primary/50 focus-within:ring-2 focus-within:ring-primary/10 transition-all mb-8">
-            <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 select-none">search</span>
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5 pointer-events-none" />
             <input 
-              className="w-full pl-12 pr-4 py-4 bg-transparent border-none focus:outline-none text-on-surface font-body-md text-sm placeholder:text-slate-400 font-semibold"
+              className="w-full pl-12 pr-10 py-4 bg-transparent border-none focus:outline-none text-on-surface font-body-md text-sm placeholder:text-slate-400 font-semibold"
               placeholder="Buscar por nombre, marca o especificación..." 
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
+            {searchQuery && (
+              <button 
+                onClick={() => setSearchQuery("")}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors border-none bg-transparent cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
           </div>
 
           {/* Dynamic Category Navigation Tabs */}
@@ -421,12 +454,21 @@ export default function ProductosPage() {
                     className="bg-white rounded-3xl overflow-hidden border border-slate-200/80 hover:shadow-lg transition-all duration-300 group flex flex-col justify-between"
                   >
                     {/* Product Image Container with Fallbacks */}
-                    <div className="aspect-square bg-slate-50/50 p-6 flex items-center justify-center border-b border-slate-100 relative overflow-hidden select-none">
+                    <div 
+                      onClick={() => setSelectedProductDetails(prod)}
+                      className="aspect-square bg-slate-50/40 p-6 flex items-center justify-center border-b border-slate-100/80 relative overflow-hidden select-none cursor-pointer group/img"
+                    >
                       <ProductImage 
                         src={prod.imagen_url} 
                         alt={prod.nombre} 
                         categoryName={prod.categoria?.nombre || "General"} 
                       />
+                      <div className="absolute inset-0 bg-slate-900/5 opacity-0 group-hover/img:opacity-100 transition-all duration-300 flex items-center justify-center backdrop-blur-[0.5px]">
+                        <div className="bg-white/95 backdrop-blur-[2px] shadow-sm border border-slate-200/50 text-slate-800 text-[10px] font-bold uppercase tracking-wider py-2 px-3 rounded-xl flex items-center gap-1.5 transform translate-y-2 group-hover/img:translate-y-0 transition-all duration-300">
+                          <Eye className="w-3.5 h-3.5 text-slate-600" />
+                          Vista Rápida
+                        </div>
+                      </div>
                     </div>
                     
                     {/* Product Details Section */}
@@ -435,10 +477,13 @@ export default function ProductosPage() {
                         <span className="inline-block px-2.5 py-0.5 rounded-md bg-slate-100 text-[10px] text-slate-500 font-bold uppercase tracking-wider">
                           {prod.categoria?.nombre || "General"}
                         </span>
-                        <h3 className="font-headline text-base font-bold text-on-surface line-clamp-2 group-hover:text-primary transition-colors leading-snug">
+                        <h3 
+                          onClick={() => setSelectedProductDetails(prod)}
+                          className="font-headline text-base font-bold text-on-surface line-clamp-2 hover:text-primary transition-colors leading-snug cursor-pointer"
+                        >
                           {prod.nombre}
                         </h3>
-                        <p className="text-xs text-on-surface-variant line-clamp-3 leading-relaxed">
+                        <p className="text-xs text-on-surface-variant line-clamp-3 leading-relaxed font-semibold">
                           {prod.descripcion || "Consúltanos especificaciones, disponibilidad y compatibilidad de este producto."}
                         </p>
                       </div>
@@ -456,18 +501,18 @@ export default function ProductosPage() {
                           <div className="flex items-center bg-slate-100 rounded-xl border border-slate-200/60 p-0.5">
                             <button 
                               onClick={() => updateQuantity(prod.id, -1)}
-                              className="w-7 h-7 flex items-center justify-center text-slate-600 hover:text-primary active:scale-90 transition-all font-bold cursor-pointer"
+                              className="w-7 h-7 flex items-center justify-center text-slate-600 hover:text-primary active:scale-90 transition-all font-bold cursor-pointer border-none bg-transparent"
                             >
-                              <span className="material-symbols-outlined text-sm font-bold">remove</span>
+                              <Minus className="w-3.5 h-3.5" />
                             </button>
                             <span className="w-7 text-center text-xs font-bold text-slate-800">
                               {cartItem.cantidad}
                             </span>
                             <button 
                               onClick={() => updateQuantity(prod.id, 1)}
-                              className="w-7 h-7 flex items-center justify-center text-slate-600 hover:text-primary active:scale-90 transition-all font-bold cursor-pointer"
+                              className="w-7 h-7 flex items-center justify-center text-slate-600 hover:text-primary active:scale-90 transition-all font-bold cursor-pointer border-none bg-transparent"
                             >
-                              <span className="material-symbols-outlined text-sm font-bold">add</span>
+                              <Plus className="w-3.5 h-3.5" />
                             </button>
                           </div>
                         ) : (
@@ -476,7 +521,7 @@ export default function ProductosPage() {
                             onClick={() => addToCart(prod)}
                             className="flex items-center gap-1.5 bg-primary hover:bg-primary/95 text-white px-4 py-2.5 rounded-xl text-[11px] font-bold transition-all active:scale-95 shadow-md shadow-primary/10 cursor-pointer select-none border-none"
                           >
-                            <span className="material-symbols-outlined text-sm">add_shopping_cart</span>
+                            <ShoppingCart className="w-3.5 h-3.5" />
                             Añadir
                           </button>
                         )}
@@ -487,7 +532,7 @@ export default function ProductosPage() {
               })
             ) : (
               <div className="col-span-full py-20 text-center text-on-surface-variant font-headline text-base bg-slate-50 border border-slate-200 rounded-3xl">
-                <span className="material-symbols-outlined text-5xl text-slate-300 mb-3 block">inventory_2</span>
+                <ShoppingBag className="w-12 h-12 text-slate-300 mb-3 mx-auto" />
                 No se encontraron productos en esta categoría o búsqueda.
               </div>
             )}
@@ -504,7 +549,7 @@ export default function ProductosPage() {
           }`}
         >
           <div className="relative flex items-center justify-center">
-            <span className="material-symbols-outlined text-2xl">shopping_bag</span>
+            <ShoppingBag className="w-6 h-6" />
             <span className="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-slate-900 text-[10px] font-black text-white">
               {cartItemCount}
             </span>
@@ -515,7 +560,6 @@ export default function ProductosPage() {
           </div>
         </button>
       )}
-
       {/* Cart Drawer / Slide-Over Modal */}
       <div 
         className={`fixed inset-0 z-50 transition-opacity duration-300 ${
@@ -538,7 +582,7 @@ export default function ProductosPage() {
             {/* Header */}
             <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-primary text-2xl">shopping_bag</span>
+                <ShoppingBag className="w-6 h-6 text-primary" />
                 <div>
                   <h2 className="font-headline text-lg font-bold text-on-surface">Tu Cotización</h2>
                   <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider leading-none mt-1">
@@ -550,7 +594,7 @@ export default function ProductosPage() {
                 onClick={() => setIsCartOpen(false)}
                 className="w-9 h-9 flex items-center justify-center rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors cursor-pointer border-none"
               >
-                <span className="material-symbols-outlined text-lg">close</span>
+                <X className="w-5 h-5" />
               </button>
             </div>
 
@@ -561,20 +605,18 @@ export default function ProductosPage() {
                   <div key={item.id} className="flex gap-4 p-3 bg-slate-50/60 rounded-2xl border border-slate-100 hover:border-slate-200/60 transition-all">
                     {/* Item Thumbnail */}
                     <div className="w-16 h-16 bg-white rounded-xl border border-slate-200 p-2 flex items-center justify-center shrink-0 overflow-hidden relative">
-                      {item.imagen_url && !item.imagen_url.includes("placeholder") ? (
-                        <img 
-                          src={item.imagen_url} 
-                          alt={item.nombre} 
-                          className="w-full h-full object-contain"
-                        />
-                      ) : (
-                        <span className="material-symbols-outlined text-slate-300 text-3xl">
-                          {item.categoriaNombre.toLowerCase().includes("impres") ? "print" :
-                           item.categoriaNombre.toLowerCase().includes("red") ? "router" :
-                           item.categoriaNombre.toLowerCase().includes("memor") ? "memory" :
-                           item.categoriaNombre.toLowerCase().includes("licenc") ? "verified_user" : "devices"}
-                        </span>
-                      )}
+                      {(() => {
+                        if (item.imagen_url && !item.imagen_url.includes("placeholder")) {
+                          return <img src={item.imagen_url} alt={item.nombre} className="w-full h-full object-contain" />;
+                        }
+                        const name = item.categoriaNombre.toLowerCase();
+                        let Icon = Monitor;
+                        if (name.includes("impres") || name.includes("ribbon") || name.includes("tint") || name.includes("suministr")) Icon = Printer;
+                        else if (name.includes("red") || name.includes("connect") || name.includes("router") || name.includes("cable")) Icon = Network;
+                        else if (name.includes("almacen") || name.includes("memor") || name.includes("disco") || name.includes("ssd") || name.includes("ram")) Icon = Cpu;
+                        else if (name.includes("licenc") || name.includes("soft")) Icon = ShieldCheck;
+                        return <Icon className="w-8 h-8 text-slate-300" />;
+                      })()}
                     </div>
 
                     {/* Item Info */}
@@ -592,14 +634,14 @@ export default function ProductosPage() {
                             onClick={() => updateQuantity(item.id, -1)}
                             className="w-6 h-6 flex items-center justify-center text-slate-500 hover:text-primary transition-colors font-bold cursor-pointer border-none bg-transparent"
                           >
-                            <span className="material-symbols-outlined text-xs font-bold">remove</span>
+                            <Minus className="w-3 h-3" />
                           </button>
                           <span className="w-6 text-center text-[11px] font-bold text-slate-700">{item.cantidad}</span>
                           <button 
                             onClick={() => updateQuantity(item.id, 1)}
                             className="w-6 h-6 flex items-center justify-center text-slate-500 hover:text-primary transition-colors font-bold cursor-pointer border-none bg-transparent"
                           >
-                            <span className="material-symbols-outlined text-xs font-bold">add</span>
+                            <Plus className="w-3 h-3" />
                           </button>
                         </div>
                       </div>
@@ -608,7 +650,7 @@ export default function ProductosPage() {
                 ))
               ) : (
                 <div className="h-full flex flex-col items-center justify-center text-center text-slate-400 py-16">
-                  <span className="material-symbols-outlined text-[64px] text-slate-200 mb-2">shopping_basket</span>
+                  <ShoppingBag className="w-16 h-16 text-slate-200 mb-2 mx-auto" />
                   <p className="text-sm font-semibold">Tu lista de cotización está vacía</p>
                   <p className="text-xs text-slate-400 mt-1">Explora nuestro catálogo y añade suministros o licencias.</p>
                 </div>
@@ -629,7 +671,7 @@ export default function ProductosPage() {
                     className="col-span-1 flex items-center justify-center bg-white hover:bg-slate-100 text-slate-500 hover:text-primary border border-slate-200 rounded-xl py-3.5 transition-colors cursor-pointer"
                     title="Vaciar Lista"
                   >
-                    <span className="material-symbols-outlined text-lg">delete</span>
+                    <Trash2 className="w-5 h-5" />
                   </button>
                   <a 
                     href={getWhatsAppUrl()}
@@ -637,7 +679,7 @@ export default function ProductosPage() {
                     rel="noopener noreferrer"
                     className="col-span-4 flex items-center justify-center gap-2 bg-primary hover:bg-primary/95 text-white font-bold text-xs uppercase tracking-wider py-3.5 rounded-xl transition-all shadow-md shadow-primary/10 active:scale-95 cursor-pointer text-center no-underline"
                   >
-                    <span className="material-symbols-outlined text-lg">chat</span>
+                    <MessageCircle className="w-5 h-5" />
                     Enviar Cotización por WhatsApp
                   </a>
                 </div>
@@ -649,6 +691,116 @@ export default function ProductosPage() {
           </div>
         </div>
       </div>
+
+      {/* Quick View Product Modal (React Portal) */}
+      {mounted && selectedProductDetails && createPortal(
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          {/* Backdrop */}
+          <div 
+            onClick={() => setSelectedProductDetails(null)}
+            className="absolute inset-0 bg-slate-900/60 backdrop-blur-[4px] transition-opacity duration-300 animate-fade-in"
+          />
+
+          {/* Modal Content Card */}
+          <div className="relative bg-white rounded-[2rem] shadow-2xl border border-slate-100 max-w-2xl w-full overflow-hidden flex flex-col md:flex-row z-10 transform scale-100 animate-scale-up transition-all duration-300 max-h-[90vh] md:max-h-none">
+            
+            {/* Left Column: Image */}
+            <div className="md:w-1/2 bg-slate-50/50 p-8 flex items-center justify-center border-b md:border-b-0 md:border-r border-slate-100 relative min-h-[250px] md:min-h-[380px]">
+              <div className="w-full h-full max-h-[280px] flex items-center justify-center">
+                <ProductImage 
+                  src={selectedProductDetails.imagen_url} 
+                  alt={selectedProductDetails.nombre} 
+                  categoryName={selectedProductDetails.categoria?.nombre || "General"} 
+                />
+              </div>
+              <span className="absolute top-4 left-4 inline-block px-3 py-1 rounded-full bg-white/90 backdrop-blur-[2px] border border-slate-200/50 text-[9px] text-slate-500 font-extrabold uppercase tracking-widest shadow-sm">
+                {selectedProductDetails.categoria?.nombre || "General"}
+              </span>
+            </div>
+
+            {/* Right Column: Information */}
+            <div className="md:w-1/2 p-8 flex flex-col justify-between overflow-y-auto no-scrollbar">
+              <div className="space-y-5">
+                <div className="flex justify-between items-start">
+                  <span className="inline-flex items-center gap-1 text-[9px] font-black text-green-600 bg-green-50 border border-green-100 px-2 py-0.5 rounded-md uppercase tracking-wider">
+                    <span className="h-1.5 w-1.5 rounded-full bg-green-600 animate-pulse" />
+                    Disponible
+                  </span>
+                  <button 
+                    onClick={() => setSelectedProductDetails(null)}
+                    className="w-8 h-8 rounded-full bg-slate-50 hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors flex items-center justify-center cursor-pointer border-none"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+
+                <div className="space-y-2">
+                  <h2 className="font-headline text-lg md:text-xl font-bold text-on-surface leading-snug">
+                    {selectedProductDetails.nombre}
+                  </h2>
+                  <div className="text-xs text-slate-400 font-bold uppercase tracking-wider">
+                    DELLCOM STOCK CERTIFICADO
+                  </div>
+                </div>
+
+                <p className="text-xs text-on-surface-variant leading-relaxed font-semibold">
+                  {selectedProductDetails.descripcion || "Consúltanos especificaciones técnicas detalladas, stock en tienda física y compatibilidad exacta para este producto."}
+                </p>
+
+                {/* Tech Specs Summary Table */}
+                <div className="border border-slate-100 rounded-2xl p-4 bg-slate-50/50 space-y-2.5">
+                  <div className="flex justify-between text-xs">
+                    <span className="text-slate-400 font-bold">Garantía</span>
+                    <span className="text-slate-700 font-extrabold">12 Meses DELLCOM</span>
+                  </div>
+                  <div className="flex justify-between text-xs">
+                    <span className="text-slate-400 font-bold">Condición</span>
+                    <span className="text-slate-700 font-extrabold">Nuevo Sellado</span>
+                  </div>
+                  <div className="flex justify-between text-xs">
+                    <span className="text-slate-400 font-bold">Instalación / Soporte</span>
+                    <span className="text-slate-700 font-extrabold text-primary">Disponible (Opcional)</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="pt-6 border-t border-slate-100 mt-6 md:mt-8 space-y-4">
+                <div className="flex justify-between items-baseline">
+                  <span className="text-xs text-slate-400 font-bold uppercase">Precio de Venta</span>
+                  <span className="font-headline text-2xl font-black text-primary">
+                    S/ {Number(selectedProductDetails.precio).toFixed(2)}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <button 
+                    onClick={() => {
+                      addToCart(selectedProductDetails);
+                      setSelectedProductDetails(null);
+                    }}
+                    className="flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs uppercase tracking-wider py-3.5 rounded-xl transition-all shadow-md active:scale-95 cursor-pointer border-none"
+                  >
+                    <ShoppingCart className="w-4 h-4" />
+                    Añadir Lista
+                  </button>
+                  <a 
+                    href={`https://wa.me/51925981741?text=${encodeURIComponent(
+                      `Hola DELLCOM SAC, deseo solicitar información y cotización inmediata para el producto: *${selectedProductDetails.nombre}* (Precio aprox: S/ ${Number(selectedProductDetails.precio).toFixed(2)})`
+                    )}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-2 bg-primary hover:bg-primary/95 text-white font-bold text-xs uppercase tracking-wider py-3.5 rounded-xl transition-all shadow-md shadow-primary/10 active:scale-95 cursor-pointer text-center no-underline border-none"
+                  >
+                    <MessageCircle className="w-4 h-4" />
+                    Cotizar Ya
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
 
       {/* Reusable Clean Footer */}
       <CleanFooter />

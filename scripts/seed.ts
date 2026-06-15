@@ -4,7 +4,7 @@ import bcrypt from "bcryptjs";
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log("🧹 Limpiando base de datos anterior...");
+  console.log("[LIMPIEZA] Limpiando base de datos anterior...");
   // Clear tables in reverse order of dependencies
   await prisma.mensajeContacto.deleteMany({});
   await prisma.trabajoRealizado.deleteMany({});
@@ -15,7 +15,7 @@ async function main() {
   await prisma.servicio.deleteMany({});
   await prisma.usuario.deleteMany({});
 
-  console.log("🌱 Iniciando siembra de datos (Seeding)...");
+  console.log("[INICIO] Iniciando siembra de datos (Seeding)...");
 
   // 1. Seed Default Admin User
   const contrasena = await bcrypt.hash("admin123", 10);
@@ -29,7 +29,7 @@ async function main() {
       activo: true,
     },
   });
-  console.log("✅ Usuario admin creado: admin / admin123");
+  console.log("[OK] Usuario admin creado: admin / admin123");
 
   // 2. Seed Real Services of ZEBRA & DELLCOM
   const serviciosList = [
@@ -78,13 +78,15 @@ async function main() {
     });
     serviciosMap[s.nombre] = created;
   }
-  console.log("✅ Servicios reales sembrados en la BD.");
+  console.log("[OK] Servicios reales sembrados en la BD.");
 
   // 3. Seed Real Categories
   const categoriasList = [
     "Ribbons y Tintas",
-    "Memorias y Discos Externos",
+    "Memorias y Discos",
     "Tarjetas ZEBRA",
+    "Redes y Conectividad",
+    "Periféricos y Accesorios",
     "Licencias de Software",
   ];
 
@@ -98,62 +100,134 @@ async function main() {
     });
     categoriasMap[nombreCat] = created;
   }
-  console.log("✅ Categorías reales sembradas en la BD.");
+  console.log("[OK] Categorías reales sembradas en la BD.");
 
   // 4. Seed Products
   const productos = [
     {
+      nombre: "Disco SSD Kingston A400 480GB SATA",
+      descripcion: "Unidad de estado sólido SATA III de 2.5 pulgadas. Increíble velocidad de lectura (hasta 500MB/s) y escritura (450MB/s) para repotenciar laptops y PCs de escritorio.",
+      precio: 180.00,
+      imagen_url: "/img/productos/ssd-480gb.jpg",
+      activo: true,
+      id_categoria: categoriasMap["Memorias y Discos"].id,
+    },
+    {
+      nombre: "Disco Duro Externo Adata HD330 1TB",
+      descripcion: "Disco duro externo resistente a impactos y caídas con carcasa de silicona amortiguadora. Conexión USB 3.2 rápida y cifrado seguro AES de 256 bits.",
+      precio: 245.00,
+      imagen_url: "/img/productos/disco-externo-1tb.jpg",
+      activo: true,
+      id_categoria: categoriasMap["Memorias y Discos"].id,
+    },
+    {
+      nombre: "Memoria RAM Kingston Valueram 8GB DDR4 3200MHz",
+      descripcion: "Memoria RAM DDR4 de alto rendimiento y bajo consumo energético. Ideal para repotenciar laptops y mejorar la capacidad multitarea.",
+      precio: 120.00,
+      imagen_url: "/img/productos/ram-8gb-ddr4.jpg",
+      activo: true,
+      id_categoria: categoriasMap["Memorias y Discos"].id,
+    },
+    {
+      nombre: "Memoria USB 3.2 Kingston Exodia 32GB",
+      descripcion: "Memoria USB portátil Kingston DataTraveler Exodia con conexión USB 3.2 Gen 1 rápida. Diseño práctico con capuchón protector y llavero colorido.",
+      precio: 29.00,
+      imagen_url: "/img/productos/memoria-usb-32gb.jpg",
+      activo: true,
+      id_categoria: categoriasMap["Memorias y Discos"].id,
+    },
+    {
+      nombre: "Cinta Ribbon Zebra YMCKO 800300-350LA",
+      descripcion: "Cinta ribbon de color original YMCKO de alto rendimiento para impresoras de tarjetas Zebra ZC100 y ZC300. Produce hasta 350 impresiones de alta definición.",
+      precio: 290.00,
+      imagen_url: "/img/productos/ribbon-zebra-800300-350la.jpg",
+      activo: true,
+      id_categoria: categoriasMap["Tarjetas ZEBRA"].id,
+    },
+    {
       nombre: "Ribbon de Cera Zebra 110x74",
-      descripcion: "Ribbon de cera de alta sensibilidad para impresoras industriales y de escritorio. Excelente calidad de impresión en etiquetas de papel.",
+      descripcion: "Rollo de cinta ribbon de cera de alta calidad para impresoras térmicas industriales y de escritorio. Transferencia térmica nítida en etiquetas de papel.",
       precio: 45.00,
       imagen_url: "/img/productos/ribbon-cera.jpg",
       activo: true,
       id_categoria: categoriasMap["Ribbons y Tintas"].id,
     },
     {
-      nombre: "Tinta Original HP GT53 Negra",
-      descripcion: "Tinta original HP de alta capacidad para impresoras de tanque de tinta. Rendimiento de hasta 6000 páginas en color negro intenso.",
-      precio: 39.00,
+      nombre: "Tinta HP 664 Negra Original",
+      descripcion: "Cartucho de tinta negra original HP 664. Diseñado para imprimir con calidad profesional constante, evitando impresiones borrosas o fallas.",
+      precio: 65.00,
       imagen_url: "/img/productos/tinta-hp-664.jpg",
       activo: true,
       id_categoria: categoriasMap["Ribbons y Tintas"].id,
     },
     {
-      nombre: "Disco Externo 2TB Toshiba",
-      descripcion: "Disco duro portátil externo Toshiba Canvio Basics USB 3.0 para copias de seguridad de alta velocidad y almacenamiento de archivos.",
-      precio: 289.00,
-      imagen_url: "/img/productos/disco-externo-1tb.jpg",
+      nombre: "Etiquetas Térmicas Directas 102x152mm",
+      descripcion: "Rollo de etiquetas térmicas autoadhesivas de alta adherencia. Ideales para despacho de mercadería, Courier, y rotulado de cajas (500 etiquetas).",
+      precio: 45.00,
+      imagen_url: "/img/productos/etiquetas-termicas.jpg",
       activo: true,
-      id_categoria: categoriasMap["Memorias y Discos Externos"].id,
+      id_categoria: categoriasMap["Ribbons y Tintas"].id,
     },
     {
-      nombre: "Memoria RAM DDR4 8GB Crucial Laptop",
-      descripcion: "Módulo de memoria RAM SODIMM DDR4 de 3200MHz para optimizar la velocidad y multitarea en computadoras portátiles.",
-      precio: 115.00,
-      imagen_url: "/img/productos/ram-8gb-ddr4.jpg",
-      activo: true,
-      id_categoria: categoriasMap["Memorias y Discos Externos"].id,
-    },
-    {
-      nombre: "Tarjeta de Limpieza Zebra",
-      descripcion: "Kit de tarjetas de limpieza con alcohol isopropílico para cabezales de impresión de tarjetas de identificación Zebra.",
+      nombre: "Router Inalámbrico TP-Link TL-WR840N N300",
+      descripcion: "Router de banda única de 2.4GHz a 300Mbps. Cuenta con 4 puertos LAN de 10/100Mbps y 2 antenas fijas de alto alcance. Modos router, repetidor y access point.",
       precio: 75.00,
-      imagen_url: "/img/productos/ribbon-zebra-800300-350la.jpg",
+      imagen_url: "/img/productos/router-tplink.jpg",
       activo: true,
-      id_categoria: categoriasMap["Tarjetas ZEBRA"].id,
+      id_categoria: categoriasMap["Redes y Conectividad"].id,
     },
     {
-      nombre: "Licencia Windows 11 Pro OEM",
-      descripcion: "Clave de producto de Windows 11 Profesional (OEM de 64 bits), activación de por vida para un único equipo nuevo.",
-      precio: 149.00,
+      nombre: "Cable de Red Cat6 UTP Dixon 100% Cobre (Caja 305m)",
+      descripcion: "Caja de cable UTP categoría 6 Dixon de cobre puro. Excelente rendimiento de transmisión Gigabit, conductor multifilar ideal para tendido estructurado.",
+      precio: 480.00,
+      imagen_url: "/img/productos/cable-cat6.jpg",
+      activo: true,
+      id_categoria: categoriasMap["Redes y Conectividad"].id,
+    },
+    {
+      nombre: "Adaptador USB 3.0 a Ethernet RJ45 Gigabit TP-Link",
+      descripcion: "Adaptador de red portátil USB a RJ45 hembra. Proporciona conectividad a internet de alta velocidad de hasta 1000Mbps para laptops sin puerto ethernet.",
+      precio: 65.00,
+      imagen_url: "/img/productos/adaptador-usb-ethernet.jpg",
+      activo: true,
+      id_categoria: categoriasMap["Redes y Conectividad"].id,
+    },
+    {
+      nombre: "Mouse Inalámbrico Logitech M170",
+      descripcion: "Mouse inalámbrico de 2.4GHz ergonómico y ambidiestro. Receptor USB plug and play con alcance de hasta 10 metros y batería de larga duración.",
+      precio: 45.00,
+      imagen_url: "/img/productos/mouse-logitech.jpg",
+      activo: true,
+      id_categoria: categoriasMap["Periféricos y Accesorios"].id,
+    },
+    {
+      nombre: "Teclado Logitech K120 USB",
+      descripcion: "Teclado cableado estándar USB resistente a salpicaduras. Teclas silenciosas, perfil plano y patas ajustables para una escritura cómoda.",
+      precio: 38.00,
+      imagen_url: "/img/productos/teclado-logitech.jpg",
+      activo: true,
+      id_categoria: categoriasMap["Periféricos y Accesorios"].id,
+    },
+    {
+      nombre: "Mousepad Ergonómico con Apoya Muñeca de Gel",
+      descripcion: "Mousepad con diseño ergonómico de base antideslizante. Relleno de gel suave que reduce la tensión en la muñeca durante largas jornadas.",
+      precio: 25.00,
+      imagen_url: "/img/productos/mousepad.jpg",
+      activo: true,
+      id_categoria: categoriasMap["Periféricos y Accesorios"].id,
+    },
+    {
+      nombre: "Licencia Windows 11 Pro Retail 64-bit",
+      descripcion: "Clave de activación digital original Retail de Windows 11 Professional. Activación permanente en un equipo, vinculable a cuenta Microsoft.",
+      precio: 120.00,
       imagen_url: "/img/productos/licencias_software.png",
       activo: true,
       id_categoria: categoriasMap["Licencias de Software"].id,
     },
     {
-      nombre: "Licencia Office 2021 Home & Business",
-      descripcion: "Licencia digital perpetua de Microsoft Office 2021 vinculada a cuenta de correo. Incluye Word, Excel, PowerPoint y Outlook.",
-      precio: 349.00,
+      nombre: "Licencia Office 2021 Professional Plus",
+      descripcion: "Clave digital original de activación de la suite Office 2021 Professional Plus. Incluye Word, Excel, PowerPoint y Outlook. Licencia permanente.",
+      precio: 280.00,
       imagen_url: "/img/productos/licencias_software.png",
       activo: true,
       id_categoria: categoriasMap["Licencias de Software"].id,
@@ -165,7 +239,7 @@ async function main() {
       data: p,
     });
   }
-  console.log("✅ Productos reales sembrados en la BD.");
+  console.log("[OK] Productos reales sembrados en la BD.");
 
   // 5. Seed Portfolio / Trabajos Realizados
   const trabajos = [
@@ -212,7 +286,7 @@ async function main() {
       data: t,
     });
   }
-  console.log("✅ Portafolio de trabajos sembrado en la BD.");
+  console.log("[OK] Portafolio de trabajos sembrado en la BD.");
 
   // 6. Seed Licencias (Para demostración del cron de expiración)
   const licencias = [
@@ -259,7 +333,7 @@ async function main() {
       data: l,
     });
   }
-  console.log("✅ Licencias de demostración sembradas en la BD.");
+  console.log("[OK] Licencias de demostración sembradas en la BD.");
 
   // 7. Seed Archivos Técnicos (Descargas)
   const archivos = [
@@ -291,7 +365,7 @@ async function main() {
       data: a,
     });
   }
-  console.log("✅ Archivos técnicos sembrados en la BD.");
+  console.log("[OK] Archivos técnicos sembrados en la BD.");
 
   // 8. Seed Mensaje de Contacto de demostración
   await prisma.mensajeContacto.create({
@@ -304,14 +378,14 @@ async function main() {
       leido: false,
     },
   });
-  console.log("✅ Mensaje de contacto de demostración sembrado.");
+  console.log("[OK] Mensaje de contacto de demostración sembrado.");
 
-  console.log("\n🚀 ¡Proceso de Seeding de DELLCOM finalizado con éxito!");
+  console.log("\n[EXITO] ¡Proceso de Seeding de DELLCOM finalizado con éxito!");
 }
 
 main()
   .catch((e) => {
-    console.error("❌ Error durante el Seeding:", e);
+    console.error("[ERROR] Error durante el Seeding:", e);
     process.exit(1);
   })
   .finally(() => prisma.$disconnect());

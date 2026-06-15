@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Globe, MapPin, Phone, Mail } from "lucide-react";
 
 function DellcomLogo({ className = "w-10 h-10" }: { className?: string }) {
   return (
@@ -49,7 +50,7 @@ export default function CleanFooter() {
               rel="noopener noreferrer" 
               className="w-10 h-10 rounded-full border border-slate-200 flex items-center justify-center text-on-surface-variant hover:text-primary hover:border-primary transition-all"
             >
-              <span className="material-symbols-outlined text-[20px]">public</span>
+              <Globe className="w-5 h-5" />
             </a>
           </div>
         </div>
@@ -83,18 +84,18 @@ export default function CleanFooter() {
           <h4 className="font-headline font-bold text-xs text-on-surface uppercase tracking-wider mb-6">Contacto</h4>
           <ul className="space-y-4">
             <li className="flex items-start gap-3">
-              <span className="material-symbols-outlined text-primary text-[20px]">location_on</span>
+              <MapPin className="text-primary w-5 h-5 shrink-0 mt-0.5" />
               <span className="text-sm text-on-surface-variant">Av. Santa Elvira, Mza. E, Lote 59, Urb. San Elías, Los Olivos, Lima.</span>
             </li>
             <li className="flex items-start gap-3">
-              <span className="material-symbols-outlined text-primary text-[20px]">call</span>
+              <Phone className="text-primary w-5 h-5 shrink-0 mt-0.5" />
               <div className="flex flex-col gap-0.5">
                 <span className="text-sm text-on-surface-variant">+51 925 981 741</span>
                 <span className="text-sm text-on-surface-variant">+51 922 452 929</span>
               </div>
             </li>
             <li className="flex items-center gap-3">
-              <span className="material-symbols-outlined text-primary text-[20px]">mail</span>
+              <Mail className="text-primary w-5 h-5 shrink-0" />
               <span className="text-sm text-on-surface-variant">soporte@dellcom.pe</span>
             </li>
           </ul>

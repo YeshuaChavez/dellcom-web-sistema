@@ -111,7 +111,7 @@ DELLCOM-WEB/
 ### 1. Portal Corporativo Publico (Frontend UX Premium)
 * **Pagina de Inicio (Hero & Bento Grid)**: Seccion de bienvenida cinemática con accesos a soporte instantaneo por WhatsApp y bento grid unificado 2-1 que expone la propuesta de valor.
 * **Servicios Corporativos (Filas Alternas)**: Visualizacion dinamica de los servicios (Soporte, Redes, Licenciamiento, Hardware) mediante layouts flexibles que alternan descripciones estructuradas y fotografias locales de alta calidad.
-* **Catalogo Virtual Activo y Carrito de Cotización**: Exposición de suministros y licencias con filtros por categoría y búsqueda en tiempo real. Incorpora un **Carrito de Cotización Dinámico** que almacena localmente los ítems seleccionados por el cliente (vía `localStorage`) y genera una solicitud de cotización consolidada enviada por WhatsApp en un solo mensaje formateado.
+* **Catalogo Virtual Activo y Carrito de Cotización**: Exposición de suministros y licencias con filtros por categoría y búsqueda en tiempo real. Incorpora un **Carrito de Cotización Dinámico** (vía `localStorage`) que envía las solicitudes formateadas a WhatsApp, y un modal de **"Vista Rápida" (Quick View)** de alto rendimiento implementado mediante React Portal para mejorar la tasa de conversión. El catálogo ha sido expandido y sincronizado completamente con la base de datos Railway a través de 6 categorías principales y 17 productos.
 * **Seccion de Descargas de Soporte**: Repositorio publico donde clientes y tecnicos pueden descargar drivers oficiales y manuales.
 * **Modulo de Soporte Remoto (/soporte)**: Interfaz de streaming cinemática con reproductor de video integrado para guias paso a paso de AnyDesk/RustDesk y consola interactiva de consulta de IDs de conexion.
 * **Formulario de Contacto Real (/contacto)**: Formulario estructurado con iconos vectoriales de Google Material Symbols. Valida datos en tiempo real y persiste las consultas directamente en la base de datos MySQL.
@@ -137,6 +137,7 @@ DELLCOM-WEB/
 * **Carga Fisica de Archivos (Hibrido AWS S3 / Local)**: Endpoint `/api/admin/upload` con logica de auto-deteccion. Si las variables de S3 estan en el archivo `.env`, envia el archivo de forma directa y asincrona al Bucket de AWS S3 mediante el SDK `@aws-sdk/client-s3`. Si no estan configuradas, escribe en el disco local (`public/uploads`) de forma transparente.
 * **Pruebas Automatizadas con Jest**: Suite de pruebas unitarias configurada con `ts-jest` en el directorio `__tests__/` para auditar la validez y consistencia del parseo de datos.
 * **Pipeline de Integracion Continua (CI)**: Flujo de trabajo automatizado en GitHub Actions (`.github/workflows/nextjs.yml`) ejecutado en cada push a main/master para instalar dependencias, auditar linter, correr tests unitarios, compilar tipos y validar el build final de Next.js.
+* **Estandarizacion de Codigo Limpio (Sin Emojis)**: Toda la base de código y scripts de base de datos (`seed.ts`, etc.) se mantienen libres de caracteres emoji crudos. Esto garantiza la máxima portabilidad, evita problemas de codificación de caracteres en consolas Windows, y asegura salidas limpias en producción.
 
 ---
 

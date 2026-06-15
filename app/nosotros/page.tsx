@@ -55,9 +55,9 @@ export default function NosotrosPage() {
             <div className="relative group scroll-reveal">
               <div className="absolute -inset-4 bg-slate-50 border border-slate-100 rounded-3xl transition-all group-hover:bg-slate-100/70" />
               <img 
-                alt="Sede DELLCOM SAC" 
+                alt="Sede Principal DELLCOM SAC" 
                 className="relative rounded-3xl shadow-2xl w-full h-[500px] object-cover transition-transform duration-700 hover:scale-[1.01]" 
-                src="/img/portafolio/WhatsApp Image 2026-06-14 at 9.36.54 PM.jpeg" 
+                src="/img/servicios/tienda_front.jpg" 
               />
             </div>
             

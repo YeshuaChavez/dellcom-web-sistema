@@ -193,13 +193,13 @@ export default async function Home() {
               <HomeHeroSearch />
             </div>
             
-            {/* Right Media (Real storefront/showroom photo) */}
+            {/* Right Media (Real showroom/counter photo) */}
             <div className="relative flex justify-center items-center">
               <div className="absolute inset-0 bg-primary/5 rounded-full blur-[100px] scale-75"></div>
               <img 
-                alt="Local Principal de DELLCOM SAC" 
+                alt="Sede DELLCOM SAC Counter" 
                 className="relative z-10 w-full max-w-[500px] aspect-[4/3] object-cover rounded-3xl drop-shadow-2xl animate-float" 
-                src="/img/servicios/tienda_front.jpg"
+                src="/img/portafolio/WhatsApp Image 2026-06-14 at 9.36.54 PM.jpeg"
               />
             </div>
           </div>

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Menu, X } from "lucide-react";
 
 function DellcomLogo({ className = "w-10 h-10" }: { className?: string }) {
   return (
@@ -95,11 +96,13 @@ export default function StatusHeader() {
         <div className="flex items-center gap-4 md:hidden">
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="text-on-surface hover:text-primary transition-colors focus:outline-none"
+            className="text-on-surface hover:text-primary transition-colors focus:outline-none cursor-pointer"
           >
-            <span className="material-symbols-outlined text-3xl">
-              {mobileMenuOpen ? "close" : "menu"}
-            </span>
+            {mobileMenuOpen ? (
+              <X className="w-7 h-7" />
+            ) : (
+              <Menu className="w-7 h-7" />
+            )}
           </button>
         </div>
       </div>
