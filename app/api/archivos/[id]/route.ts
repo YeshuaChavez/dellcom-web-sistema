@@ -2,6 +2,14 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { z } from "zod";
+
+const ArchivoUpdateSchema = z.object({
+  nombre: z.string().min(1, "El nombre del archivo es requerido").optional(),
+  tipo: z.enum(["programa", "driver", "excel", "link"]).optional(),
+  url_archivo: z.string().min(1, "La URL del archivo es requerida").optional(),
+  descripcion: z.string().nullable().optional(),
+});
 
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const session = await getServerSession(authOptions);
@@ -9,9 +17,14 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 
   const { id } = await params;
   const body = await req.json();
+  const result = ArchivoUpdateSchema.safeParse(body);
+  if (!result.success) {
+    return NextResponse.json({ errors: result.error.flatten().fieldErrors }, { status: 400 });
+  }
+
   const archivo = await prisma.archivoTecnico.update({
     where: { id: Number(id) },
-    data: body,
+    data: result.data,
   });
   return NextResponse.json(archivo);
 }
