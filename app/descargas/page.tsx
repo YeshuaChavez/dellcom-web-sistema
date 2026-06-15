@@ -1,3 +1,10 @@
+/**
+ * Página de descargas: /descargas
+ * Muestra el repositorio de archivos técnicos (drivers, programas, Excel, links).
+ * Carga los archivos desde /api/archivos y usa FALLBACK_ARCHIVOS si la API falla.
+ * Permite filtrar por tipo (Todos/Programa/Driver/Excel/Link) y buscar por nombre.
+ * Los archivos de tipo "link" abren en nueva pestaña; los demás descargan directamente.
+ */
 "use client";
 
 import { useState, useEffect } from "react";

@@ -1,3 +1,9 @@
+/**
+ * Página corporativa "Nosotros": /nosotros
+ * Server Component estático (sin llamadas a DB). Describe la historia,
+ * equipo, valores y diferenciadores de DELLCOM SAC.
+ * Incluye una línea de tiempo de hitos y tarjetas del equipo técnico.
+ */
 import Link from "next/link";
 import StatusHeader from "../components/StatusHeader";
 import CleanFooter from "../components/CleanFooter";

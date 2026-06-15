@@ -1,3 +1,13 @@
+/**
+ * Galería de portfolio con filtrado por categoría y lightbox.
+ * Funcionalidades principales:
+ *  - Pestañas de categoría derivadas dinámicamente de los servicios de cada trabajo.
+ *  - Paginación progresiva: muestra 6 trabajos y permite cargar más.
+ *  - Lightbox con carrusel de imágenes (soporta múltiples imágenes en el campo
+ *    descripcion separadas por "||" y "," → "texto del trabajo||url1,url2,url3").
+ *  - El modal se monta con createPortal en document.body para evitar problemas
+ *    de z-index y que el estado `mounted` previene la hidratación SSR del portal.
+ */
 "use client";
 
 import { useState, useMemo, useEffect } from "react";

@@ -1,3 +1,8 @@
+/**
+ * Layout de la sección de descargas (/descargas).
+ * Define los metadatos SEO para la página de repositorio de archivos técnicos
+ * y la guía de descarga de AnyDesk/RustDesk.
+ */
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {

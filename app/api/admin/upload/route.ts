@@ -1,3 +1,12 @@
+/**
+ * API Route: /api/admin/upload
+ * Sube un archivo enviado como multipart/form-data (campo "file").
+ * Estrategia dual:
+ *   - Si AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY y AWS_BUCKET_NAME están configurados
+ *     → sube a S3 y devuelve la URL pública del objeto.
+ *   - Si no → guarda en /public/uploads/ del servidor como fallback local.
+ * Devuelve { success, url, name, size, storage: "s3" | "local" }.
+ */
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";

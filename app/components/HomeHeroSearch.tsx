@@ -1,3 +1,9 @@
+/**
+ * Buscador de averías en el hero de la home page.
+ * Filtra la lista de averías frecuentes por texto (problema o categoría).
+ * Al seleccionar un resultado redirige directamente a WhatsApp con un mensaje
+ * prefabricado para ese tipo de avería. Cierra el dropdown al hacer click fuera.
+ */
 "use client";
 
 import { useState, useRef, useEffect } from "react";

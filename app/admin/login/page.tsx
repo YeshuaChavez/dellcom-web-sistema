@@ -1,3 +1,9 @@
+/**
+ * Página de login del panel de administración: /admin/login
+ * Usa signIn("credentials") de NextAuth con redirect:false para manejar
+ * errores sin recargar la página. En caso de éxito redirige al dashboard.
+ * Incluye video de fondo y el logo SVG de DELLCOM renderizado en línea.
+ */
 "use client";
 
 import { useState } from "react";

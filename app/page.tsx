@@ -1,3 +1,11 @@
+/**
+ * Página principal (Home) de DELLCOM SAC: /
+ * Es un Server Component: obtiene servicios y trabajos de la base de datos
+ * en el servidor y los pasa como props a los componentes cliente.
+ * Si la base de datos no responde, usa datos de fallback estáticos para
+ * garantizar que la landing page siempre esté disponible.
+ * Secciones: Hero, Servicios, Cotizador Express, Portfolio, CTA.
+ */
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import StatusHeader from "./components/StatusHeader";

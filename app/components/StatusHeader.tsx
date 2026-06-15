@@ -1,3 +1,9 @@
+/**
+ * Header de navegación principal (fijo en la parte superior).
+ * Muestra el logo, los links de navegación y el botón "Soporte AnyDesk".
+ * En móvil colapsa a un menú hamburguesa con animación.
+ * El link activo se detecta con usePathname() y se resalta visualmente.
+ */
 "use client";
 
 import { useState } from "react";

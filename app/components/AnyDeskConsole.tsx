@@ -1,3 +1,9 @@
+/**
+ * Consola de conexión de soporte remoto.
+ * Permite al cliente elegir entre AnyDesk o RustDesk, ingresar su código de 9 dígitos
+ * y enviarlo por WhatsApp con un mensaje prefabricado al técnico de DELLCOM.
+ * El código se auto-formatea como 000-000-000 al escribir.
+ */
 "use client";
 
 import { useState } from "react";

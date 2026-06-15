@@ -1,3 +1,8 @@
+/**
+ * Layout de la sección de contacto (/contacto).
+ * Define los metadatos SEO. Pasa los children sin envolver en contenedores
+ * adicionales para que la página controle su propia estructura.
+ */
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {

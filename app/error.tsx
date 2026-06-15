@@ -1,3 +1,10 @@
+/**
+ * Error boundary global de Next.js App Router.
+ * Captura errores de renderizado en el árbol de componentes y muestra esta UI.
+ * Debe ser "use client" — Next.js lo requiere para los error boundaries.
+ * `error.digest` es un identificador único generado por Next.js para rastrear
+ * el error en los logs del servidor sin exponer el stack trace al cliente.
+ */
 "use client";
 
 import { useEffect } from "react";

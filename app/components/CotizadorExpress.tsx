@@ -1,3 +1,10 @@
+/**
+ * Cotizador Express de servicios técnicos (3 pasos).
+ * Calcula un rango de precio estimado multiplicando:
+ *   precio_base_del_equipo × multiplicador_de_falla × multiplicador_de_urgencia
+ * Al finalizar, genera un mensaje de WhatsApp con el resumen de la cotización.
+ * Los rangos son orientativos; el diagnóstico final se determina en taller.
+ */
 "use client";
 
 import { useState } from "react";

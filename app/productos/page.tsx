@@ -1,3 +1,13 @@
+/**
+ * Página del catálogo de productos: /productos
+ * Carga los productos desde la API (/api/productos) en el cliente.
+ * Funcionalidades:
+ *  - Búsqueda por nombre en tiempo real.
+ *  - Filtrado por categoría con pestañas.
+ *  - Carrito de compras local (estado React) con modal de checkout.
+ *  - Lightbox de detalle de producto con botón de cotizar por WhatsApp.
+ *  - Componente ProductImage con fallback por ícono según categoría.
+ */
 "use client";
 
 import { useState, useEffect } from "react";
