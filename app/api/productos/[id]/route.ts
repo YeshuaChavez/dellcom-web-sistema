@@ -1,9 +1,17 @@
+/**
+ * API Route: /api/productos/[id]
+ * Operaciones sobre un producto específico por su ID.
+ * GET    — obtiene el detalle del producto (público)
+ * PUT    — actualiza los campos enviados (requiere sesión activa)
+ * DELETE — desactiva el producto (soft delete, requiere sesión activa)
+ */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { z } from "zod";
 
+// Todos los campos son opcionales para permitir actualizaciones parciales
 const ProductoUpdateSchema = z.object({
   nombre: z.string().min(1, "El nombre del producto es requerido").optional(),
   precio: z.number({ invalid_type_error: "El precio debe ser un número" }).positive().optional(),
@@ -13,6 +21,7 @@ const ProductoUpdateSchema = z.object({
   activo: z.boolean().optional(),
 });
 
+// Devuelve el producto con su categoría incluida
 export async function GET(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const producto = await prisma.producto.findUnique({
@@ -23,6 +32,7 @@ export async function GET(_: NextRequest, { params }: { params: Promise<{ id: st
   return NextResponse.json(producto);
 }
 
+// Actualiza solo los campos enviados en el body
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
@@ -41,6 +51,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   return NextResponse.json(producto);
 }
 
+// Soft delete: marca el producto como inactivo en vez de borrarlo
 export async function DELETE(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json({ error: "No autorizado" }, { status: 401 });

@@ -1,3 +1,8 @@
+/**
+ * Configuración de NextAuth.js para la autenticación del panel DELLCOM.
+ * Estrategia: JWT (sin base de datos de sesiones) con CredentialsProvider.
+ * Roles soportados: "admin" | "tecnico" | "vendedor"
+ */
 import { AuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { prisma } from "@/lib/prisma";
@@ -12,6 +17,7 @@ export const authOptions: AuthOptions = {
         contrasena: { label: "Contraseña", type: "password" },
       },
       async authorize(credentials) {
+        // Rechaza inmediatamente si faltan campos
         if (!credentials?.usuario || !credentials?.contrasena) {
           return null;
         }
@@ -21,16 +27,19 @@ export const authOptions: AuthOptions = {
             where: { usuario: credentials.usuario },
           });
 
+          // Verifica que el usuario exista y esté activo
           if (!user || !user.activo) {
             return null;
           }
 
+          // Compara la contraseña enviada con el hash almacenado (bcrypt)
           const valid = await bcrypt.compare(credentials.contrasena, user.contrasena);
 
           if (!valid) {
             return null;
           }
 
+          // Devuelve los datos que se guardarán en el token JWT
           return {
             id: String(user.id),
             name: user.nombre,
@@ -44,17 +53,21 @@ export const authOptions: AuthOptions = {
       },
     }),
   ],
+  // Usa JWT en lugar de sesiones en base de datos (sin tabla de sesiones)
   session: { strategy: "jwt" },
   callbacks: {
+    // Agrega el rol del usuario al token JWT al hacer login
     async jwt({ token, user }) {
       if (user) token.role = (user as any).role;
       return token;
     },
+    // Expone el rol del token en el objeto session del cliente
     async session({ session, token }) {
       if (session.user) (session.user as any).role = token.role;
       return session;
     },
   },
+  // Redirige a esta página cuando se requiere autenticación
   pages: { signIn: "/admin/login" },
   secret: process.env.NEXTAUTH_SECRET,
 };

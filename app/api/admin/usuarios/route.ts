@@ -1,3 +1,11 @@
+/**
+ * API Route: /api/admin/usuarios  (solo admin)
+ * CRUD completo de usuarios del panel de administración.
+ * GET   — lista todos los usuarios (sin el campo contrasena)
+ * POST  — crea un usuario nuevo con contraseña hasheada
+ * PUT   — edita datos de un usuario (contraseña opcional)
+ * PATCH — activa o desactiva un usuario (no se puede auto-desactivar)
+ */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
@@ -5,7 +13,7 @@ import { authOptions } from "@/lib/auth";
 import { z } from "zod";
 import bcrypt from "bcryptjs";
 
-// Validation Schemas
+// Esquema para crear un usuario nuevo (contraseña obligatoria)
 const CreateUserSchema = z.object({
   nombre: z.string().min(3, "El nombre debe tener al menos 3 caracteres"),
   usuario: z.string().min(3, "El usuario debe tener al menos 3 caracteres"),
@@ -14,6 +22,7 @@ const CreateUserSchema = z.object({
   rol: z.enum(["admin", "tecnico", "vendedor"], { errorMap: () => ({ message: "Rol inválido" }) }),
 });
 
+// Esquema para editar un usuario (contraseña opcional: cadena vacía = sin cambios)
 const UpdateUserSchema = z.object({
   id: z.number({ required_error: "ID de usuario es requerido" }),
   nombre: z.string().min(3, "El nombre debe tener al menos 3 caracteres"),
@@ -23,21 +32,22 @@ const UpdateUserSchema = z.object({
   rol: z.enum(["admin", "tecnico", "vendedor"], { errorMap: () => ({ message: "Rol inválido" }) }),
 });
 
+// Esquema para activar/desactivar un usuario
 const ToggleStatusSchema = z.object({
   id: z.number({ required_error: "ID de usuario es requerido" }),
   activo: z.boolean({ required_error: "Estado activo es requerido" }),
 });
 
-// Helper validation for role
+// Helper reutilizable: verifica sesión y que el usuario sea admin
 async function checkAdminAuth() {
   const session = await getServerSession(authOptions);
   if (!session) return { authorized: false, errorResponse: NextResponse.json({ error: "No autorizado" }, { status: 401 }) };
-  
+
   const userRole = (session.user as any).role;
   if (userRole !== "admin") {
     return { authorized: false, errorResponse: NextResponse.json({ error: "Permisos insuficientes" }, { status: 403 }) };
   }
-  
+
   return { authorized: true };
 }
 

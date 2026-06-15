@@ -1,9 +1,16 @@
+/**
+ * API Route: /api/trabajos/[id]
+ * Operaciones sobre un trabajo del portfolio específico por su ID.
+ * PUT    — actualiza los campos enviados (requiere sesión activa)
+ * DELETE — elimina el trabajo permanentemente (requiere sesión activa)
+ */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { z } from "zod";
 
+// Todos los campos son opcionales para permitir actualizaciones parciales
 const TrabajoUpdateSchema = z.object({
   titulo: z.string().min(1, "El título del trabajo es requerido").optional(),
   descripcion: z.string().nullable().optional(),
@@ -11,6 +18,7 @@ const TrabajoUpdateSchema = z.object({
   id_servicio: z.number().int().positive().nullable().optional(),
 });
 
+// Actualiza solo los campos enviados en el body
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
@@ -29,6 +37,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   return NextResponse.json(trabajo);
 }
 
+// Elimina el trabajo de forma permanente (borrado físico)
 export async function DELETE(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
