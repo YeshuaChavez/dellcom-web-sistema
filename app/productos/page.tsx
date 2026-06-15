@@ -539,19 +539,18 @@ export default function ProductosPage() {
 
       <main className="pt-16">
         {/* Asymmetric Header Banner */}
-        <section className="relative py-20 bg-slate-900 text-white overflow-hidden border-b border-slate-800">
-          <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#fff 1px, transparent 1px)', backgroundSize: '20px 20px' }} />
-          <div className="absolute -top-40 -right-40 w-96 h-96 bg-primary/20 rounded-full blur-[120px] pointer-events-none" />
-          <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-blue-500/10 rounded-full blur-[120px] pointer-events-none" />
+        <section className="relative py-16 bg-slate-50/50 overflow-hidden border-b border-slate-100">
+          <div className="absolute inset-0 opacity-[0.02] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#000 1px, transparent 1px)', backgroundSize: '16px 16px' }} />
+          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[100px] pointer-events-none" />
           
           <div className="relative px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto w-full text-center z-10 scroll-reveal">
-            <span className="inline-block py-1 px-3.5 mb-4 bg-primary/20 border border-primary/30 text-primary font-bold text-[10px] rounded-full uppercase tracking-widest">
+            <span className="inline-block py-1 px-3.5 mb-4 bg-primary/10 border border-primary/15 text-primary font-bold text-[10px] rounded-full uppercase tracking-widest">
               Catálogo Virtual Oficial 2026
             </span>
-            <h1 className="font-headline text-3xl md:text-5xl font-black text-white leading-tight tracking-tight">
+            <h1 className="font-headline text-3xl md:text-5xl font-black text-on-surface leading-tight tracking-tight">
               Nuestro <span className="text-primary">Catálogo</span>
             </h1>
-            <p className="text-xs md:text-sm text-slate-300 max-w-xl mx-auto mt-3 leading-relaxed font-semibold">
+            <p className="text-xs md:text-sm text-on-surface-variant max-w-xl mx-auto mt-2 leading-relaxed font-semibold">
               Filtra y cotiza suministros originales Zebra, repuestos de hardware premium, componentes de microelectrónica y licenciamiento oficial.
             </p>
           </div>

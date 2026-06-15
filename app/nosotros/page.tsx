@@ -8,6 +8,7 @@ import Link from "next/link";
 import StatusHeader from "../components/StatusHeader";
 import CleanFooter from "../components/CleanFooter";
 import ScrollRevealObserver from "../components/ScrollRevealObserver";
+import CounterStats from "../components/CounterStats";
 
 export const metadata = {
   title: "Nosotros — DELLCOM SAC | Ingeniería IT en Los Olivos, Lima",
@@ -41,7 +42,6 @@ export default function NosotrosPage() {
           <div className="absolute inset-0 tech-pattern pointer-events-none" />
           <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[100px] pointer-events-none" />
 
-          
           <div className="relative max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop text-center z-10 scroll-reveal">
             <span className="inline-block py-1 px-3.5 mb-4 bg-slate-100 border border-slate-200/80 text-slate-700 font-bold text-[10px] rounded-full uppercase tracking-widest">
               Nuestra Historia
@@ -56,37 +56,80 @@ export default function NosotrosPage() {
         </section>
 
         {/* Narrative & Laboratory Showcase */}
-        <section className="py-24 bg-white">
+        <section className="py-24 bg-white overflow-hidden">
           <div className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-            <div className="relative group scroll-reveal">
-              <div className="absolute -inset-4 bg-slate-50 border border-slate-100 rounded-3xl transition-all group-hover:bg-slate-100/70" />
-              <img 
-                alt="Sede Principal DELLCOM SAC" 
-                className="relative rounded-3xl shadow-2xl w-full h-[500px] object-cover transition-transform duration-700 hover:scale-[1.01]" 
-                src="/img/servicios/tienda_front.jpg" 
+            
+            {/* Redesigned organic image showcase layout matching the HubSpot inspiration */}
+            <div className="relative w-full max-w-[480px] mx-auto aspect-[4/5] group scroll-reveal order-last lg:order-first">
+              {/* Decorative background blob */}
+              <div 
+                className="absolute inset-0 bg-primary/5 transform -rotate-6 scale-105 transition-transform duration-700 group-hover:rotate-0" 
+                style={{ borderRadius: "40% 60% 70% 30% / 40% 50% 60% 50%" }}
               />
+              
+              {/* Image container with organic blob shape */}
+              <div 
+                className="absolute inset-0 overflow-hidden shadow-2xl border-4 border-white"
+                style={{ borderRadius: "60% 40% 30% 70% / 60% 30% 70% 40%" }}
+              >
+                <img 
+                  alt="Sede Principal DELLCOM SAC" 
+                  className="w-full h-full object-cover transition-transform duration-700 hover:scale-105" 
+                  src="/img/servicios/tienda_front.jpg" 
+                />
+              </div>
+
+              {/* Floating Sede Central Badge */}
+              <div className="absolute -bottom-6 -left-6 bg-white/95 backdrop-blur-[2px] border border-slate-200/60 p-4 rounded-2xl shadow-xl flex items-center gap-3 transform -rotate-3 hover:rotate-0 transition-transform duration-300">
+                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+                  <span className="material-symbols-outlined text-xl">location_on</span>
+                </div>
+                <div>
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block leading-none">Sede Central</span>
+                  <span className="text-xs font-black text-on-surface mt-1 block">Los Olivos, Lima</span>
+                </div>
+              </div>
+
+              {/* Floating 100% Certified Badge */}
+              <div className="absolute -top-6 -right-6 bg-white/95 backdrop-blur-[2px] border border-slate-200/60 py-3 px-4 rounded-2xl shadow-xl flex items-center gap-2.5 transform rotate-3 hover:rotate-0 transition-transform duration-300">
+                <span className="material-symbols-outlined text-primary text-lg">verified</span>
+                <span className="text-[10px] font-black uppercase tracking-wider text-on-surface">100% Certificado</span>
+              </div>
             </div>
             
-            <div className="scroll-reveal space-y-6" style={{ transitionDelay: "150ms" }}>
-              <h3 className="font-headline text-2xl md:text-3xl font-bold text-on-surface relative pb-3">
+            <div className="scroll-reveal space-y-8" style={{ transitionDelay: "150ms" }}>
+              <h3 className="font-headline text-2xl md:text-4xl font-black text-on-surface relative pb-3 leading-tight">
                 Trayectoria Orientada al <span className="text-primary font-bold">Futuro Digital</span>
                 <div className="absolute bottom-0 left-0 w-24 h-1 bg-primary rounded-full" />
               </h3>
-              <div className="space-y-6 text-sm md:text-base text-on-surface-variant leading-relaxed">
+              
+              <div className="space-y-6 text-sm md:text-base text-on-surface-variant leading-relaxed font-semibold">
                 <p>
                   Nacimos con una visión clara: elevar los estándares de soporte técnico y consultoría IT en el mercado nacional. Lo que comenzó como un taller especializado se transformó rápidamente en un centro neurálgico de ingeniería de precisión.
                 </p>
                 <p>
                   Hoy, DELLCOM SAC es reconocido como un aliado estratégico líder en infraestructura crítica. Nuestra evolución ha sido impulsada por una obsesión constante con el detalle técnico y un compromiso inquebrantable con la continuidad operativa de nuestros socios corporativos.
                 </p>
+                
+                {/* Re-aligned Foundation/Sede central values */}
                 <div className="pt-4 flex gap-4">
-                  <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200/50 flex-1">
-                    <span className="font-headline text-2xl font-bold text-primary block mb-1">2014</span>
-                    <span className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Fundación</span>
+                  <div className="p-5 bg-slate-50 border border-slate-200/50 rounded-2xl flex-1 flex items-center gap-4 hover:shadow-md hover:bg-white transition-all duration-300">
+                    <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                      <span className="material-symbols-outlined text-xl">event_available</span>
+                    </div>
+                    <div>
+                      <span className="font-headline text-xl font-black text-on-surface block leading-none">2014</span>
+                      <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mt-1 leading-none">Fundación</span>
+                    </div>
                   </div>
-                  <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200/50 flex-1">
-                    <span className="font-headline text-2xl font-bold text-primary block mb-1">Lima</span>
-                    <span className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Sede Central</span>
+                  <div className="p-5 bg-slate-50 border border-slate-200/50 rounded-2xl flex-1 flex items-center gap-4 hover:shadow-md hover:bg-white transition-all duration-300">
+                    <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                      <span className="material-symbols-outlined text-xl">domain</span>
+                    </div>
+                    <div>
+                      <span className="font-headline text-xl font-black text-on-surface block leading-none">Lima</span>
+                      <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mt-1 leading-none">Sede Central</span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -98,23 +141,25 @@ export default function NosotrosPage() {
         <section className="py-24 bg-slate-50 border-t border-slate-100">
           <div className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Mission Card */}
-            <div className="glass-card p-12 rounded-3xl flex flex-col gap-6 group hover:-translate-y-2 transition-all duration-300 scroll-reveal">
-              <div className="w-16 h-16 bg-slate-50 border border-slate-200/50 rounded-2xl flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white group-hover:border-primary transition-all duration-300">
-                <span className="material-symbols-outlined text-[32px]">verified_user</span>
+            <div className="bg-white border border-slate-200/80 p-10 rounded-[2.5rem] flex flex-col gap-6 group hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 scroll-reveal relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-2xl pointer-events-none group-hover:bg-primary/10 transition-colors" />
+              <div className="w-14 h-14 bg-primary/10 text-primary rounded-2xl flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all duration-500 shadow-sm">
+                <span className="material-symbols-outlined text-[28px]">verified_user</span>
               </div>
-              <h4 className="font-headline text-2xl font-bold text-on-surface">Nuestra Misión</h4>
-              <p className="text-sm md:text-base text-on-surface-variant leading-relaxed">
+              <h4 className="font-headline text-2xl font-extrabold text-on-surface">Nuestra Misión</h4>
+              <p className="text-sm md:text-base text-on-surface-variant leading-relaxed font-semibold">
                 Garantizar la continuidad operativa de nuestros clientes mediante la implementación de soluciones de infraestructura robustas y soporte técnico de alta precisión, minimizando riesgos y optimizando el rendimiento tecnológico.
               </p>
             </div>
             
             {/* Vision Card */}
-            <div className="glass-card p-12 rounded-3xl flex flex-col gap-6 group hover:-translate-y-2 transition-all duration-300 scroll-reveal" style={{ transitionDelay: "150ms" }}>
-              <div className="w-16 h-16 bg-slate-50 border border-slate-200/50 rounded-2xl flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white group-hover:border-primary transition-all duration-300">
-                <span className="material-symbols-outlined text-[32px]">visibility</span>
+            <div className="bg-white border border-slate-200/80 p-10 rounded-[2.5rem] flex flex-col gap-6 group hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 scroll-reveal relative overflow-hidden" style={{ transitionDelay: "150ms" }}>
+              <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-2xl pointer-events-none group-hover:bg-primary/10 transition-colors" />
+              <div className="w-14 h-14 bg-primary/10 text-primary rounded-2xl flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all duration-500 shadow-sm">
+                <span className="material-symbols-outlined text-[28px]">visibility</span>
               </div>
-              <h4 className="font-headline text-2xl font-bold text-on-surface">Nuestra Visión</h4>
-              <p className="text-sm md:text-base text-on-surface-variant leading-relaxed">
+              <h4 className="font-headline text-2xl font-extrabold text-on-surface">Nuestra Visión</h4>
+              <p className="text-sm md:text-base text-on-surface-variant leading-relaxed font-semibold">
                 Ser el referente nacional en ingeniería de precisión IT, liderando la transformación tecnológica con estándares internacionales de calidad y siendo reconocidos como el socio más confiable para la infraestructura crítica en el Perú.
               </p>
             </div>
@@ -135,7 +180,7 @@ export default function NosotrosPage() {
               </p>
             </div>
             
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-gutter">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {[
                 { icon: "handshake", title: "Compromiso", desc: "Dedicación total al éxito y tranquilidad de nuestros clientes." },
                 { icon: "biotech", title: "Precisión", desc: "Exactitud técnica rigurosa en cada diagnóstico y reparación." },
@@ -144,21 +189,21 @@ export default function NosotrosPage() {
               ].map((item, index) => (
                 <div 
                   key={item.title} 
-                  className="text-center p-8 border-b-2 border-transparent hover:border-primary transition-all duration-300 scroll-reveal"
+                  className="bg-slate-50/50 border border-slate-100 hover:border-slate-200 hover:bg-white hover:shadow-lg rounded-[2rem] p-8 transition-all duration-300 scroll-reveal group"
                   style={{ transitionDelay: `${index * 100}ms` }}
                 >
-                  <div className="w-16 h-16 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center mx-auto mb-6 text-primary hover:scale-110 hover:bg-primary hover:text-white hover:border-primary transition-all duration-300 shadow-sm">
-                    <span className="material-symbols-outlined text-4xl">{item.icon}</span>
+                  <div className="w-14 h-14 rounded-2xl bg-white border border-slate-200/50 flex items-center justify-center mb-6 text-primary group-hover:bg-primary group-hover:text-white transition-all duration-500 shadow-sm">
+                    <span className="material-symbols-outlined text-2xl">{item.icon}</span>
                   </div>
                   <h5 className="font-headline text-lg font-bold text-on-surface mb-2">{item.title}</h5>
-                  <p className="text-xs text-on-surface-variant leading-relaxed">{item.desc}</p>
+                  <p className="text-xs text-on-surface-variant leading-relaxed font-semibold">{item.desc}</p>
                 </div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* Stats Section with Crimson Background (Highlight metrics panel) */}
+        {/* Stats Section with Crimson Background & Client Counter Animation */}
         <section className="py-24 relative bg-primary text-white overflow-hidden scroll-reveal">
           <div className="absolute inset-0 opacity-10 mix-blend-overlay pointer-events-none">
             <div className="tech-pattern h-full w-full" />
@@ -171,20 +216,7 @@ export default function NosotrosPage() {
                   Resultados tangibles que respaldan nuestra autoridad técnica y capacidad operativa en todo el país.
                 </p>
               </div>
-              <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div className="p-8 bg-white/10 backdrop-blur-sm rounded-2xl border border-white/10 hover:bg-white/15 transition-all">
-                  <span className="font-headline text-5xl font-extrabold block mb-2 text-white">10+</span>
-                  <span className="text-xs font-bold uppercase tracking-widest text-white/80">Años de Experiencia</span>
-                </div>
-                <div className="p-8 bg-white/10 backdrop-blur-sm rounded-2xl border border-white/10 hover:bg-white/15 transition-all">
-                  <span className="font-headline text-5xl font-extrabold block mb-2 text-white">15k+</span>
-                  <span className="text-xs font-bold uppercase tracking-widest text-white/80">Reparaciones Exitosas</span>
-                </div>
-                <div className="p-8 bg-white/10 backdrop-blur-sm rounded-2xl border border-white/10 hover:bg-white/15 transition-all">
-                  <span className="font-headline text-5xl font-extrabold block mb-2 text-white">99%</span>
-                  <span className="text-xs font-bold uppercase tracking-widest text-white/80">Satisfacción Cliente</span>
-                </div>
-              </div>
+              <CounterStats />
             </div>
           </div>
         </section>
