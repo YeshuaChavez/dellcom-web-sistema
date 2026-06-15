@@ -66,7 +66,7 @@ export default function NosotrosPage() {
               </div>
 
               {/* Floating Sede Central Badge */}
-              <div className="absolute -bottom-6 -left-6 bg-white/95 backdrop-blur-[2px] border border-slate-200/60 p-4 rounded-2xl shadow-xl flex items-center gap-3 transform -rotate-3 hover:rotate-0 transition-transform duration-300">
+              <div className="hidden sm:flex absolute -bottom-6 -left-6 bg-white/95 backdrop-blur-[2px] border border-slate-200/60 p-4 rounded-2xl shadow-xl items-center gap-3 transform -rotate-3 hover:rotate-0 transition-transform duration-300">
                 <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
                   <span className="material-symbols-outlined text-xl">location_on</span>
                 </div>
@@ -77,7 +77,7 @@ export default function NosotrosPage() {
               </div>
 
               {/* Floating 100% Certified Badge */}
-              <div className="absolute -top-6 -right-6 bg-white/95 backdrop-blur-[2px] border border-slate-200/60 py-3 px-4 rounded-2xl shadow-xl flex items-center gap-2.5 transform rotate-3 hover:rotate-0 transition-transform duration-300">
+              <div className="hidden sm:flex absolute -top-6 -right-6 bg-white/95 backdrop-blur-[2px] border border-slate-200/60 py-3 px-4 rounded-2xl shadow-xl items-center gap-2.5 transform rotate-3 hover:rotate-0 transition-transform duration-300">
                 <span className="material-symbols-outlined text-primary text-lg">verified</span>
                 <span className="text-[10px] font-black uppercase tracking-wider text-on-surface">100% Certificado</span>
               </div>
@@ -150,7 +150,7 @@ export default function NosotrosPage() {
                 </div>
 
                 {/* Overlapping badge */}
-                <div className="absolute -bottom-4 -right-4 bg-white/95 backdrop-blur-[2px] border border-slate-200/60 py-2.5 px-4 rounded-xl shadow-lg flex items-center gap-2 transform rotate-2 hover:rotate-0 transition-transform duration-300">
+                <div className="hidden sm:flex absolute -bottom-4 -right-4 bg-white/95 backdrop-blur-[2px] border border-slate-200/60 py-2.5 px-4 rounded-xl shadow-lg items-center gap-2 transform rotate-2 hover:rotate-0 transition-transform duration-300">
                   <span className="material-symbols-outlined text-primary text-base">verified_user</span>
                   <span className="text-[9px] font-black uppercase tracking-wider text-on-surface">Continuidad Operativa</span>
                 </div>
@@ -210,7 +210,7 @@ export default function NosotrosPage() {
                 </div>
 
                 {/* Overlapping badge */}
-                <div className="absolute -bottom-4 -left-4 bg-white/95 backdrop-blur-[2px] border border-slate-200/60 py-2.5 px-4 rounded-xl shadow-lg flex items-center gap-2 transform -rotate-2 hover:rotate-0 transition-transform duration-300">
+                <div className="hidden sm:flex absolute -bottom-4 -left-4 bg-white/95 backdrop-blur-[2px] border border-slate-200/60 py-2.5 px-4 rounded-xl shadow-lg items-center gap-2 transform -rotate-2 hover:rotate-0 transition-transform duration-300">
                   <span className="material-symbols-outlined text-primary text-base">visibility</span>
                   <span className="text-[9px] font-black uppercase tracking-wider text-on-surface">Liderazgo Tecnológico</span>
                 </div>
