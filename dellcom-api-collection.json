@@ -1,0 +1,218 @@
+{
+  "info": {
+    "name": "DELLCOM SAC - API Collection",
+    "description": "Colección de peticiones de API para el sistema de DELLCOM SAC. Incluye endpoints públicos y administrativos. Para probar las rutas protegidas administrativamente, se debe haber iniciado sesión en el navegador y que Postman comparta las cookies, o usar la variable de sesión correspondiente.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Endpoints Públicos",
+      "item": [
+        {
+          "name": "Obtener Productos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/productos",
+              "host": ["{{base_url}}"],
+              "path": ["api", "productos"]
+            },
+            "description": "Obtiene la lista completa de productos activos del catálogo."
+          }
+        },
+        {
+          "name": "Obtener Categorías",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/categorias",
+              "host": ["{{base_url}}"],
+              "path": ["api", "categorias"]
+            },
+            "description": "Obtiene las categorías activas del catálogo para los filtros."
+          }
+        },
+        {
+          "name": "Obtener Servicios",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/servicios",
+              "host": ["{{base_url}}"],
+              "path": ["api", "servicios"]
+            },
+            "description": "Obtiene la lista de servicios de ingeniería y soporte de DELLCOM."
+          }
+        },
+        {
+          "name": "Obtener Portafolio (Trabajos)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/trabajos",
+              "host": ["{{base_url}}"],
+              "path": ["api", "trabajos"]
+            },
+            "description": "Obtiene la lista de trabajos técnicos reales ejecutados por los técnicos."
+          }
+        },
+        {
+          "name": "Enviar Mensaje de Contacto",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Cliente Demo\",\n  \"correo\": \"cliente.demo@gmail.com\",\n  \"telefono\": \"987654321\",\n  \"asunto\": \"Cotización de Servicio\",\n  \"mensaje\": \"Hola, requiero soporte de red en mi local de Los Olivos.\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/contacto",
+              "host": ["{{base_url}}"],
+              "path": ["api", "contacto"]
+            },
+            "description": "Envía un mensaje de consulta que se almacenará en la base de datos para los administradores."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Endpoints Administrativos (Requieren Sesión)",
+      "item": [
+        {
+          "name": "Obtener Mensajes de Contacto",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/admin/contacto",
+              "host": ["{{base_url}}"],
+              "path": ["api", "admin", "contacto"]
+            },
+            "description": "Obtiene todos los mensajes de contacto enviados por los usuarios."
+          }
+        },
+        {
+          "name": "Marcar Mensaje como Leído",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"leido\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/admin/contacto/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "admin", "contacto", "1"]
+            },
+            "description": "Actualiza el estado de lectura de un mensaje específico."
+          }
+        },
+        {
+          "name": "Obtener Personal Técnico (CRUD)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/admin/usuarios",
+              "host": ["{{base_url}}"],
+              "path": ["api", "admin", "usuarios"]
+            },
+            "description": "Lista todo el personal técnico de la empresa (solo visible por administradores)."
+          }
+        },
+        {
+          "name": "Crear Nuevo Personal Técnico",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Juan Técnico\",\n  \"usuario\": \"juantecnico\",\n  \"email\": \"juan@dellcom.pe\",\n  \"contrasena\": \"tecnico123\",\n  \"rol\": \"tecnico\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/admin/usuarios",
+              "host": ["{{base_url}}"],
+              "path": ["api", "admin", "usuarios"]
+            },
+            "description": "Registra un nuevo usuario técnico en el sistema."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Automatización y Cron Jobs",
+      "item": [
+        {
+          "name": "Ejecutar Verificación de Licencias",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{cron_secret}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/cron/check-licencias",
+              "host": ["{{base_url}}"],
+              "path": ["api", "cron", "check-licencias"]
+            },
+            "description": "Trigger manual para ejecutar el cron job de verificación de vencimiento de licencias. Requiere enviar el token secreto configurado en el archivo .env."
+          }
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [""]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [""]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "cron_secret",
+      "value": "your-cron-secret-token",
+      "type": "string"
+    }
+  ]
+}
