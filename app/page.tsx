@@ -12,7 +12,7 @@ import StatusHeader from "./components/StatusHeader";
 import CleanFooter from "./components/CleanFooter";
 import HomeHeroSearch from "./components/HomeHeroSearch";
 import ScrollRevealObserver from "./components/ScrollRevealObserver";
-import PortfolioGallery from "./components/PortfolioGallery";
+import HomePortfolioBubblePreview from "./components/HomePortfolioBubblePreview";
 
 export const metadata = {
   title: "DELLCOM SAC | Tu centro de confianza",
@@ -313,7 +313,7 @@ export default async function Home() {
             </div>
 
             <div className="scroll-reveal">
-              <PortfolioGallery trabajos={trabajos} />
+              <HomePortfolioBubblePreview trabajos={trabajos} />
             </div>
           </div>
         </section>

@@ -10,6 +10,7 @@ import Link from "next/link";
 import StatusHeader from "../components/StatusHeader";
 import CleanFooter from "../components/CleanFooter";
 import ScrollRevealObserver from "../components/ScrollRevealObserver";
+import PortfolioGallery from "../components/PortfolioGallery";
 
 export const metadata = {
   title: "Servicios — DELLCOM SAC | Soporte de TI y Hardware en Lima Norte",
@@ -160,8 +161,57 @@ async function getServices() {
   ];
 }
 
+async function getTrabajos() {
+  try {
+    const dbTrabajos = await prisma.trabajoRealizado.findMany({
+      include: { servicio: true },
+      orderBy: { fecha: "desc" },
+    });
+    if (dbTrabajos && dbTrabajos.length > 0) {
+      return dbTrabajos.map(t => ({
+        id: t.id,
+        titulo: t.titulo,
+        descripcion: t.descripcion,
+        imagen_url: t.imagen_url,
+        fecha: t.fecha,
+        servicio: t.servicio ? { nombre: t.servicio.nombre } : null
+      }));
+    }
+  } catch (error) {
+    console.warn("Prisma DB connection failed for trabajos. Using static fallback.");
+  }
+
+  return [
+    {
+      id: 1,
+      titulo: "Mantenimiento Térmico y Reparación de Laptops",
+      descripcion: "Mantenimiento térmico preventivo y correctivo para laptops gaming y corporativas de alta gama. Extracción de acumulación de polvo extremo en turbinas, cambio de almohadillas térmicas (pads) secas, aplicación de pasta térmica de alta conductividad para reducir temperaturas de CPU y GPU, reemplazo de pantallas LED/IPS rotas, y repotenciación con discos SSD M.2 NVMe.",
+      imagen_url: "/img/portafolio/WhatsApp Image 2026-06-14 at 9.36.56 PM (1).jpeg",
+      fecha: new Date("2026-06-15T12:00:00Z"),
+      servicio: { nombre: "Reparación de Laptops e Impresoras" }
+    },
+    {
+      id: 2,
+      titulo: "Soporte y Reparación de Impresoras Epson y Zebra",
+      descripcion: "Diagnóstico y solución de encendido en impresoras Epson EcoTank CK57 MAIN mediante soldadura de transistores y fusible F1 quemados. Reparación de atascos continuos mediante cambio de engranajes de tracción y calibración de sensores ópticos. Configuración y purgado de sistemas continuos HP Smart Tank e integración inalámbrica en red local.",
+      imagen_url: "/img/portafolio/WhatsApp Image 2026-06-14 at 9.41.12 PM (2).jpeg",
+      fecha: new Date("2026-06-15T11:00:00Z"),
+      servicio: { nombre: "Reparación de Laptops e Impresoras" }
+    },
+    {
+      id: 3,
+      titulo: "Instalación de Cableado Estructurado Cat6 y Racks de Servidor",
+      descripcion: "Montaje y estructurado de cableado de red de datos Cat6 para oficinas. Peinado de cables, ponchado en patch panel, ordenamiento en gabinete rack de servidores, instalación de switches administrables y enrutadores MikroTik/Ubiquiti, y puesta en marcha de servidores NAS de almacenamiento local centralizado con políticas de backup automático.",
+      imagen_url: "/img/portafolio/WhatsApp Image 2026-06-14 at 9.41.12 PM (6).jpeg",
+      fecha: new Date("2026-06-15T09:00:00Z"),
+      servicio: { nombre: "Redes y Servidores" }
+    }
+  ];
+}
+
 export default async function ServiciosPage() {
   const servicios = await getServices();
+  const trabajos = await getTrabajos();
 
   return (
     <div className="selection:bg-primary/20 selection:text-primary min-h-screen bg-white">
@@ -258,6 +308,26 @@ export default async function ServiciosPage() {
                 </div>
               );
             })}
+          </div>
+        </section>
+
+        {/* Trabajos Realizados / Portafolio Section */}
+        <section className="py-24 px-margin-mobile md:px-margin-desktop bg-slate-50/50 border-t border-slate-100" id="portafolio">
+          <div className="max-w-container-max mx-auto">
+            <div className="scroll-reveal text-center mb-16 space-y-3">
+              <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider mb-2">
+                <span className="material-symbols-outlined text-[16px]">verified</span>
+                Garantía y Casos de Éxito
+              </div>
+              <h2 className="font-headline text-3xl md:text-4xl font-bold text-on-surface">Trabajos <span className="text-primary">Realizados</span></h2>
+              <p className="text-sm md:text-base text-on-surface-variant max-w-2xl mx-auto leading-relaxed font-semibold">
+                Explora el registro completo de nuestras reparaciones de hardware, instalaciones de redes y configuraciones corporativas.
+              </p>
+            </div>
+
+            <div className="scroll-reveal">
+              <PortfolioGallery trabajos={trabajos} />
+            </div>
           </div>
         </section>
       </main>
