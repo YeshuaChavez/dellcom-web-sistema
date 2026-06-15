@@ -1,11 +1,19 @@
+/**
+ * API Route: /api/archivos
+ * Repositorio de archivos técnicos: programas, drivers, plantillas Excel, links.
+ * GET  — lista todos los archivos con el nombre de quien los subió (requiere sesión)
+ * POST — registra un archivo nuevo (requiere sesión activa)
+ */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { z } from "zod";
 
+// Esquema Zod para crear un archivo técnico
 const ArchivoSchema = z.object({
   nombre: z.string().min(1, "El nombre del archivo es requerido"),
+  // Tipos válidos definidos en el modelo Prisma
   tipo: z.enum(["programa", "driver", "excel", "link"], {
     errorMap: () => ({ message: "Tipo inválido. Debe ser: programa, driver, excel o link" }),
   }),
@@ -13,6 +21,7 @@ const ArchivoSchema = z.object({
   descripcion: z.string().nullable().optional(),
 });
 
+// Devuelve los archivos ordenados por fecha de subida (más reciente primero)
 export async function GET() {
   const archivos = await prisma.archivoTecnico.findMany({
     include: { usuario: { select: { nombre: true } } },
@@ -21,10 +30,12 @@ export async function GET() {
   return NextResponse.json(archivos);
 }
 
+// Crea un archivo nuevo asignado al usuario autenticado
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session || !session.user?.email) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
 
+  // Busca el usuario para obtener su ID y asignarlo al registro
   const user = await prisma.usuario.findUnique({ where: { email: session.user.email } });
   if (!user) return NextResponse.json({ error: "Usuario no encontrado" }, { status: 404 });
 

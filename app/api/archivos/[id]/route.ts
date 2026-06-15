@@ -1,9 +1,16 @@
+/**
+ * API Route: /api/archivos/[id]
+ * Operaciones sobre un archivo técnico específico por su ID.
+ * PUT    — actualiza los campos enviados (requiere sesión activa)
+ * DELETE — elimina el registro permanentemente (requiere sesión activa)
+ */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { z } from "zod";
 
+// Todos los campos son opcionales para permitir actualizaciones parciales
 const ArchivoUpdateSchema = z.object({
   nombre: z.string().min(1, "El nombre del archivo es requerido").optional(),
   tipo: z.enum(["programa", "driver", "excel", "link"]).optional(),
@@ -11,6 +18,7 @@ const ArchivoUpdateSchema = z.object({
   descripcion: z.string().nullable().optional(),
 });
 
+// Actualiza los campos del archivo indicados en el body
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
@@ -29,6 +37,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   return NextResponse.json(archivo);
 }
 
+// Elimina el archivo de forma permanente (borrado físico)
 export async function DELETE(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json({ error: "No autorizado" }, { status: 401 });

@@ -1,14 +1,23 @@
+/**
+ * API Route: /api/admin/contacto
+ * Gestión de los mensajes recibidos desde el formulario de contacto público.
+ * GET    — lista todos los mensajes (del más reciente al más antiguo)
+ * PUT    — marca un mensaje como leído o no leído (body: { id, leido })
+ * DELETE — elimina un mensaje permanentemente (?id=<número> en la URL)
+ */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { z } from "zod";
 
+// Esquema Zod para cambiar el estado de lectura de un mensaje
 const UpdateReadSchema = z.object({
   id: z.number({ required_error: "ID de mensaje es requerido" }),
   leido: z.boolean({ required_error: "Estado leido es requerido" }),
 });
 
+// Devuelve todos los mensajes de contacto ordenados por fecha descendente
 export async function GET() {
   try {
     const session = await getServerSession(authOptions);
@@ -30,6 +39,7 @@ export async function GET() {
   }
 }
 
+// Actualiza el campo `leido` de un mensaje específico
 export async function PUT(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
@@ -39,7 +49,7 @@ export async function PUT(req: NextRequest) {
 
     const body = await req.json();
     const result = UpdateReadSchema.safeParse(body);
-    
+
     if (!result.success) {
       return NextResponse.json(
         { errors: result.error.flatten().fieldErrors },
@@ -64,6 +74,7 @@ export async function PUT(req: NextRequest) {
   }
 }
 
+// Elimina un mensaje de forma permanente usando el ID en el query string (?id=X)
 export async function DELETE(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);

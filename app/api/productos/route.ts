@@ -1,9 +1,16 @@
+/**
+ * API Route: /api/productos
+ * Catálogo de productos de la tienda DELLCOM.
+ * GET  — lista productos (públicamente activos, o todos con ?all=true para admin)
+ * POST — crea un producto nuevo (requiere sesión activa)
+ */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { z } from "zod";
 
+// Esquema Zod para crear un producto
 const ProductoSchema = z.object({
   nombre: z.string().min(1, "El nombre del producto es requerido"),
   precio: z.number({ invalid_type_error: "El precio debe ser un número" }).positive("El precio debe ser mayor a 0"),
@@ -13,6 +20,8 @@ const ProductoSchema = z.object({
   activo: z.boolean().default(true),
 });
 
+// ?all=true → devuelve activos e inactivos (uso admin)
+// Sin parámetro → solo productos activos (uso público)
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const showAll = searchParams.get("all") === "true";
@@ -25,6 +34,7 @@ export async function GET(req: NextRequest) {
   return NextResponse.json(productos);
 }
 
+// Crea un producto nuevo tras validar el cuerpo con Zod
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json({ error: "No autorizado" }, { status: 401 });

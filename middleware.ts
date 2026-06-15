@@ -1,3 +1,13 @@
+/**
+ * Middleware RBAC (Role-Based Access Control) de Next.js.
+ * Se ejecuta antes de cada request en las rutas del `matcher`.
+ *
+ * Reglas de acceso:
+ * - GET de productos/servicios/trabajos/categorias/archivos → público (sin sesión)
+ * - Todo lo demás bajo /api/ o /admin/ → requiere JWT válido
+ * - Escritura (POST/PUT/DELETE/PATCH) en /api/licencias y /api/archivos → solo admin
+ * - Gestión de usuarios (/api/admin/usuarios) → solo admin
+ */
 import { withAuth } from "next-auth/middleware";
 import { NextResponse } from "next/server";
 
@@ -7,6 +17,7 @@ export default withAuth(
     const path = req.nextUrl.pathname;
     const method = req.method;
 
+    // Determina si la petición es a un endpoint GET público (sin autenticación)
     const esPublico =
       (path.startsWith("/api/productos") ||
         path.startsWith("/api/servicios") ||
@@ -15,6 +26,7 @@ export default withAuth(
         path.startsWith("/api/archivos")) &&
       method === "GET";
 
+    // Redirige o rechaza peticiones no autenticadas a rutas protegidas
     if (!token && !esPublico) {
       if (path.startsWith("/api/")) {
         return NextResponse.json({ error: "No autorizado" }, { status: 401 });
@@ -50,6 +62,8 @@ export default withAuth(
   },
   {
     callbacks: {
+      // `authorized` se ejecuta antes de la función middleware principal.
+      // Devuelve false para rutas protegidas sin token → middleware redirige.
       authorized: ({ token, req }) => {
         const path = req.nextUrl.pathname;
         const method = req.method;
@@ -73,6 +87,7 @@ export default withAuth(
   }
 );
 
+// Define qué rutas intercepta el middleware (Edge Runtime)
 export const config = {
   matcher: [
     "/admin/dashboard/:path*",
