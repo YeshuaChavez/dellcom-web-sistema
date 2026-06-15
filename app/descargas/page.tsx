@@ -343,7 +343,7 @@ export default function DescargasPage() {
                           href={file.url_archivo}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="w-full md:w-auto inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary/95 text-white font-bold text-xs uppercase tracking-wider py-3.5 rounded-xl transition-all duration-300 active:scale-95 shadow-md shadow-primary/10 cursor-pointer border-none no-underline"
+                          className="w-full md:w-auto inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary/95 text-white font-bold text-xs uppercase tracking-wider px-6 py-3.5 rounded-xl transition-all duration-300 active:scale-95 shadow-md shadow-primary/10 cursor-pointer border-none no-underline"
                         >
                           <span className="material-symbols-outlined text-sm">
                             {file.tipo === "link" ? "open_in_new" : "download"}
