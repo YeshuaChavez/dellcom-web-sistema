@@ -1,3 +1,8 @@
+/**
+ * Componente de contadores animados para la sección de estadísticas en /nosotros.
+ * Usa IntersectionObserver para disparar la animación al entrar en viewport y
+ * requestAnimationFrame con easing cuadrático para el conteo progresivo.
+ */
 "use client";
 
 import { useEffect, useState, useRef } from "react";
@@ -44,29 +49,24 @@ export default function CounterStats() {
   useEffect(() => {
     if (!hasStarted) return;
 
+    let animationId: number;
     let startTime: number | null = null;
-    const duration = 2000; // 2 seconds animation duration
+    const duration = 2000;
 
     const animate = (timestamp: number) => {
       if (!startTime) startTime = timestamp;
       const progress = Math.min((timestamp - startTime) / duration, 1);
-      
-      // Easing out quadratic: progress * (2 - progress)
-      const ease = progress * (2 - progress);
-
+      const ease = progress * (2 - progress); // easing out quadratic
       setStats((prev) =>
-        prev.map((stat) => {
-          const val = Math.floor(ease * stat.target);
-          return { ...stat, current: val };
-        })
+        prev.map((stat) => ({ ...stat, current: Math.floor(ease * stat.target) }))
       );
-
       if (progress < 1) {
-        requestAnimationFrame(animate);
+        animationId = requestAnimationFrame(animate);
       }
     };
 
-    requestAnimationFrame(animate);
+    animationId = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(animationId);
   }, [hasStarted]);
 
   return (

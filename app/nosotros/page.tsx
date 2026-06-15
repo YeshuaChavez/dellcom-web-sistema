@@ -19,20 +19,6 @@ export const metadata = {
 export default function NosotrosPage() {
   return (
     <div className="selection:bg-primary/20 selection:text-primary bg-white min-h-screen flex flex-col justify-between text-on-surface">
-      <style dangerouslySetInnerHTML={{ __html: `
-        .tech-pattern {
-          background-image: radial-gradient(#94a3b8 0.5px, transparent 0.5px);
-          background-size: 16px 16px;
-          opacity: 0.15;
-        }
-        .glass-card {
-          background: rgba(255, 255, 255, 0.85);
-          backdrop-filter: blur(20px);
-          border: 1px solid rgba(226, 232, 240, 0.8);
-          box-shadow: 0px 20px 50px rgba(15, 23, 42, 0.04);
-        }
-      `}} />
-
       {/* Reusable Status Header */}
       <StatusHeader />
 
