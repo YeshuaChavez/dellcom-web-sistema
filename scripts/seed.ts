@@ -273,14 +273,14 @@ async function main() {
     },
     {
       titulo: "Montaje Custom y Gestión de Cables de Computadoras Gamer",
-      descripcion: "Diseño y armado a medida de PCs de escritorio para gaming, edición y diseño arquitectónico. Selección balanceada de componentes (procesador, tarjeta gráfica, RAM y disipación líquida), gestión oculta de cables para flujo de aire óptimo y sincronización de ventiladores ARGB.||/img/portafolio/WhatsApp Image 2026-06-14 at 9.36.57 PM (1).jpeg,/img/portafolio/WhatsApp Image 2026-06-14 at 9.36.57 PM.jpeg",
+      descripcion: "Diseño y armado a medida de PCs de escritorio para gaming, edición y diseño arquitectónico. Selección balanceada de componentes (procesador, tarjeta gráfica, RAM y disipación líquida), gestión oculta de cables para flujo de aire óptimo y sincronización de ventiladores ARGB.||/img/portafolio/WhatsApp Image 2026-06-14 at 9.36.57 PM (1).jpeg,/img/portafolio/WhatsApp Image 2026-06-14 at 9.41.13 PM (3).jpeg",
       imagen_url: "/img/portafolio/WhatsApp Image 2026-06-14 at 9.36.57 PM (1).jpeg",
       id_servicio: serviciosMap["Reparación de Laptops e Impresoras"].id,
       fecha: new Date("2026-06-15T08:00:00Z"),
     },
     {
       titulo: "Saneamiento de Software y Configuración de Correos Corporativos",
-      descripcion: "Soporte corporativo presencial y remoto vía AnyDesk/RustDesk. Activación legal de licencias oficiales Windows 10/11 Pro OEM/Retail, suites de Microsoft Office 2021 Hogar y Empresas, configuración de correos corporativos en Google Workspace y Microsoft 365 bajo políticas seguras de spam y envío de emails.||/img/portafolio/WhatsApp Image 2026-06-14 at 9.41.12 PM (2).jpeg,/img/portafolio/WhatsApp Image 2026-06-14 at 9.41.13 PM (2).jpeg,/img/portafolio/WhatsApp Image 2026-06-14 at 9.41.13 PM (3).jpeg,/img/portafolio/WhatsApp Image 2026-06-14 at 9.41.13 PM (4).jpeg",
+      descripcion: "Soporte corporativo presencial y remoto vía AnyDesk/RustDesk. Activación legal de licencias oficiales Windows 10/11 Pro OEM/Retail, suites de Microsoft Office 2021 Hogar y Empresas, configuración de correos corporativos en Google Workspace y Microsoft 365 bajo políticas seguras de spam y envío de emails.||/img/portafolio/WhatsApp Image 2026-06-14 at 9.41.13 PM (2).jpeg,/img/portafolio/WhatsApp Image 2026-06-14 at 9.41.12 PM (2).jpeg,/img/portafolio/WhatsApp Image 2026-06-14 at 9.41.13 PM (4).jpeg",
       imagen_url: "/img/portafolio/WhatsApp Image 2026-06-14 at 9.41.12 PM (2).jpeg",
       id_servicio: serviciosMap["Licencias de Software"].id,
       fecha: new Date("2026-06-15T07:00:00Z"),
