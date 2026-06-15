@@ -33,6 +33,15 @@ export async function POST(req: NextRequest) {
 
     const formData = await req.formData();
     const file = formData.get("file") as File | null;
+    const folderParam = (formData.get("folder") as string | null) || "uploads";
+
+    // Only allow known folder names to avoid path traversal
+    const allowedFolders: Record<string, string> = {
+      productos: "productos",
+      portfolio: "portfolio",
+      uploads: "uploads",
+    };
+    const folder = allowedFolders[folderParam] ?? "uploads";
 
     if (!file) {
       return NextResponse.json({ error: "No se proporcionó ningún archivo" }, { status: 400 });
@@ -56,7 +65,7 @@ export async function POST(req: NextRequest) {
     if (hasS3Config) {
       const bucketName = process.env.AWS_BUCKET_NAME!;
       const region = process.env.AWS_REGION || "us-east-1";
-      const key = `uploads/${filename}`;
+      const key = `${folder}/${filename}`;
 
       await s3Client.send(
         new PutObjectCommand({
@@ -78,7 +87,7 @@ export async function POST(req: NextRequest) {
       });
     } else {
       // Fallback local en caso de no contar con variables de entorno de S3
-      const uploadDir = path.join(process.cwd(), "public", "uploads");
+      const uploadDir = path.join(process.cwd(), "public", folder);
 
       // Asegurar que la carpeta de destino exista
       await mkdir(uploadDir, { recursive: true });
@@ -86,7 +95,7 @@ export async function POST(req: NextRequest) {
       const filePath = path.join(uploadDir, filename);
       await writeFile(filePath, buffer);
 
-      const relativeUrl = `/uploads/${filename}`;
+      const relativeUrl = `/${folder}/${filename}`;
 
       return NextResponse.json({
         success: true,
