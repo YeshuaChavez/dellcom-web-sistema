@@ -57,7 +57,7 @@ export default function NosotrosPage() {
               <img 
                 alt="Sede DELLCOM SAC" 
                 className="relative rounded-3xl shadow-2xl w-full h-[500px] object-cover transition-transform duration-700 hover:scale-[1.01]" 
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBbKlaq884XBGD29EJ0sGavqIv8kfBP8-4XGFID3pJ4WsEgPFTXvnyA8FG06rJPgYP55mqQNFsI0WY30LskyjRyNhkW49jtM4N8i_THAkwDOIOpM4kg5eNWJ6UuaVKqj4DBl0ale7efhYd1lC6Hc5zcW-YPTZX8aaINu3d5oO_ankSjENm7f5wsgPHbz5TUkkhXyo9LTEAKPMMV2jnNeq9_nn02RLKcME0qmhO7LGV6hA-jzUjhMH3EEC9vKQ962FM_z-g9QCIRR1i_" 
+                src="/img/portafolio/WhatsApp Image 2026-06-14 at 9.36.54 PM.jpeg" 
               />
             </div>
             
