@@ -7,14 +7,22 @@ export default withAuth(
     const path = req.nextUrl.pathname;
     const method = req.method;
 
-    if (!token) {
+    const esPublico =
+      (path.startsWith("/api/productos") ||
+        path.startsWith("/api/servicios") ||
+        path.startsWith("/api/trabajos") ||
+        path.startsWith("/api/categorias") ||
+        path.startsWith("/api/archivos")) &&
+      method === "GET";
+
+    if (!token && !esPublico) {
       if (path.startsWith("/api/")) {
         return NextResponse.json({ error: "No autorizado" }, { status: 401 });
       }
       return NextResponse.redirect(new URL("/admin/login", req.url));
     }
 
-    const esAdmin = token.role === "admin";
+    const esAdmin = token?.role === "admin";
     const esEscritura = ["POST", "PUT", "DELETE", "PATCH"].includes(method);
 
     // Técnico y vendedor NO pueden modificar licencias ni archivos
