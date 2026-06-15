@@ -237,6 +237,12 @@ export default function ProductosPage() {
   const [selectedProductDetails, setSelectedProductDetails] = useState<Producto | null>(null);
   const [mounted, setMounted] = useState(false);
 
+  // Advanced Filters & Sorting
+  const [priceLimit, setPriceLimit] = useState<number>(0);
+  const [maxPrice, setMaxPrice] = useState<number>(0);
+  const [sortBy, setSortBy] = useState("default");
+  const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
+
   useEffect(() => {
     setMounted(true);
     return () => setMounted(false);
@@ -298,10 +304,18 @@ export default function ProductosPage() {
           cats = [{ id: 0, nombre: "Todos" }, ...cats];
         }
 
+        // Calculate maximum product price dynamically
+        const computedMaxPrice = Math.max(...prods.map(p => Number(p.precio)), 0);
+        setMaxPrice(computedMaxPrice);
+        setPriceLimit(computedMaxPrice);
+
         setProductos(prods);
         setCategorias(cats);
       } catch (err) {
         console.error("Error fetching product data from Next API. Using static fallbacks.", err);
+        const computedMaxPrice = Math.max(...fallbackProducts.map(p => Number(p.precio)), 0);
+        setMaxPrice(computedMaxPrice);
+        setPriceLimit(computedMaxPrice);
         setProductos(fallbackProducts);
         setCategorias(fallbackCategories);
       }
@@ -373,7 +387,15 @@ export default function ProductosPage() {
     return `https://wa.me/51925981741?text=${encodeURIComponent(message)}`;
   };
 
-  // Filter products by query search and selected tab
+  // Count items per category dynamically
+  const getCategoryCount = (categoryName: string) => {
+    if (categoryName === "Todos") return productos.length;
+    return productos.filter(
+      (p) => p.categoria?.nombre.toLowerCase() === categoryName.toLowerCase()
+    ).length;
+  };
+
+  // Filter products by query search, category, and price limit
   const filteredProducts = productos.filter((p) => {
     const matchesSearch = 
       p.nombre.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -383,8 +405,129 @@ export default function ProductosPage() {
       selectedCategory === "Todos" || 
       (p.categoria && p.categoria.nombre.toLowerCase() === selectedCategory.toLowerCase());
 
-    return matchesSearch && matchesCategory;
+    const matchesPrice = Number(p.precio) <= (priceLimit || maxPrice || 9999);
+
+    return matchesSearch && matchesCategory && matchesPrice;
   });
+
+  // Sort products based on criteria selection
+  const sortedProducts = [...filteredProducts].sort((a, b) => {
+    if (sortBy === "price_asc") {
+      return Number(a.precio) - Number(b.precio);
+    }
+    if (sortBy === "price_desc") {
+      return Number(b.precio) - Number(a.precio);
+    }
+    if (sortBy === "name_asc") {
+      return a.nombre.localeCompare(b.nombre);
+    }
+    return 0; // Default
+  });
+
+  // Render sidebar filters for reuse in desktop aside and mobile drawer
+  const renderSidebarFilters = (isMobile: boolean = false) => {
+    return (
+      <div className="space-y-8">
+        {/* Search */}
+        <div>
+          <h4 className="font-headline font-bold text-xs uppercase text-slate-450 tracking-wider mb-3">Buscar Producto</h4>
+          <div className="relative bg-slate-50 border border-slate-200 rounded-xl overflow-hidden focus-within:border-primary/50 focus-within:ring-2 focus-within:ring-primary/10 transition-all">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4 pointer-events-none" />
+            <input 
+              className="w-full pl-9 pr-8 py-2.5 bg-transparent border-none focus:outline-none text-on-surface text-xs font-semibold placeholder:text-slate-400"
+              placeholder="Buscar..." 
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            {searchQuery && (
+              <button 
+                onClick={() => setSearchQuery("")}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors border-none bg-transparent cursor-pointer"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Categories Checkboxes */}
+        <div>
+          <h4 className="font-headline font-bold text-xs uppercase text-slate-450 tracking-wider mb-3">Categorías</h4>
+          <div className="space-y-2 max-h-60 overflow-y-auto pr-1 no-scrollbar">
+            {categorias.map((cat) => {
+              const isSelected = selectedCategory.toLowerCase() === cat.nombre.toLowerCase();
+              const count = getCategoryCount(cat.nombre);
+              return (
+                <button
+                  key={cat.id}
+                  onClick={() => {
+                    setSelectedCategory(cat.nombre);
+                    if (isMobile) setIsMobileFiltersOpen(false);
+                  }}
+                  className={`w-full flex items-center justify-between text-left py-2 px-3 rounded-xl transition-all cursor-pointer border-none text-xs font-semibold ${
+                    isSelected 
+                      ? "bg-primary/5 text-primary animate-pulse-subtle" 
+                      : "bg-transparent text-slate-600 hover:bg-slate-50 hover:text-slate-800"
+                  }`}
+                >
+                  <div className="flex items-center gap-2.5 truncate mr-2">
+                    <div className={`w-4 h-4 rounded-full border flex items-center justify-center transition-all ${
+                      isSelected ? "border-primary bg-primary" : "border-slate-300 bg-white"
+                    }`}>
+                      {isSelected && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                    </div>
+                    <span className="truncate">{cat.nombre}</span>
+                  </div>
+                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full transition-all shrink-0 ${
+                    isSelected ? "bg-primary/10 text-primary" : "bg-slate-100 text-slate-500"
+                  }`}>
+                    {count}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Price Slider */}
+        {maxPrice > 0 && (
+          <div>
+            <h4 className="font-headline font-bold text-xs uppercase text-slate-450 tracking-wider mb-2">Filtrar por Precio</h4>
+            <div className="space-y-3 pt-2">
+              <input 
+                type="range"
+                min="0"
+                max={maxPrice}
+                value={priceLimit || maxPrice}
+                onChange={(e) => setPriceLimit(Number(e.target.value))}
+                className="w-full accent-primary h-1 bg-slate-200 rounded-lg cursor-pointer"
+              />
+              <div className="flex justify-between items-center text-[10px] sm:text-xs">
+                <span className="text-slate-500 font-bold">Máx: S/ {maxPrice.toFixed(0)}</span>
+                <span className="text-primary font-extrabold bg-primary/5 px-2.5 py-1 rounded-lg">Hasta S/ {(priceLimit || maxPrice).toFixed(0)}</span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Clear filters button */}
+        {(searchQuery || selectedCategory !== "Todos" || (priceLimit > 0 && priceLimit < maxPrice)) && (
+          <button
+            onClick={() => {
+              setSearchQuery("");
+              setSelectedCategory("Todos");
+              setPriceLimit(maxPrice);
+              if (isMobile) setIsMobileFiltersOpen(false);
+            }}
+            className="w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-800 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer border-none"
+          >
+            Limpiar Filtros
+          </button>
+        )}
+      </div>
+    );
+  };
 
   return (
     <div className="bg-white min-h-screen flex flex-col justify-between text-on-surface selection:bg-primary/20 selection:text-primary relative overflow-x-hidden">
@@ -394,159 +537,196 @@ export default function ProductosPage() {
 
       <main className="pt-16">
         {/* Asymmetric Header Banner */}
-        <section className="relative py-16 bg-slate-50/50 overflow-hidden border-b border-slate-100">
-          <div className="absolute inset-0 opacity-[0.02] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#000 1px, transparent 1px)', backgroundSize: '16px 16px' }} />
-          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[100px] pointer-events-none" />
+        <section className="relative py-20 bg-slate-900 text-white overflow-hidden border-b border-slate-800">
+          <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#fff 1px, transparent 1px)', backgroundSize: '20px 20px' }} />
+          <div className="absolute -top-40 -right-40 w-96 h-96 bg-primary/20 rounded-full blur-[120px] pointer-events-none" />
+          <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-blue-500/10 rounded-full blur-[120px] pointer-events-none" />
           
           <div className="relative px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto w-full text-center z-10 scroll-reveal">
-            <span className="inline-block py-1 px-3.5 mb-4 bg-primary/10 border border-primary/15 text-primary font-bold text-[10px] rounded-full uppercase tracking-widest">
-              Catálogo Virtual 2026
+            <span className="inline-block py-1 px-3.5 mb-4 bg-primary/20 border border-primary/30 text-primary font-bold text-[10px] rounded-full uppercase tracking-widest">
+              Catálogo Virtual Oficial 2026
             </span>
-            <h1 className="font-headline text-3xl md:text-5xl font-black text-on-surface leading-tight tracking-tight">
-              Nuestros <span className="text-primary">Productos</span>
+            <h1 className="font-headline text-3xl md:text-5xl font-black text-white leading-tight tracking-tight">
+              Shop Our <span className="text-primary">Products</span>
             </h1>
-            <p className="text-xs md:text-sm text-on-surface-variant max-w-xl mx-auto mt-2 leading-relaxed">
-              Explora nuestra selección de suministros originales Zebra, repuestos de hardware, y licenciamiento de software oficial.
+            <p className="text-xs md:text-sm text-slate-300 max-w-xl mx-auto mt-3 leading-relaxed font-semibold">
+              Filtra y cotiza suministros originales Zebra, repuestos de hardware premium, componentes de microelectrónica y licenciamiento oficial.
             </p>
           </div>
         </section>
 
         {/* Main Catalog Content Container */}
-        <div className="py-20 max-w-container-max mx-auto w-full px-margin-mobile md:px-margin-desktop space-y-12">
-          {/* Search box (Centered) */}
-          <div className="relative max-w-2xl mx-auto bg-slate-50 border border-slate-200 rounded-2xl shadow-sm overflow-hidden focus-within:border-primary/50 focus-within:ring-2 focus-within:ring-primary/10 transition-all mb-8">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5 pointer-events-none" />
-            <input 
-              className="w-full pl-12 pr-10 py-4 bg-transparent border-none focus:outline-none text-on-surface font-body-md text-sm placeholder:text-slate-400 font-semibold"
-              placeholder="Buscar por nombre, marca o especificación..." 
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-            {searchQuery && (
-              <button 
-                onClick={() => setSearchQuery("")}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors border-none bg-transparent cursor-pointer"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            )}
-          </div>
-
-          {/* Dynamic Category Navigation Tabs */}
-          <section className="mb-8">
-            <div className="flex overflow-x-auto no-scrollbar gap-3 pb-3">
-              {categorias.map((cat) => (
-                <button 
-                  key={cat.id}
-                  className={`px-5 py-2 rounded-full font-headline text-xs font-bold tracking-wide uppercase transition-all whitespace-nowrap border cursor-pointer select-none ${
-                    selectedCategory.toLowerCase() === cat.nombre.toLowerCase()
-                      ? "bg-primary border-primary text-white shadow-md shadow-primary/20"
-                      : "bg-white border-slate-200 text-slate-500 hover:bg-slate-50 hover:text-slate-800"
-                  }`}
-                  onClick={() => setSelectedCategory(cat.nombre)}
-                >
-                  {cat.nombre}
-                </button>
-              ))}
-            </div>
-          </section>
-
-          {/* Dynamic Products Grid */}
-          <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filteredProducts.length > 0 ? (
-              filteredProducts.map((prod) => {
-                const cartItem = cart.find((item) => item.id === prod.id);
-
-                return (
-                  <article 
-                    key={prod.id} 
-                    className="bg-white rounded-3xl overflow-hidden border border-slate-200/80 hover:shadow-lg transition-all duration-300 group flex flex-col justify-between"
+        <div className="py-16 max-w-container-max mx-auto w-full px-margin-mobile md:px-margin-desktop">
+          
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
+            
+            {/* Sidebar Filters (Desktop version) */}
+            <aside className="hidden lg:block lg:col-span-1 sticky top-24 self-start bg-white border border-slate-200/80 p-6 rounded-[2rem] shadow-sm space-y-8 select-none">
+              {renderSidebarFilters(false)}
+            </aside>
+            
+            {/* Products Content Column */}
+            <div className="col-span-1 lg:col-span-3 space-y-8">
+              
+              {/* Filter controls and Sorting Header */}
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-slate-50/50 border border-slate-200/60 p-4 rounded-3xl shadow-sm w-full">
+                
+                {/* Mobile Filter Button + Results Count */}
+                <div className="flex items-center justify-between sm:justify-start gap-4 w-full sm:w-auto">
+                  <button
+                    onClick={() => setIsMobileFiltersOpen(true)}
+                    className="flex lg:hidden items-center gap-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer border-none shadow-sm"
                   >
-                    {/* Product Image Container with Fallbacks */}
-                    <div 
-                      onClick={() => setSelectedProductDetails(prod)}
-                      className="aspect-square bg-slate-50/40 p-6 flex items-center justify-center border-b border-slate-100/80 relative overflow-hidden select-none cursor-pointer group/img"
-                    >
-                      <ProductImage 
-                        src={prod.imagen_url} 
-                        alt={prod.nombre} 
-                        categoryName={prod.categoria?.nombre || "General"} 
-                      />
-                      <div className="absolute inset-0 bg-slate-900/5 opacity-0 group-hover/img:opacity-100 transition-all duration-300 flex items-center justify-center backdrop-blur-[0.5px]">
-                        <div className="bg-white/95 backdrop-blur-[2px] shadow-sm border border-slate-200/50 text-slate-800 text-[10px] font-bold uppercase tracking-wider py-2 px-3 rounded-xl flex items-center gap-1.5 transform translate-y-2 group-hover/img:translate-y-0 transition-all duration-300">
-                          <Eye className="w-3.5 h-3.5 text-slate-600" />
-                          Vista Rápida
-                        </div>
-                      </div>
-                    </div>
-                    
-                    {/* Product Details Section */}
-                    <div className="p-5 flex flex-col justify-between flex-1 space-y-4">
-                      <div className="space-y-2">
-                        <span className="inline-block px-2.5 py-0.5 rounded-md bg-slate-100 text-[10px] text-slate-500 font-bold uppercase tracking-wider">
-                          {prod.categoria?.nombre || "General"}
-                        </span>
-                        <h3 
-                          onClick={() => setSelectedProductDetails(prod)}
-                          className="font-headline text-base font-bold text-on-surface line-clamp-2 hover:text-primary transition-colors leading-snug cursor-pointer"
-                        >
-                          {prod.nombre}
-                        </h3>
-                        <p className="text-xs text-on-surface-variant line-clamp-3 leading-relaxed font-semibold">
-                          {prod.descripcion || "Consúltanos especificaciones, disponibilidad y compatibilidad de este producto."}
-                        </p>
-                      </div>
+                    <span className="material-symbols-outlined text-sm">filter_alt</span>
+                    Filtros
+                  </button>
+                  <p className="text-xs text-slate-500 font-bold leading-none uppercase">
+                    Mostrando <span className="text-slate-800 font-extrabold">{sortedProducts.length}</span> de <span className="text-slate-800 font-extrabold">{productos.length}</span> resultados
+                  </p>
+                </div>
 
-                      <div className="flex items-center justify-between pt-4 border-t border-slate-100 mt-auto">
-                        <div className="flex flex-col">
-                          <span className="text-[10px] text-slate-400 font-bold uppercase leading-none">Precio Aprox.</span>
-                          <span className="font-headline text-lg font-extrabold text-primary mt-1">
-                            S/ {Number(prod.precio).toFixed(2)}
-                          </span>
-                        </div>
-
-                        {cartItem ? (
-                          /* Quantity selector if already in cart */
-                          <div className="flex items-center bg-slate-100 rounded-xl border border-slate-200/60 p-0.5">
-                            <button 
-                              onClick={() => updateQuantity(prod.id, -1)}
-                              className="w-7 h-7 flex items-center justify-center text-slate-600 hover:text-primary active:scale-90 transition-all font-bold cursor-pointer border-none bg-transparent"
-                            >
-                              <Minus className="w-3.5 h-3.5" />
-                            </button>
-                            <span className="w-7 text-center text-xs font-bold text-slate-800">
-                              {cartItem.cantidad}
-                            </span>
-                            <button 
-                              onClick={() => updateQuantity(prod.id, 1)}
-                              className="w-7 h-7 flex items-center justify-center text-slate-600 hover:text-primary active:scale-90 transition-all font-bold cursor-pointer border-none bg-transparent"
-                            >
-                              <Plus className="w-3.5 h-3.5" />
-                            </button>
-                          </div>
-                        ) : (
-                          /* Add button if not in cart */
-                          <button 
-                            onClick={() => addToCart(prod)}
-                            className="flex items-center gap-1.5 bg-primary hover:bg-primary/95 text-white px-4 py-2.5 rounded-xl text-[11px] font-bold transition-all active:scale-95 shadow-md shadow-primary/10 cursor-pointer select-none border-none"
-                          >
-                            <ShoppingCart className="w-3.5 h-3.5" />
-                            Añadir
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  </article>
-                );
-              })
-            ) : (
-              <div className="col-span-full py-20 text-center text-on-surface-variant font-headline text-base bg-slate-50 border border-slate-200 rounded-3xl">
-                <ShoppingBag className="w-12 h-12 text-slate-300 mb-3 mx-auto" />
-                No se encontraron productos en esta categoría o búsqueda.
+                {/* Sorting Dropdown */}
+                <div className="flex items-center gap-2 self-end sm:self-auto">
+                  <span className="text-xs text-slate-500 font-bold uppercase whitespace-nowrap">Ordenar por:</span>
+                  <select
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value)}
+                    className="bg-white border border-slate-200 focus:border-primary/50 focus:outline-none rounded-xl px-3 py-2 text-xs font-bold text-slate-700 cursor-pointer"
+                  >
+                    <option value="default">Por Defecto</option>
+                    <option value="price_asc">Precio: Menor a Mayor</option>
+                    <option value="price_desc">Precio: Mayor a Menor</option>
+                    <option value="name_asc">Nombre: A - Z</option>
+                  </select>
+                </div>
               </div>
-            )}
-          </section>
+
+              {/* Dynamic Products Grid */}
+              <section className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+                {sortedProducts.length > 0 ? (
+                  sortedProducts.map((prod) => {
+                    const cartItem = cart.find((item) => item.id === prod.id);
+
+                    return (
+                      <article 
+                        key={prod.id} 
+                        className="bg-white rounded-3xl overflow-hidden border border-slate-200/80 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group flex flex-col justify-between relative"
+                      >
+                        {/* Dynamic Sale Badge (Visual Vibe) */}
+                        <span className="absolute top-4 right-4 bg-primary/10 text-primary border border-primary/20 text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full z-10">
+                          Original
+                        </span>
+
+                        {/* Product Image Container with Fallbacks */}
+                        <div 
+                          onClick={() => setSelectedProductDetails(prod)}
+                          className="aspect-square bg-slate-50/40 p-6 flex items-center justify-center border-b border-slate-100/80 relative overflow-hidden select-none cursor-pointer group/img"
+                        >
+                          <ProductImage 
+                            src={prod.imagen_url} 
+                            alt={prod.nombre} 
+                            categoryName={prod.categoria?.nombre || "General"} 
+                          />
+                          <div className="absolute inset-0 bg-slate-900/5 opacity-0 group-hover/img:opacity-100 transition-all duration-300 flex items-center justify-center backdrop-blur-[0.5px]">
+                            <div className="bg-white/95 backdrop-blur-[2px] shadow-sm border border-slate-200/50 text-slate-800 text-[10px] font-bold uppercase tracking-wider py-2 px-3 rounded-xl flex items-center gap-1.5 transform translate-y-2 group-hover/img:translate-y-0 transition-all duration-300">
+                              <Eye className="w-3.5 h-3.5 text-slate-600" />
+                              Vista Rápida
+                            </div>
+                          </div>
+                        </div>
+                        
+                        {/* Product Details Section */}
+                        <div className="p-5 flex flex-col justify-between flex-1 space-y-4">
+                          <div className="space-y-2">
+                            <span className="inline-block px-2.5 py-0.5 rounded-md bg-slate-100 text-[10px] text-slate-500 font-bold uppercase tracking-wider">
+                              {prod.categoria?.nombre || "General"}
+                            </span>
+                            <h3 
+                              onClick={() => setSelectedProductDetails(prod)}
+                              className="font-headline text-sm md:text-base font-bold text-on-surface line-clamp-2 hover:text-primary transition-colors leading-snug cursor-pointer"
+                            >
+                              {prod.nombre}
+                            </h3>
+                            <p className="text-xs text-on-surface-variant line-clamp-3 leading-relaxed font-semibold">
+                              {prod.descripcion || "Consúltanos especificaciones, disponibilidad y compatibilidad de este producto."}
+                            </p>
+                          </div>
+
+                          <div className="flex items-center justify-between pt-4 border-t border-slate-100 mt-auto">
+                            <div className="flex flex-col">
+                              <span className="text-[10px] text-slate-400 font-bold uppercase leading-none">Precio Aprox.</span>
+                              <div className="flex items-baseline gap-1.5 mt-1">
+                                <span className="font-headline text-base font-extrabold text-primary leading-none">
+                                  S/ {Number(prod.precio).toFixed(2)}
+                                </span>
+                                <span className="text-[9px] text-slate-400 line-through leading-none font-bold">
+                                  S/ {(Number(prod.precio) * 1.25).toFixed(0)}
+                                </span>
+                              </div>
+                            </div>
+
+                            {cartItem ? (
+                              /* Quantity selector if already in cart */
+                              <div className="flex items-center bg-slate-100 rounded-xl border border-slate-200/60 p-0.5">
+                                <button 
+                                  onClick={() => updateQuantity(prod.id, -1)}
+                                  className="w-7 h-7 flex items-center justify-center text-slate-600 hover:text-primary active:scale-90 transition-all font-bold cursor-pointer border-none bg-transparent"
+                                >
+                                  <Minus className="w-3.5 h-3.5" />
+                                </button>
+                                <span className="w-7 text-center text-xs font-bold text-slate-800">
+                                  {cartItem.cantidad}
+                                </span>
+                                <button 
+                                  onClick={() => updateQuantity(prod.id, 1)}
+                                  className="w-7 h-7 flex items-center justify-center text-slate-600 hover:text-primary active:scale-90 transition-all font-bold cursor-pointer border-none bg-transparent"
+                                >
+                                  <Plus className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
+                            ) : (
+                              /* Add button if not in cart */
+                              <button 
+                                onClick={() => addToCart(prod)}
+                                className="flex items-center gap-1.5 bg-primary hover:bg-primary/95 text-white px-4 py-2.5 rounded-xl text-[11px] font-bold transition-all active:scale-95 shadow-md shadow-primary/10 cursor-pointer select-none border-none"
+                              >
+                                <ShoppingCart className="w-3.5 h-3.5" />
+                                Añadir
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      </article>
+                    );
+                  })
+                ) : (
+                  <div className="col-span-full py-20 text-center text-on-surface-variant font-headline text-base bg-slate-50 border border-slate-200 rounded-3xl">
+                    <ShoppingBag className="w-12 h-12 text-slate-300 mb-3 mx-auto" />
+                    No se encontraron productos en esta categoría o precio.
+                  </div>
+                )}
+              </section>
+            </div>
+          </div>
+        </div>
+
+        {/* Mobile Filters Drawer Modal */}
+        <div className={`fixed inset-0 z-50 transition-opacity duration-300 lg:hidden ${isMobileFiltersOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`}>
+          <div onClick={() => setIsMobileFiltersOpen(false)} className="absolute inset-0 bg-slate-900/40 backdrop-blur-[2px]" />
+          <div className={`absolute inset-y-0 left-0 w-80 max-w-full bg-white shadow-xl flex flex-col p-6 transform transition-transform duration-300 ${isMobileFiltersOpen ? "translate-x-0" : "-translate-x-full"}`}>
+            <div className="flex justify-between items-center border-b border-slate-100 pb-4 mb-6">
+              <h3 className="font-headline font-bold text-slate-800 text-base">Filtros Avanzados</h3>
+              <button 
+                onClick={() => setIsMobileFiltersOpen(false)}
+                className="w-8 h-8 rounded-full border border-slate-200 flex items-center justify-center text-slate-400 hover:text-slate-600 transition-all cursor-pointer bg-transparent"
+              >
+                <span className="material-symbols-outlined text-sm font-bold">close</span>
+              </button>
+            </div>
+            <div className="space-y-8 flex-1 overflow-y-auto pr-1 no-scrollbar">
+              {renderSidebarFilters(true)}
+            </div>
+          </div>
         </div>
       </main>
 
