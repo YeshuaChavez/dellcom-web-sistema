@@ -193,13 +193,13 @@ export default async function Home() {
               <HomeHeroSearch />
             </div>
             
-            {/* Right Media (Floating laptop illustration) */}
+            {/* Right Media (Real storefront/showroom photo) */}
             <div className="relative flex justify-center items-center">
               <div className="absolute inset-0 bg-primary/5 rounded-full blur-[100px] scale-75"></div>
               <img 
-                alt="Dellcom IT Laptop Support Render" 
-                className="relative z-10 w-full max-w-[500px] h-auto object-contain rounded-3xl drop-shadow-2xl animate-float" 
-                src="/img/servicios/reparacion_laptop.jpg"
+                alt="Local Principal de DELLCOM SAC" 
+                className="relative z-10 w-full max-w-[500px] aspect-[4/3] object-cover rounded-3xl drop-shadow-2xl animate-float" 
+                src="/img/servicios/tienda_front.jpg"
               />
             </div>
           </div>
