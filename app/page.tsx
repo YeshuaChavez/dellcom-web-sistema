@@ -4,6 +4,7 @@ import StatusHeader from "./components/StatusHeader";
 import CleanFooter from "./components/CleanFooter";
 import HomeHeroSearch from "./components/HomeHeroSearch";
 import ScrollRevealObserver from "./components/ScrollRevealObserver";
+import PortfolioGallery from "./components/PortfolioGallery";
 
 export const metadata = {
   title: "DELLCOM SAC | Tu centro de confianza",
@@ -111,7 +112,6 @@ async function getTrabajos() {
     const dbTrabajos = await prisma.trabajoRealizado.findMany({
       include: { servicio: true },
       orderBy: { fecha: "desc" },
-      take: 3,
     });
     if (dbTrabajos && dbTrabajos.length > 0) {
       return dbTrabajos.map(t => ({
@@ -304,56 +304,8 @@ export default async function Home() {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
-              {trabajos.map((trabajo, index) => {
-                const formattedDate = new Date(trabajo.fecha).toLocaleDateString("es-ES", {
-                  day: "2-digit",
-                  month: "short",
-                  year: "numeric"
-                });
-
-                return (
-                  <article 
-                    key={trabajo.id} 
-                    className="scroll-reveal group bg-white rounded-3xl border border-slate-200/60 overflow-hidden hover:shadow-lg transition-all duration-300 flex flex-col justify-between"
-                    style={{ transitionDelay: `${(index % 3) * 100}ms` }}
-                  >
-                    <div className="relative h-48 w-full overflow-hidden bg-slate-100">
-                      <img 
-                        src={trabajo.imagen_url} 
-                        alt={trabajo.titulo} 
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
-                      <div className="absolute top-4 left-4 bg-black/60 backdrop-blur-sm text-white px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">
-                        {trabajo.servicio?.nombre || "Servicio Técnico"}
-                      </div>
-                    </div>
-                    
-                    <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
-                      <div>
-                        <div className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1">
-                          Completado el {formattedDate}
-                        </div>
-                        <h3 className="font-headline text-base font-bold text-on-surface mb-2 group-hover:text-primary transition-colors leading-tight">
-                          {trabajo.titulo}
-                        </h3>
-                        <p className="text-xs text-on-surface-variant leading-relaxed">
-                          {trabajo.descripcion}
-                        </p>
-                      </div>
-
-                      <div className="pt-4 border-t border-slate-100 flex justify-between items-center text-[10px] font-bold tracking-wider uppercase text-emerald-600">
-                        <span className="flex items-center gap-1">
-                          <span className="material-symbols-outlined text-sm">check_circle</span>
-                          Operatividad Restablecida
-                        </span>
-                        <span className="text-slate-400">Dellcom SAC</span>
-                      </div>
-                    </div>
-                  </article>
-                );
-              })}
+            <div className="scroll-reveal">
+              <PortfolioGallery trabajos={trabajos} />
             </div>
           </div>
         </section>
