@@ -239,8 +239,6 @@ async function main() {
       data: p,
     });
   }
-  console.log("[OK] Productos reales sembrados en la BD.");
-
   // 5. Seed Portfolio / Trabajos Realizados
   const trabajos = [
     {
@@ -252,8 +250,8 @@ async function main() {
     },
     {
       titulo: "Soporte y Reparación de Impresoras Epson y Zebra",
-      descripcion: "Diagnóstico y solución de encendido en impresoras Epson EcoTank CK57 MAIN mediante soldadura de transistores y fusible F1 quemados. Reparación de atascos continuos mediante cambio de engranajes de tracción y calibración de sensores ópticos. Configuración y purgado de sistemas continuos HP Smart Tank e integración inalámbrica en red local.||/img/portafolio/WhatsApp Image 2026-06-14 at 9.36.56 PM (2).jpeg,/img/portafolio/WhatsApp Image 2026-06-14 at 9.41.12 PM.jpeg,/img/portafolio/WhatsApp Image 2026-06-14 at 9.41.12 PM (1).jpeg",
-      imagen_url: "/img/portafolio/WhatsApp Image 2026-06-14 at 9.36.56 PM (2).jpeg",
+      descripcion: "Diagnóstico y solución de encendido en impresoras Epson EcoTank CK57 MAIN mediante soldadura de transistores y fusible F1 quemados. Reparación de atascos continuos mediante cambio de engranajes de tracción y calibración de sensores ópticos. Configuración y purgado de sistemas continuos HP Smart Tank e integración inalámbrica en red local.||/img/portafolio/WhatsApp Image 2026-06-14 at 9.41.12 PM (2).jpeg,/img/portafolio/WhatsApp Image 2026-06-14 at 9.36.56 PM (2).jpeg,/img/portafolio/WhatsApp Image 2026-06-14 at 9.41.12 PM.jpeg,/img/portafolio/WhatsApp Image 2026-06-14 at 9.41.12 PM (1).jpeg,/img/portafolio/WhatsApp Image 2026-06-14 at 9.41.12 PM (5).jpeg",
+      imagen_url: "/img/portafolio/WhatsApp Image 2026-06-14 at 9.41.12 PM (2).jpeg",
       id_servicio: serviciosMap["Reparación de Laptops e Impresoras"].id,
       fecha: new Date("2026-06-15T11:00:00Z"),
     },
@@ -266,22 +264,22 @@ async function main() {
     },
     {
       titulo: "Instalación de Cableado Estructurado Cat6 y Racks de Servidor",
-      descripcion: "Montaje y estructurado de cableado de red de datos Cat6 para oficinas. Peinado de cables, ponchado en patch panel, ordenamiento en gabinete rack de servidores, instalación de switches administrables y enrutadores MikroTik/Ubiquiti, y puesta en marcha de servidores NAS de almacenamiento local centralizado con políticas de backup automático.||/img/portafolio/WhatsApp Image 2026-06-14 at 9.41.13 PM.jpeg",
-      imagen_url: "/img/portafolio/WhatsApp Image 2026-06-14 at 9.41.13 PM.jpeg",
+      descripcion: "Montaje y estructurado de cableado de red de datos Cat6 para oficinas. Peinado de cables, ponchado en patch panel, ordenamiento en gabinete rack de servidores, instalación de switches administrables y enrutadores MikroTik/Ubiquiti, y puesta en marcha de servidores NAS de almacenamiento local centralizado con políticas de backup automático.||/img/portafolio/WhatsApp Image 2026-06-14 at 9.41.12 PM (6).jpeg",
+      imagen_url: "/img/portafolio/WhatsApp Image 2026-06-14 at 9.41.12 PM (6).jpeg",
       id_servicio: serviciosMap["Redes y Servidores"].id,
       fecha: new Date("2026-06-15T09:00:00Z"),
     },
     {
       titulo: "Montaje Custom y Gestión de Cables de Computadoras Gamer",
-      descripcion: "Diseño y armado a medida de PCs de escritorio para gaming, edición y diseño arquitectónico. Selección balanceada de componentes (procesador, tarjeta gráfica, RAM y disipación líquida), gestión oculta de cables para flujo de aire óptimo y sincronización de ventiladores ARGB.||/img/portafolio/WhatsApp Image 2026-06-14 at 9.36.57 PM (1).jpeg,/img/portafolio/WhatsApp Image 2026-06-14 at 9.41.13 PM (3).jpeg",
+      descripcion: "Diseño y armado a medida de PCs de escritorio para gaming, edición y diseño arquitectónico. Selección balanceada de componentes (procesador, tarjeta gráfica, RAM y disipación líquida), gestión oculta de cables para flujo de aire óptimo y sincronización de ventiladores ARGB.||/img/portafolio/WhatsApp Image 2026-06-14 at 9.36.57 PM (1).jpeg,/img/portafolio/WhatsApp Image 2026-06-14 at 9.36.57 PM.jpeg",
       imagen_url: "/img/portafolio/WhatsApp Image 2026-06-14 at 9.36.57 PM (1).jpeg",
       id_servicio: serviciosMap["Reparación de Laptops e Impresoras"].id,
       fecha: new Date("2026-06-15T08:00:00Z"),
     },
     {
       titulo: "Saneamiento de Software y Configuración de Correos Corporativos",
-      descripcion: "Soporte corporativo presencial y remoto vía AnyDesk/RustDesk. Activación legal de licencias oficiales Windows 10/11 Pro OEM/Retail, suites de Microsoft Office 2021 Hogar y Empresas, configuración de correos corporativos en Google Workspace y Microsoft 365 bajo políticas seguras de spam y envío de emails.||/img/portafolio/WhatsApp Image 2026-06-14 at 9.41.13 PM (2).jpeg,/img/portafolio/WhatsApp Image 2026-06-14 at 9.41.12 PM (2).jpeg,/img/portafolio/WhatsApp Image 2026-06-14 at 9.41.13 PM (4).jpeg",
-      imagen_url: "/img/portafolio/WhatsApp Image 2026-06-14 at 9.41.13 PM (2).jpeg",
+      descripcion: "Soporte corporativo presencial y remoto vía AnyDesk/RustDesk. Activación legal de licencias oficiales Windows 10/11 Pro OEM/Retail, suites de Microsoft Office 2021 Hogar y Empresas, configuración de correos corporativos en Google Workspace y Microsoft 365 bajo políticas seguras de spam y envío de emails.||/img/portafolio/WhatsApp Image 2026-06-14 at 9.41.13 PM.jpeg,/img/portafolio/WhatsApp Image 2026-06-14 at 9.41.13 PM (2).jpeg,/img/portafolio/WhatsApp Image 2026-06-14 at 9.41.13 PM (3).jpeg,/img/portafolio/WhatsApp Image 2026-06-14 at 9.41.13 PM (4).jpeg",
+      imagen_url: "/img/portafolio/WhatsApp Image 2026-06-14 at 9.41.13 PM.jpeg",
       id_servicio: serviciosMap["Licencias de Software"].id,
       fecha: new Date("2026-06-15T07:00:00Z"),
     },
