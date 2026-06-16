@@ -108,6 +108,15 @@ model TrabajoRealizado {
   fecha        DateTime @default(now())
 }
 
+model PasswordResetToken {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  email     String
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
 model MensajeContacto {
   id        Int      @id @default(autoincrement()) @map("id_mensaje")
   nombre    String

@@ -94,11 +94,11 @@ export default function AdminLoginPage() {
           loop
           muted
           playsInline
-          className="absolute inset-0 w-full h-full object-cover z-0 opacity-35 blur-[2px] pointer-events-none"
+          className="absolute inset-0 w-full h-full object-cover z-0 opacity-55 blur-[1px] pointer-events-none"
         >
           <source src="/vid/laptop_video.mp4" type="video/mp4" />
         </video>
-        <div className="absolute inset-0 bg-gradient-to-br from-red-950/20 via-black/85 to-black/95 z-0 pointer-events-none"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-red-950/10 via-black/55 to-black/75 z-0 pointer-events-none"></div>
 
         {/* Acceso Técnico Pill Badge */}
         <div className="relative z-20 flex justify-end">
@@ -150,14 +150,10 @@ export default function AdminLoginPage() {
         </div>
 
         {/* Technical Footer */}
-        <div className="relative z-20 flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-t border-white/5 pt-4">
-          <p className="text-[9px] text-white/30 font-bold uppercase tracking-wider">
+        <div className="relative z-20 border-t border-white/5 pt-4">
+          <p className="text-[9px] text-white/35 font-bold uppercase tracking-wider text-center sm:text-left">
             © 2026 DELLCOM SAC - TODOS LOS DERECHOS RESERVADOS
           </p>
-          <span className="inline-flex items-center gap-1.5 text-[9px] text-white/30 font-bold uppercase tracking-wider">
-            <span className="w-1.5 h-1.5 rounded-full bg-green-500 shadow-[0_0_8px_#22c55e] animate-pulse"></span>
-            SISTEMA OPERATIVO - v2.4
-          </span>
         </div>
       </div>
 
@@ -166,9 +162,7 @@ export default function AdminLoginPage() {
 
         {/* Brand Header */}
         <div className="flex items-center gap-3 justify-center md:justify-start">
-          <div className="w-9 h-9 rounded-full bg-black border border-primary flex items-center justify-center font-headline font-black italic text-white text-base select-none shadow-sm shadow-black/20">
-            D
-          </div>
+          <DellcomLogo className="w-10 h-10 lg:w-12 lg:h-12" />
           <div className="leading-none">
             <span className="font-headline text-base font-black text-slate-800 block">DELLCOM</span>
             <span className="text-[8px] font-bold text-primary uppercase tracking-widest block mt-0.5">Portal de Gestión Interna</span>
@@ -292,7 +286,7 @@ export default function AdminLoginPage() {
         </div>
 
         {/* Support Link */}
-        <div className="text-center md:text-left text-xs text-slate-400 font-semibold">
+        <div className="text-center w-full text-xs text-slate-400 font-semibold">
           ¿Problemas para acceder?{" "}
           <a
             href="https://wa.me/51987654321"
