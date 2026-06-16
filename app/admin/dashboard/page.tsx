@@ -245,8 +245,18 @@ export default function AdminDashboardPage() {
   // Form states for Category CRUD
   const [formCategoryName, setFormCategoryName] = useState("");
   const [formCategoryActive, setFormCategoryActive] = useState(true);
-  
+
   const [uploading, setUploading] = useState(false);
+
+  // Mensaje de contacto seleccionado para ver el texto completo en un modal
+  const [selectedMensaje, setSelectedMensaje] = useState<MensajeContacto | null>(null);
+
+  // Permisos por rol: admin tiene acceso total; tecnico y vendedor según su área de trabajo
+  const userRole = (session?.user as any)?.role as "admin" | "tecnico" | "vendedor" | undefined;
+  const isAdmin = userRole === "admin";
+  const canEditCatalogo = isAdmin || userRole === "vendedor"; // Productos, Categorías, Servicios
+  const canEditTecnico = isAdmin || userRole === "tecnico"; // Portafolio, Archivos/Drivers
+  const canDelete = isAdmin; // Borrar queda exclusivo de admin en todos los módulos
 
   // Redirect if unauthorized
   useEffect(() => {
@@ -1344,7 +1354,7 @@ export default function AdminDashboardPage() {
       {sidebarOpen && (
         <div
           onClick={() => setSidebarOpen(false)}
-          className="fixed inset-0 bg-slate-900/50 z-40 lg:hidden"
+          className="fixed inset-0 bg-slate-900/50 z-40 lg:hidden cursor-pointer"
           aria-hidden="true"
         />
       )}
@@ -1811,51 +1821,57 @@ export default function AdminDashboardPage() {
                 <h3 className="font-bold text-sm text-on-surface mb-4">Accesos Rápidos Operativos</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   
-                  {/* Action 1: Crear Licencia */}
-                  <button 
-                    onClick={() => { closeLicenseModal(); setShowLicenseModal(true); }}
-                    className="group bg-white border border-slate-200 p-6 rounded-2xl shadow-sm text-left hover:border-red-500/50 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex items-center justify-between"
-                  >
-                    <div className="space-y-1">
-                      <span className="text-[10px] font-bold text-red-500 uppercase tracking-widest block">Acción de Clientes</span>
-                      <h4 className="font-black text-sm text-on-surface group-hover:text-primary transition-colors">Registrar Licencia</h4>
-                      <p className="text-xs text-slate-500">Añadir suscripción de software a un cliente.</p>
-                    </div>
-                    <div className="p-4 bg-red-50 text-red-600 rounded-xl group-hover:bg-red-600 group-hover:text-white transition-all">
-                      <span className="material-symbols-outlined text-2xl">add_moderator</span>
-                    </div>
-                  </button>
-                  
-                  {/* Action 2: Subir Archivo */}
-                  <button 
-                    onClick={() => { closeFileModal(); setShowFileModal(true); }}
-                    className="group bg-white border border-slate-200 p-6 rounded-2xl shadow-sm text-left hover:border-blue-500/50 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex items-center justify-between"
-                  >
-                    <div className="space-y-1">
-                      <span className="text-[10px] font-bold text-blue-500 uppercase tracking-widest block">Recursos Técnicos</span>
-                      <h4 className="font-black text-sm text-on-surface group-hover:text-blue-600 transition-colors">Subir Archivo / Driver</h4>
-                      <p className="text-xs text-slate-500">Almacenar manuales o instaladores.</p>
-                    </div>
-                    <div className="p-4 bg-blue-50 text-blue-600 rounded-xl group-hover:bg-blue-600 group-hover:text-white transition-all">
-                      <span className="material-symbols-outlined text-2xl">upload_file</span>
-                    </div>
-                  </button>
-                  
-                  {/* Action 3: Registrar Producto */}
-                  <button 
-                    onClick={() => { closeProductModal(); setShowProductModal(true); }}
-                    className="group bg-white border border-slate-200 p-6 rounded-2xl shadow-sm text-left hover:border-emerald-500/50 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex items-center justify-between"
-                  >
-                    <div className="space-y-1">
-                      <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest block">Gestión Catálogo</span>
-                      <h4 className="font-black text-sm text-on-surface group-hover:text-emerald-600 transition-colors">Registrar Producto</h4>
-                      <p className="text-xs text-slate-500">Publicar tintas, cintas o ribbons.</p>
-                    </div>
-                    <div className="p-4 bg-emerald-50 text-emerald-600 rounded-xl group-hover:bg-emerald-500 group-hover:text-white transition-all">
-                      <span className="material-symbols-outlined text-2xl">add_shopping_cart</span>
-                    </div>
-                  </button>
-                  
+                  {/* Action 1: Crear Licencia (solo admin) */}
+                  {isAdmin && (
+                    <button
+                      onClick={() => { closeLicenseModal(); setShowLicenseModal(true); }}
+                      className="group bg-white border border-slate-200 p-6 rounded-2xl shadow-sm text-left hover:border-red-500/50 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex items-center justify-between"
+                    >
+                      <div className="space-y-1">
+                        <span className="text-[10px] font-bold text-red-500 uppercase tracking-widest block">Acción de Clientes</span>
+                        <h4 className="font-black text-sm text-on-surface group-hover:text-primary transition-colors">Registrar Licencia</h4>
+                        <p className="text-xs text-slate-500">Añadir suscripción de software a un cliente.</p>
+                      </div>
+                      <div className="p-4 bg-red-50 text-red-600 rounded-xl group-hover:bg-red-600 group-hover:text-white transition-all">
+                        <span className="material-symbols-outlined text-2xl">add_moderator</span>
+                      </div>
+                    </button>
+                  )}
+
+                  {/* Action 2: Subir Archivo (admin o tecnico) */}
+                  {canEditTecnico && (
+                    <button
+                      onClick={() => { closeFileModal(); setShowFileModal(true); }}
+                      className="group bg-white border border-slate-200 p-6 rounded-2xl shadow-sm text-left hover:border-blue-500/50 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex items-center justify-between"
+                    >
+                      <div className="space-y-1">
+                        <span className="text-[10px] font-bold text-blue-500 uppercase tracking-widest block">Recursos Técnicos</span>
+                        <h4 className="font-black text-sm text-on-surface group-hover:text-blue-600 transition-colors">Subir Archivo / Driver</h4>
+                        <p className="text-xs text-slate-500">Almacenar manuales o instaladores.</p>
+                      </div>
+                      <div className="p-4 bg-blue-50 text-blue-600 rounded-xl group-hover:bg-blue-600 group-hover:text-white transition-all">
+                        <span className="material-symbols-outlined text-2xl">upload_file</span>
+                      </div>
+                    </button>
+                  )}
+
+                  {/* Action 3: Registrar Producto (admin o vendedor) */}
+                  {canEditCatalogo && (
+                    <button
+                      onClick={() => { closeProductModal(); setShowProductModal(true); }}
+                      className="group bg-white border border-slate-200 p-6 rounded-2xl shadow-sm text-left hover:border-emerald-500/50 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex items-center justify-between"
+                    >
+                      <div className="space-y-1">
+                        <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest block">Gestión Catálogo</span>
+                        <h4 className="font-black text-sm text-on-surface group-hover:text-emerald-600 transition-colors">Registrar Producto</h4>
+                        <p className="text-xs text-slate-500">Publicar tintas, cintas o ribbons.</p>
+                      </div>
+                      <div className="p-4 bg-emerald-50 text-emerald-600 rounded-xl group-hover:bg-emerald-500 group-hover:text-white transition-all">
+                        <span className="material-symbols-outlined text-2xl">add_shopping_cart</span>
+                      </div>
+                    </button>
+                  )}
+
                 </div>
               </div>
               
@@ -1989,13 +2005,15 @@ export default function AdminDashboardPage() {
                   <h2 className="text-xl font-bold text-on-surface">Gestión de Licencias de Software</h2>
                   <p className="text-xs text-slate-500 mt-0.5">Control centralizado de suscripciones, cuentas de correo y vigencias de clientes.</p>
                 </div>
-                <button 
-                  onClick={() => setShowLicenseModal(true)}
-                  className="bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-5 py-3 rounded-xl transition-all active:scale-95 shadow-md shadow-red-600/10 flex items-center gap-2"
-                >
-                  <span className="material-symbols-outlined text-base">add</span>
-                  Registrar Licencia
-                </button>
+                {isAdmin && (
+                  <button
+                    onClick={() => setShowLicenseModal(true)}
+                    className="bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-5 py-3 rounded-xl transition-all active:scale-95 shadow-md shadow-red-600/10 flex items-center gap-2 cursor-pointer"
+                  >
+                    <span className="material-symbols-outlined text-base">add</span>
+                    Registrar Licencia
+                  </button>
+                )}
               </div>
 
               {/* Licenses Data Table */}
@@ -2054,20 +2072,24 @@ export default function AdminDashboardPage() {
                                 )}
                               </td>
                               <td className="px-6 py-4 text-right space-x-2">
-                                <button 
-                                  onClick={() => openEditLicenseModal(lic)}
-                                  className="text-slate-400 hover:text-red-600 p-1 transition-colors"
-                                  title="Editar"
-                                >
-                                  <span className="material-symbols-outlined text-[18px]">edit</span>
-                                </button>
-                                <button 
-                                  onClick={() => handleDeleteLicense(lic.id)}
-                                  className="text-slate-400 hover:text-red-700 p-1 transition-colors"
-                                  title="Eliminar"
-                                >
-                                  <span className="material-symbols-outlined text-[18px]">delete</span>
-                                </button>
+                                {isAdmin && (
+                                  <button
+                                    onClick={() => openEditLicenseModal(lic)}
+                                    className="text-slate-400 hover:text-red-600 p-1 transition-colors cursor-pointer"
+                                    title="Editar"
+                                  >
+                                    <span className="material-symbols-outlined text-[18px]">edit</span>
+                                  </button>
+                                )}
+                                {canDelete && (
+                                  <button
+                                    onClick={() => handleDeleteLicense(lic.id)}
+                                    className="text-slate-400 hover:text-red-700 p-1 transition-colors cursor-pointer"
+                                    title="Eliminar"
+                                  >
+                                    <span className="material-symbols-outlined text-[18px]">delete</span>
+                                  </button>
+                                )}
                               </td>
                             </tr>
                           );
@@ -2094,13 +2116,15 @@ export default function AdminDashboardPage() {
                   <h2 className="text-xl font-bold text-on-surface">Repositorio de Archivos y Drivers Técnicos</h2>
                   <p className="text-xs text-slate-500 mt-0.5">Gestión de recursos, manuales, parches e instaladores de software.</p>
                 </div>
-                <button 
-                  onClick={() => setShowFileModal(true)}
-                  className="bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-5 py-3 rounded-xl transition-all active:scale-95 shadow-md shadow-red-600/10 flex items-center gap-2"
-                >
-                  <span className="material-symbols-outlined text-base">cloud_upload</span>
-                  Registrar Recurso
-                </button>
+                {canEditTecnico && (
+                  <button
+                    onClick={() => setShowFileModal(true)}
+                    className="bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-5 py-3 rounded-xl transition-all active:scale-95 shadow-md shadow-red-600/10 flex items-center gap-2 cursor-pointer"
+                  >
+                    <span className="material-symbols-outlined text-base">cloud_upload</span>
+                    Registrar Recurso
+                  </button>
+                )}
               </div>
 
               {/* Folders Summary Row */}
@@ -2184,12 +2208,14 @@ export default function AdminDashboardPage() {
                             </td>
                             <td className="px-6 py-4 text-xs text-slate-500">{formatDate(file.fecha_subida)}</td>
                             <td className="px-6 py-4 text-right">
-                              <button 
-                                onClick={() => handleDeleteFile(file.id)}
-                                className="text-slate-400 hover:text-red-700 p-1 transition-colors"
-                              >
-                                <span className="material-symbols-outlined text-[18px]">delete</span>
-                              </button>
+                              {canDelete && (
+                                <button
+                                  onClick={() => handleDeleteFile(file.id)}
+                                  className="text-slate-400 hover:text-red-700 p-1 transition-colors cursor-pointer"
+                                >
+                                  <span className="material-symbols-outlined text-[18px]">delete</span>
+                                </button>
+                              )}
                             </td>
                           </tr>
                         ))
@@ -2215,22 +2241,24 @@ export default function AdminDashboardPage() {
                   <h2 className="text-xl font-bold text-on-surface">Productos del Catálogo Web</h2>
                   <p className="text-xs text-slate-500 mt-0.5">Control de ribbons, tintas, tarjetas y repuestos mostrados en el catálogo virtual.</p>
                 </div>
-                <button 
-                  onClick={() => {
-                    setEditingProduct(null);
-                    setFormProductName("");
-                    setFormProductPrice("");
-                    setFormProductDesc("");
-                    setFormProductCategory(categorias[0]?.id ? String(categorias[0].id) : "");
-                    setFormProductImages([""]);
-                    setFormProductActive(true);
-                    setShowProductModal(true);
-                  }}
-                  className="bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-5 py-3 rounded-xl transition-all active:scale-95 shadow-md shadow-red-600/10 flex items-center gap-2"
-                >
-                  <span className="material-symbols-outlined text-base">add</span>
-                  Registrar Producto
-                </button>
+                {canEditCatalogo && (
+                  <button
+                    onClick={() => {
+                      setEditingProduct(null);
+                      setFormProductName("");
+                      setFormProductPrice("");
+                      setFormProductDesc("");
+                      setFormProductCategory(categorias[0]?.id ? String(categorias[0].id) : "");
+                      setFormProductImages([""]);
+                      setFormProductActive(true);
+                      setShowProductModal(true);
+                    }}
+                    className="bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-5 py-3 rounded-xl transition-all active:scale-95 shadow-md shadow-red-600/10 flex items-center gap-2 cursor-pointer"
+                  >
+                    <span className="material-symbols-outlined text-base">add</span>
+                    Registrar Producto
+                  </button>
+                )}
               </div>
 
               {/* Products List Table */}
@@ -2287,20 +2315,24 @@ export default function AdminDashboardPage() {
                               )}
                             </td>
                             <td className="px-6 py-4 text-right space-x-2">
-                              <button 
-                                onClick={() => openEditProductModal(prod)}
-                                className="text-slate-400 hover:text-red-600 p-1 transition-colors"
-                                title="Editar"
-                              >
-                                <span className="material-symbols-outlined text-[18px]">edit</span>
-                              </button>
-                              <button 
-                                onClick={() => handleDeleteProduct(prod.id)}
-                                className="text-slate-400 hover:text-red-700 p-1 transition-colors"
-                                title="Ocultar/Eliminar"
-                              >
-                                <span className="material-symbols-outlined text-[18px]">delete</span>
-                              </button>
+                              {canEditCatalogo && (
+                                <button
+                                  onClick={() => openEditProductModal(prod)}
+                                  className="text-slate-400 hover:text-red-600 p-1 transition-colors cursor-pointer"
+                                  title="Editar"
+                                >
+                                  <span className="material-symbols-outlined text-[18px]">edit</span>
+                                </button>
+                              )}
+                              {canDelete && (
+                                <button
+                                  onClick={() => handleDeleteProduct(prod.id)}
+                                  className="text-slate-400 hover:text-red-700 p-1 transition-colors cursor-pointer"
+                                  title="Ocultar/Eliminar"
+                                >
+                                  <span className="material-symbols-outlined text-[18px]">delete</span>
+                                </button>
+                              )}
                             </td>
                           </tr>
                         ))
@@ -2351,7 +2383,13 @@ export default function AdminDashboardPage() {
                               {msg.telefono && <div className="text-[10px] text-slate-400">{msg.telefono}</div>}
                             </td>
                             <td className="px-6 py-4 text-xs text-slate-600 font-semibold">{msg.asunto}</td>
-                            <td className="px-6 py-4 text-xs text-slate-500 max-w-xs truncate" title={msg.mensaje}>{msg.mensaje}</td>
+                            <td
+                              className="px-6 py-4 text-xs text-slate-500 max-w-xs truncate cursor-pointer hover:text-primary hover:underline"
+                              title="Clic para ver el mensaje completo"
+                              onClick={() => setSelectedMensaje(msg)}
+                            >
+                              {msg.mensaje}
+                            </td>
                             <td className="px-6 py-4">
                               {msg.leido ? (
                                 <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 text-[10px] font-bold">
@@ -2365,21 +2403,30 @@ export default function AdminDashboardPage() {
                             </td>
                             <td className="px-6 py-4 text-right space-x-2">
                               <button
+                                onClick={() => setSelectedMensaje(msg)}
+                                className="text-slate-400 hover:text-primary p-1 transition-colors cursor-pointer"
+                                title="Ver mensaje completo"
+                              >
+                                <span className="material-symbols-outlined text-[18px]">visibility</span>
+                              </button>
+                              <button
                                 onClick={() => toggleMensajeLeido(msg.id, msg.leido)}
-                                className="text-slate-400 hover:text-red-600 p-1 transition-colors"
+                                className="text-slate-400 hover:text-red-600 p-1 transition-colors cursor-pointer"
                                 title={msg.leido ? "Marcar como no leído" : "Marcar como leído"}
                               >
                                 <span className="material-symbols-outlined text-[18px]">
                                   {msg.leido ? "mark_email_unread" : "mark_email_read"}
                                 </span>
                               </button>
-                              <button
-                                onClick={() => handleDeleteMensaje(msg.id)}
-                                className="text-slate-400 hover:text-red-700 p-1 transition-colors"
-                                title="Eliminar"
-                              >
-                                <span className="material-symbols-outlined text-[18px]">delete</span>
-                              </button>
+                              {canDelete && (
+                                <button
+                                  onClick={() => handleDeleteMensaje(msg.id)}
+                                  className="text-slate-400 hover:text-red-700 p-1 transition-colors cursor-pointer"
+                                  title="Eliminar"
+                                >
+                                  <span className="material-symbols-outlined text-[18px]">delete</span>
+                                </button>
+                              )}
                             </td>
                           </tr>
                         ))
@@ -2406,7 +2453,7 @@ export default function AdminDashboardPage() {
                 </div>
                 <button 
                   onClick={() => setShowUserModal(true)}
-                  className="bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-5 py-3 rounded-xl transition-all active:scale-95 shadow-md shadow-red-600/10 flex items-center gap-2"
+                  className="bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-5 py-3 rounded-xl transition-all active:scale-95 shadow-md shadow-red-600/10 flex items-center gap-2 cursor-pointer"
                 >
                   <span className="material-symbols-outlined text-base">person_add</span>
                   Registrar Personal
@@ -2460,14 +2507,14 @@ export default function AdminDashboardPage() {
                             <td className="px-6 py-4 text-right space-x-2">
                               <button
                                 onClick={() => openEditUserModal(u)}
-                                className="text-slate-400 hover:text-red-600 p-1 transition-colors"
+                                className="text-slate-400 hover:text-red-600 p-1 transition-colors cursor-pointer"
                                 title="Editar"
                               >
                                 <span className="material-symbols-outlined text-[18px]">edit</span>
                               </button>
                               <button
                                 onClick={() => handleToggleUserStatus(u.id, u.activo)}
-                                className="text-slate-400 hover:text-red-700 p-1 transition-colors"
+                                className="text-slate-400 hover:text-red-700 p-1 transition-colors cursor-pointer"
                                 title={u.activo ? "Desactivar Cuenta" : "Activar Cuenta"}
                               >
                                 <span className="material-symbols-outlined text-[18px]">
@@ -2499,13 +2546,15 @@ export default function AdminDashboardPage() {
                   <h2 className="text-xl font-bold text-on-surface">Gestión de Servicios de TI</h2>
                   <p className="text-xs text-slate-500 mt-0.5">Control del catálogo público de servicios que se ofrecen al cliente.</p>
                 </div>
-                <button 
-                  onClick={() => setShowServiceModal(true)}
-                  className="bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-5 py-3 rounded-xl transition-all active:scale-95 shadow-md shadow-red-600/10 flex items-center gap-2 cursor-pointer"
-                >
-                  <span className="material-symbols-outlined text-base">add</span>
-                  Crear Servicio
-                </button>
+                {canEditCatalogo && (
+                  <button
+                    onClick={() => setShowServiceModal(true)}
+                    className="bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-5 py-3 rounded-xl transition-all active:scale-95 shadow-md shadow-red-600/10 flex items-center gap-2 cursor-pointer"
+                  >
+                    <span className="material-symbols-outlined text-base">add</span>
+                    Crear Servicio
+                  </button>
+                )}
               </div>
 
               <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
@@ -2544,20 +2593,24 @@ export default function AdminDashboardPage() {
                               )}
                             </td>
                             <td className="px-6 py-4 text-right space-x-2">
-                              <button
-                                onClick={() => openEditServiceModal(srv)}
-                                className="text-slate-400 hover:text-red-600 p-1 transition-colors cursor-pointer"
-                                title="Editar"
-                              >
-                                <span className="material-symbols-outlined text-[18px]">edit</span>
-                              </button>
-                              <button
-                                onClick={() => handleDeleteService(srv.id)}
-                                className="text-slate-400 hover:text-red-700 p-1 transition-colors cursor-pointer"
-                                title="Desactivar"
-                              >
-                                <span className="material-symbols-outlined text-[18px]">block</span>
-                              </button>
+                              {canEditCatalogo && (
+                                <button
+                                  onClick={() => openEditServiceModal(srv)}
+                                  className="text-slate-400 hover:text-red-600 p-1 transition-colors cursor-pointer"
+                                  title="Editar"
+                                >
+                                  <span className="material-symbols-outlined text-[18px]">edit</span>
+                                </button>
+                              )}
+                              {canDelete && (
+                                <button
+                                  onClick={() => handleDeleteService(srv.id)}
+                                  className="text-slate-400 hover:text-red-700 p-1 transition-colors cursor-pointer"
+                                  title="Desactivar"
+                                >
+                                  <span className="material-symbols-outlined text-[18px]">block</span>
+                                </button>
+                              )}
                             </td>
                           </tr>
                         ))
@@ -2583,13 +2636,15 @@ export default function AdminDashboardPage() {
                   <h2 className="text-xl font-bold text-on-surface">Trabajos Realizados (Portafolio)</h2>
                   <p className="text-xs text-slate-500 mt-0.5">Galería de imágenes de trabajos reales del taller y en campo.</p>
                 </div>
-                <button 
-                  onClick={() => setShowPortfolioModal(true)}
-                  className="bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-5 py-3 rounded-xl transition-all active:scale-95 shadow-md shadow-red-600/10 flex items-center gap-2 cursor-pointer"
-                >
-                  <span className="material-symbols-outlined text-base">add_a_photo</span>
-                  Registrar Trabajo
-                </button>
+                {canEditTecnico && (
+                  <button
+                    onClick={() => setShowPortfolioModal(true)}
+                    className="bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-5 py-3 rounded-xl transition-all active:scale-95 shadow-md shadow-red-600/10 flex items-center gap-2 cursor-pointer"
+                  >
+                    <span className="material-symbols-outlined text-base">add_a_photo</span>
+                    Registrar Trabajo
+                  </button>
+                )}
               </div>
 
               <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
@@ -2626,20 +2681,24 @@ export default function AdminDashboardPage() {
                               {formatDate(job.fecha)}
                             </td>
                             <td className="px-6 py-4 text-right space-x-2">
-                              <button
-                                onClick={() => openEditPortfolioModal(job)}
-                                className="text-slate-400 hover:text-red-600 p-1 transition-colors cursor-pointer"
-                                title="Editar"
-                              >
-                                <span className="material-symbols-outlined text-[18px]">edit</span>
-                              </button>
-                              <button
-                                onClick={() => handleDeletePortfolio(job.id)}
-                                className="text-slate-400 hover:text-red-700 p-1 transition-colors cursor-pointer"
-                                title="Eliminar"
-                              >
-                                <span className="material-symbols-outlined text-[18px]">delete</span>
-                              </button>
+                              {canEditTecnico && (
+                                <button
+                                  onClick={() => openEditPortfolioModal(job)}
+                                  className="text-slate-400 hover:text-red-600 p-1 transition-colors cursor-pointer"
+                                  title="Editar"
+                                >
+                                  <span className="material-symbols-outlined text-[18px]">edit</span>
+                                </button>
+                              )}
+                              {canDelete && (
+                                <button
+                                  onClick={() => handleDeletePortfolio(job.id)}
+                                  className="text-slate-400 hover:text-red-700 p-1 transition-colors cursor-pointer"
+                                  title="Eliminar"
+                                >
+                                  <span className="material-symbols-outlined text-[18px]">delete</span>
+                                </button>
+                              )}
                             </td>
                           </tr>
                         ))
@@ -2665,13 +2724,15 @@ export default function AdminDashboardPage() {
                   <h2 className="text-xl font-bold text-on-surface">Categorías de Productos</h2>
                   <p className="text-xs text-slate-500 mt-0.5">Gestión de las categorías del catálogo virtual de suministros y hardware.</p>
                 </div>
-                <button 
-                  onClick={() => setShowCategoryModal(true)}
-                  className="bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-5 py-3 rounded-xl transition-all active:scale-95 shadow-md shadow-red-600/10 flex items-center gap-2 cursor-pointer"
-                >
-                  <span className="material-symbols-outlined text-base">add</span>
-                  Crear Categoría
-                </button>
+                {canEditCatalogo && (
+                  <button
+                    onClick={() => setShowCategoryModal(true)}
+                    className="bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-5 py-3 rounded-xl transition-all active:scale-95 shadow-md shadow-red-600/10 flex items-center gap-2 cursor-pointer"
+                  >
+                    <span className="material-symbols-outlined text-base">add</span>
+                    Crear Categoría
+                  </button>
+                )}
               </div>
 
               <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm max-w-2xl">
@@ -2701,20 +2762,24 @@ export default function AdminDashboardPage() {
                               )}
                             </td>
                             <td className="px-6 py-4 text-right space-x-2">
-                              <button
-                                onClick={() => openEditCategoryModal(cat)}
-                                className="text-slate-400 hover:text-red-600 p-1 transition-colors cursor-pointer"
-                                title="Editar"
-                              >
-                                <span className="material-symbols-outlined text-[18px]">edit</span>
-                              </button>
-                              <button
-                                onClick={() => handleDeleteCategory(cat.id)}
-                                className="text-slate-400 hover:text-red-700 p-1 transition-colors cursor-pointer"
-                                title="Desactivar"
-                              >
-                                <span className="material-symbols-outlined text-[18px]">block</span>
-                              </button>
+                              {canEditCatalogo && (
+                                <button
+                                  onClick={() => openEditCategoryModal(cat)}
+                                  className="text-slate-400 hover:text-red-600 p-1 transition-colors cursor-pointer"
+                                  title="Editar"
+                                >
+                                  <span className="material-symbols-outlined text-[18px]">edit</span>
+                                </button>
+                              )}
+                              {canDelete && (
+                                <button
+                                  onClick={() => handleDeleteCategory(cat.id)}
+                                  className="text-slate-400 hover:text-red-700 p-1 transition-colors cursor-pointer"
+                                  title="Desactivar"
+                                >
+                                  <span className="material-symbols-outlined text-[18px]">block</span>
+                                </button>
+                              )}
                             </td>
                           </tr>
                         ))
@@ -2743,7 +2808,7 @@ export default function AdminDashboardPage() {
               <h3 className="font-bold text-base text-on-surface">
                 {editingLicense ? "Editar Licencia de Cliente" : "Registrar Nueva Licencia"}
               </h3>
-              <button onClick={closeLicenseModal} className="text-slate-400 hover:text-slate-700 transition-colors">
+              <button onClick={closeLicenseModal} className="text-slate-400 hover:text-slate-700 transition-colors cursor-pointer">
                 <span className="material-symbols-outlined">close</span>
               </button>
             </header>
@@ -2847,13 +2912,13 @@ export default function AdminDashboardPage() {
                 <button 
                   type="button" 
                   onClick={closeLicenseModal}
-                  className="px-5 py-3 border border-slate-200 hover:bg-slate-50 rounded-xl text-xs font-bold transition-all"
+                  className="px-5 py-3 border border-slate-200 hover:bg-slate-50 rounded-xl text-xs font-bold transition-all cursor-pointer"
                 >
                   Cancelar
                 </button>
                 <button 
                   type="submit" 
-                  className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold transition-all active:scale-95 shadow-md shadow-red-600/10"
+                  className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold transition-all active:scale-95 shadow-md shadow-red-600/10 cursor-pointer"
                 >
                   {editingLicense ? "Actualizar Cambios" : "Guardar Licencia"}
                 </button>
@@ -2869,7 +2934,7 @@ export default function AdminDashboardPage() {
           <div className="bg-white border border-slate-200 rounded-3xl w-full max-w-lg shadow-2xl relative overflow-hidden">
             <header className="px-8 py-5 border-b border-slate-100 flex justify-between items-center bg-slate-50">
               <h3 className="font-bold text-base text-on-surface">Registrar Nuevo Recurso / Driver</h3>
-              <button onClick={closeFileModal} className="text-slate-400 hover:text-slate-700 transition-colors">
+              <button onClick={closeFileModal} className="text-slate-400 hover:text-slate-700 transition-colors cursor-pointer">
                 <span className="material-symbols-outlined">close</span>
               </button>
             </header>
@@ -2940,13 +3005,13 @@ export default function AdminDashboardPage() {
                 <button 
                   type="button" 
                   onClick={closeFileModal}
-                  className="px-5 py-3 border border-slate-200 hover:bg-slate-50 rounded-xl text-xs font-bold transition-all"
+                  className="px-5 py-3 border border-slate-200 hover:bg-slate-50 rounded-xl text-xs font-bold transition-all cursor-pointer"
                 >
                   Cancelar
                 </button>
                 <button 
                   type="submit" 
-                  className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold transition-all active:scale-95 shadow-md shadow-red-600/10"
+                  className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold transition-all active:scale-95 shadow-md shadow-red-600/10 cursor-pointer"
                 >
                   Guardar Recurso
                 </button>
@@ -2964,7 +3029,7 @@ export default function AdminDashboardPage() {
               <h3 className="font-bold text-base text-on-surface">
                 {editingProduct ? "Editar Producto del Catálogo" : "Registrar Nuevo Producto"}
               </h3>
-              <button onClick={closeProductModal} className="text-slate-400 hover:text-slate-700 transition-colors">
+              <button onClick={closeProductModal} className="text-slate-400 hover:text-slate-700 transition-colors cursor-pointer">
                 <span className="material-symbols-outlined">close</span>
               </button>
             </header>
@@ -3111,13 +3176,13 @@ export default function AdminDashboardPage() {
                 <button 
                   type="button" 
                   onClick={closeProductModal}
-                  className="px-5 py-3 border border-slate-200 hover:bg-slate-50 rounded-xl text-xs font-bold transition-all"
+                  className="px-5 py-3 border border-slate-200 hover:bg-slate-50 rounded-xl text-xs font-bold transition-all cursor-pointer"
                 >
                   Cancelar
                 </button>
                 <button 
                   type="submit" 
-                  className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold transition-all active:scale-95 shadow-md shadow-red-600/10"
+                  className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold transition-all active:scale-95 shadow-md shadow-red-600/10 cursor-pointer"
                 >
                   {editingProduct ? "Actualizar Cambios" : "Guardar Producto"}
                 </button>
@@ -3135,7 +3200,7 @@ export default function AdminDashboardPage() {
               <h3 className="font-bold text-base text-on-surface">
                 {editingUser ? "Editar Personal / Usuario" : "Registrar Nuevo Personal"}
               </h3>
-              <button onClick={closeUserModal} className="text-slate-400 hover:text-slate-700 transition-colors">
+              <button onClick={closeUserModal} className="text-slate-400 hover:text-slate-700 transition-colors cursor-pointer">
                 <span className="material-symbols-outlined">close</span>
               </button>
             </header>
@@ -3209,13 +3274,13 @@ export default function AdminDashboardPage() {
                 <button 
                   type="button" 
                   onClick={closeUserModal}
-                  className="px-5 py-3 border border-slate-200 hover:bg-slate-50 rounded-xl text-xs font-bold transition-all"
+                  className="px-5 py-3 border border-slate-200 hover:bg-slate-50 rounded-xl text-xs font-bold transition-all cursor-pointer"
                 >
                   Cancelar
                 </button>
                 <button 
                   type="submit" 
-                  className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold transition-all active:scale-95 shadow-md shadow-red-600/10"
+                  className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold transition-all active:scale-95 shadow-md shadow-red-600/10 cursor-pointer"
                 >
                   {editingUser ? "Actualizar Cambios" : "Guardar Personal"}
                 </button>
@@ -3462,6 +3527,47 @@ export default function AdminDashboardPage() {
                 </button>
               </footer>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: Ver Mensaje de Contacto Completo */}
+      {selectedMensaje && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
+          <div className="bg-white border border-slate-200 rounded-3xl w-full max-w-lg shadow-2xl relative overflow-hidden">
+            <header className="px-8 py-5 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+              <h3 className="font-bold text-base text-on-surface">{selectedMensaje.asunto}</h3>
+              <button onClick={() => setSelectedMensaje(null)} className="text-slate-400 hover:text-slate-700 transition-colors border-none bg-transparent cursor-pointer">
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            </header>
+
+            <div className="p-8 space-y-4">
+              <div>
+                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Remitente</p>
+                <p className="text-sm text-on-surface">{selectedMensaje.nombre}</p>
+                <p className="text-xs text-slate-500">{selectedMensaje.correo}</p>
+                {selectedMensaje.telefono && <p className="text-xs text-slate-500">{selectedMensaje.telefono}</p>}
+              </div>
+              <div>
+                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Fecha</p>
+                <p className="text-sm text-on-surface">{formatDate(selectedMensaje.fecha)}</p>
+              </div>
+              <div>
+                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Mensaje</p>
+                <p className="text-sm text-on-surface whitespace-pre-wrap">{selectedMensaje.mensaje}</p>
+              </div>
+            </div>
+
+            <footer className="px-8 pb-8 flex justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => setSelectedMensaje(null)}
+                className="px-5 py-3 border border-slate-200 hover:bg-slate-50 rounded-xl text-xs font-bold transition-all cursor-pointer"
+              >
+                Cerrar
+              </button>
+            </footer>
           </div>
         </div>
       )}
