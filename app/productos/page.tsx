@@ -10,7 +10,7 @@
  */
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import StatusHeader from "../components/StatusHeader";
@@ -321,6 +321,8 @@ export default function ProductosPage() {
   const [maxPrice, setMaxPrice] = useState<number>(0);
   const [sortBy, setSortBy] = useState("default");
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
+  const [page, setPage] = useState(1);
+  const productsGridRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -499,14 +501,46 @@ export default function ProductosPage() {
     return 0;
   }), [filteredProducts, sortBy]);
 
-  // Split results into sections of at most 9 products each (Sección 1, 2, 3...)
-  const productSections = useMemo(() => {
-    const chunks: Producto[][] = [];
-    for (let i = 0; i < sortedProducts.length; i += PRODUCTS_PER_SECTION) {
-      chunks.push(sortedProducts.slice(i, i + PRODUCTS_PER_SECTION));
+  // Pagination: show at most PRODUCTS_PER_SECTION products per page
+  const totalPages = Math.max(1, Math.ceil(sortedProducts.length / PRODUCTS_PER_SECTION));
+  const currentPage = Math.min(Math.max(page, 1), totalPages);
+
+  const paginatedProducts = useMemo(
+    () => sortedProducts.slice((currentPage - 1) * PRODUCTS_PER_SECTION, currentPage * PRODUCTS_PER_SECTION),
+    [sortedProducts, currentPage]
+  );
+
+  // Reset to page 1 whenever the active filters or sorting change.
+  // Adjusted synchronously during render (not in an effect) per React's
+  // recommended pattern for resetting state when inputs change.
+  const filterKey = `${searchQuery}|${selectedCategory}|${priceLimit}|${sortBy}`;
+  const [prevFilterKey, setPrevFilterKey] = useState(filterKey);
+  if (filterKey !== prevFilterKey) {
+    setPrevFilterKey(filterKey);
+    setPage(1);
+  }
+
+  const goToPage = (n: number) => {
+    setPage(n);
+    productsGridRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
+  // Builds the numbered page list with "..." gaps for large page counts (e.g. 1 2 ... 9 10)
+  const getPageNumbers = (current: number, total: number): (number | "...")[] => {
+    if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+
+    const keep = new Set<number>([1, 2, total - 1, total, current - 1, current, current + 1]);
+    const sorted = [...keep].filter((p) => p >= 1 && p <= total).sort((a, b) => a - b);
+
+    const result: (number | "...")[] = [];
+    let prev = 0;
+    for (const p of sorted) {
+      if (prev && p - prev > 1) result.push("...");
+      result.push(p);
+      prev = p;
     }
-    return chunks;
-  }, [sortedProducts]);
+    return result;
+  };
 
   // Render sidebar filters for reuse in desktop aside and mobile drawer
   const renderSidebarFilters = (isMobile: boolean = false) => {
@@ -690,7 +724,7 @@ export default function ProductosPage() {
                 </div>
               </div>
 
-              {/* Dynamic Products Grid, split into sections of up to 9 items */}
+              {/* Dynamic Products Grid, paginated to at most 9 items per page */}
               {isLoading ? (
                 <section className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
                   {Array.from({ length: 6 }).map((_, idx) => (
@@ -700,20 +734,10 @@ export default function ProductosPage() {
                     />
                   ))}
                 </section>
-              ) : productSections.length > 0 ? (
-                <div className="space-y-12">
-                  {productSections.map((sectionProducts, sectionIdx) => (
-                    <section key={sectionIdx}>
-                      {productSections.length > 1 && (
-                        <div className="flex items-center gap-3 mb-6">
-                          <h2 className="font-headline text-xs font-extrabold text-slate-700 uppercase tracking-wider whitespace-nowrap">
-                            Sección {sectionIdx + 1}
-                          </h2>
-                          <div className="flex-1 h-px bg-slate-200" />
-                        </div>
-                      )}
-                      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
-                        {sectionProducts.map((prod) => {
+              ) : paginatedProducts.length > 0 ? (
+                <>
+                  <section ref={productsGridRef} className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+                    {paginatedProducts.map((prod) => {
                           const cartItem = cart.find((item) => item.id === prod.id);
 
                           return (
@@ -803,10 +827,49 @@ export default function ProductosPage() {
                       </article>
                           );
                         })}
-                      </div>
-                    </section>
-                  ))}
-                </div>
+                  </section>
+
+                  {/* Pagination Controls (numbered page boxes) */}
+                  {totalPages > 1 && (
+                    <div className="flex items-center justify-center gap-2 pt-4 flex-wrap">
+                      <button
+                        onClick={() => goToPage(currentPage - 1)}
+                        disabled={currentPage === 1}
+                        className="w-9 h-9 flex items-center justify-center rounded-xl border border-slate-200 text-slate-500 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer bg-white"
+                      >
+                        <span className="material-symbols-outlined text-base">chevron_left</span>
+                      </button>
+
+                      {getPageNumbers(currentPage, totalPages).map((p, idx) =>
+                        p === "..." ? (
+                          <span key={`dots-${idx}`} className="w-9 h-9 flex items-center justify-center text-slate-400 text-xs font-bold">
+                            ···
+                          </span>
+                        ) : (
+                          <button
+                            key={p}
+                            onClick={() => goToPage(p)}
+                            className={`w-9 h-9 flex items-center justify-center rounded-xl text-xs font-bold transition-all cursor-pointer border ${
+                              p === currentPage
+                                ? "bg-primary text-white border-primary shadow-md shadow-primary/20"
+                                : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50"
+                            }`}
+                          >
+                            {p}
+                          </button>
+                        )
+                      )}
+
+                      <button
+                        onClick={() => goToPage(currentPage + 1)}
+                        disabled={currentPage === totalPages}
+                        className="w-9 h-9 flex items-center justify-center rounded-xl border border-slate-200 text-slate-500 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer bg-white"
+                      >
+                        <span className="material-symbols-outlined text-base">chevron_right</span>
+                      </button>
+                    </div>
+                  )}
+                </>
               ) : (
                 <div className="py-20 text-center text-on-surface-variant font-headline text-base bg-slate-50 border border-slate-200 rounded-3xl">
                   <ShoppingBag className="w-12 h-12 text-slate-300 mb-3 mx-auto" />
