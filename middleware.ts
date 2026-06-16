@@ -71,6 +71,11 @@ export default withAuth(
       );
     }
 
+    // Users who must change their password on first login are redirected
+    if (token?.mustChangePassword && !path.startsWith("/api/") && path !== "/admin/change-password") {
+      return NextResponse.redirect(new URL("/admin/change-password", req.url));
+    }
+
     return NextResponse.next();
   },
   {
@@ -103,6 +108,7 @@ export default withAuth(
 // Define qué rutas intercepta el middleware (Edge Runtime)
 export const config = {
   matcher: [
+    "/admin/change-password",
     "/admin/dashboard/:path*",
     "/admin/productos/:path*",
     "/admin/servicios/:path*",

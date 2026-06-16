@@ -45,6 +45,7 @@ export const authOptions: AuthOptions = {
             name: user.nombre,
             email: user.email,
             role: user.rol,
+            mustChangePassword: user.mustChangePassword,
           };
         } catch (error) {
           console.error("[Auth] Database connection or query error during authorize:", error);
@@ -56,14 +57,18 @@ export const authOptions: AuthOptions = {
   // Usa JWT en lugar de sesiones en base de datos (sin tabla de sesiones)
   session: { strategy: "jwt" },
   callbacks: {
-    // Agrega el rol del usuario al token JWT al hacer login
     async jwt({ token, user }) {
-      if (user) token.role = (user as any).role;
+      if (user) {
+        token.role = (user as any).role;
+        token.mustChangePassword = (user as any).mustChangePassword;
+      }
       return token;
     },
-    // Expone el rol del token en el objeto session del cliente
     async session({ session, token }) {
-      if (session.user) (session.user as any).role = token.role;
+      if (session.user) {
+        (session.user as any).role = token.role;
+        (session.user as any).mustChangePassword = token.mustChangePassword;
+      }
       return session;
     },
   },

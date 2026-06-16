@@ -10,16 +10,17 @@ datasource db {
 // ─── SISTEMA ADMINISTRATIVO ───────────────────────────
 
 model Usuario {
-  id            Int              @id @default(autoincrement()) @map("id_usuario")
-  nombre        String
-  usuario       String           @unique
-  email         String           @unique
-  contrasena    String
-  rol           Rol              @default(tecnico)
-  activo        Boolean          @default(true)
-  createdAt     DateTime         @default(now())
-  archivos      ArchivoTecnico[]
-  licencias     Licencia[]
+  id                  Int              @id @default(autoincrement()) @map("id_usuario")
+  nombre              String
+  usuario             String           @unique
+  email               String           @unique
+  contrasena          String
+  rol                 Rol              @default(tecnico)
+  activo              Boolean          @default(true)
+  mustChangePassword  Boolean          @default(false)
+  createdAt           DateTime         @default(now())
+  archivos            ArchivoTecnico[]
+  licencias           Licencia[]
 }
 
 enum Rol {
