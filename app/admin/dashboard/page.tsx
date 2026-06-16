@@ -1184,22 +1184,7 @@ export default function AdminDashboardPage() {
 
         {/* Support & Logout links in sidebar footer */}
         <div className="mt-auto border-t border-slate-100 pt-4 space-y-1">
-          {/* User mini-card */}
-          <div className="mx-3 mb-3 px-3 py-2.5 bg-slate-50 border border-slate-100 rounded-xl flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-red-600 text-white flex items-center justify-center font-black text-xs uppercase shrink-0 shadow-sm">
-              {(() => {
-                const name = session?.user?.name || "";
-                const parts = name.trim().split(/\s+/);
-                return parts.length >= 2
-                  ? (parts[0][0] + parts[1][0]).toUpperCase()
-                  : name.substring(0, 2).toUpperCase() || "US";
-              })()}
-            </div>
-            <div className="min-w-0">
-              <p className="text-xs font-bold text-slate-800 truncate leading-tight">{session?.user?.name || "Usuario"}</p>
-              <p className="text-[10px] text-red-500 font-bold uppercase tracking-wide leading-tight">{(session?.user as any)?.role || "técnico"}</p>
-            </div>
-          </div>
+
 
           <Link href="/" className="flex items-center gap-3 text-slate-500 hover:text-on-surface px-6 py-3 hover:bg-slate-50 transition-colors">
             <span className="material-symbols-outlined text-[20px] text-slate-400">public</span>
