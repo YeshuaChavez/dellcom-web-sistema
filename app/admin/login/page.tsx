@@ -105,25 +105,25 @@ export default function AdminLoginPage() {
 
           {/* Status badge */}
           <div className="relative z-20 flex justify-end">
-            <span className="inline-flex items-center gap-1.5 py-1 px-3 bg-white/70 backdrop-blur-md border border-white/80 text-primary font-bold text-[9px] rounded-full uppercase tracking-widest leading-none shadow-sm">
+            <span className="inline-flex items-center gap-1.5 py-1.5 px-4 bg-white/70 backdrop-blur-md border border-white/80 text-primary font-bold text-[10px] lg:text-xs rounded-full uppercase tracking-widest leading-none shadow-sm">
               <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
               Acceso Técnico
             </span>
           </div>
 
           {/* Centered Greeting */}
-          <div className="relative z-20 my-auto py-10 space-y-4">
-            <h1 className="font-headline text-4xl md:text-5xl font-black text-slate-800 leading-none tracking-tight">
+          <div className="relative z-20 my-auto py-10 space-y-6">
+            <h1 className="font-headline text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-black text-slate-800 leading-none tracking-tight">
               ¡Hola, <br /><span className="text-primary">Dellcom!</span>
             </h1>
-            <p className="text-xs md:text-sm text-slate-500 leading-relaxed font-semibold max-w-sm">
+            <p className="text-sm md:text-base lg:text-lg text-slate-500 leading-relaxed font-semibold max-w-sm lg:max-w-md">
               Soporte IT de primer nivel, repuestos y licencias originales. Gestiona los servicios técnicos de forma eficiente y segura desde un solo panel.
             </p>
           </div>
 
           {/* Footer */}
           <div className="relative z-20">
-            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest leading-none">
+            <p className="text-[10px] lg:text-xs text-slate-400 font-bold uppercase tracking-widest leading-none">
               © 2026 DELLCOM SAC. Todos los derechos reservados.
             </p>
           </div>
@@ -133,39 +133,39 @@ export default function AdminLoginPage() {
         <div className="w-full md:w-1/2 min-h-screen p-10 md:p-16 lg:p-20 flex flex-col justify-between bg-white relative z-10">
 
           {/* Brand mark */}
-          <div className="flex items-center gap-2.5 justify-center md:justify-start">
-            <DellcomLogo className="w-8 h-8" />
+          <div className="flex items-center gap-3 justify-center md:justify-start">
+            <DellcomLogo className="w-10 h-10 lg:w-12 lg:h-12" />
             <div className="leading-none">
-              <span className="font-headline text-sm font-black text-slate-800 block">DELLCOM</span>
-              <span className="text-[8px] font-bold text-primary uppercase tracking-widest block mt-0.5">Portal de Gestión Interna</span>
+              <span className="font-headline text-base lg:text-lg font-black text-slate-800 block">DELLCOM</span>
+              <span className="text-[9px] lg:text-[10px] font-bold text-primary uppercase tracking-widest block mt-0.5">Portal de Gestión Interna</span>
             </div>
           </div>
 
           {/* Centered form block */}
-          <div className="max-w-sm w-full mx-auto my-auto py-10 space-y-7">
-            <div className="space-y-1.5 text-center md:text-left">
-              <h2 className="font-headline text-2xl md:text-3xl font-black text-slate-800 tracking-tight">¡Bienvenido de nuevo!</h2>
-              <p className="text-xs text-slate-400 font-semibold leading-relaxed">
+          <div className="max-w-md lg:max-w-lg w-full mx-auto my-auto py-10 space-y-8">
+            <div className="space-y-2 text-center md:text-left">
+              <h2 className="font-headline text-3xl md:text-4xl lg:text-5xl font-black text-slate-800 tracking-tight">¡Bienvenido de nuevo!</h2>
+              <p className="text-sm lg:text-base text-slate-400 font-semibold leading-relaxed">
                 Ingresa tus credenciales para acceder al panel administrativo.
               </p>
             </div>
 
             {error && (
-              <div className="bg-red-50 border border-red-100 text-red-600 text-xs p-4 rounded-xl flex items-start gap-2.5 font-semibold animate-fade-in">
+              <div className="bg-red-50 border border-red-100 text-red-600 text-sm p-4 rounded-xl flex items-start gap-2.5 font-semibold animate-fade-in">
                 <span className="material-symbols-outlined text-base mt-0.5">error</span>
                 <span>{error}</span>
               </div>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-5">
+            <form onSubmit={handleSubmit} className="space-y-6">
 
               {/* Username Field Group */}
               <div className="group relative flex flex-col">
-                <label className="block text-[9px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">
+                <label className="block text-[10px] lg:text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
                   Usuario
                 </label>
-                <div className="relative flex items-center bg-slate-50/80 border border-slate-200/80 rounded-2xl focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-all px-4 py-3">
-                  <span className="material-symbols-outlined text-slate-400 group-focus-within:text-primary transition-colors mr-3 text-lg leading-none">person</span>
+                <div className="relative flex items-center bg-slate-50/80 border border-slate-200/80 rounded-2xl focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-all px-5 py-4">
+                  <span className="material-symbols-outlined text-slate-400 group-focus-within:text-primary transition-colors mr-3 text-xl leading-none">person</span>
                   <input
                     type="text"
                     required
@@ -173,18 +173,18 @@ export default function AdminLoginPage() {
                     value={usuario}
                     onChange={(e) => setUsuario(e.target.value)}
                     placeholder="Ingresa tu usuario"
-                    className="w-full bg-transparent border-none focus:outline-none focus:ring-0 p-0 text-slate-800 text-sm font-semibold placeholder:text-slate-400"
+                    className="w-full bg-transparent border-none focus:outline-none focus:ring-0 p-0 text-slate-800 text-sm lg:text-base font-semibold placeholder:text-slate-400"
                   />
                 </div>
               </div>
 
               {/* Password Field Group */}
               <div className="group relative flex flex-col">
-                <label className="block text-[9px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">
+                <label className="block text-[10px] lg:text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
                   Contraseña
                 </label>
-                <div className="relative flex items-center bg-slate-50/80 border border-slate-200/80 rounded-2xl focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-all px-4 py-3">
-                  <span className="material-symbols-outlined text-slate-400 group-focus-within:text-primary transition-colors mr-3 text-lg leading-none">lock</span>
+                <div className="relative flex items-center bg-slate-50/80 border border-slate-200/80 rounded-2xl focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-all px-5 py-4">
+                  <span className="material-symbols-outlined text-slate-400 group-focus-within:text-primary transition-colors mr-3 text-xl leading-none">lock</span>
                   <input
                     type="password"
                     required
@@ -192,7 +192,7 @@ export default function AdminLoginPage() {
                     value={contrasena}
                     onChange={(e) => setContrasena(e.target.value)}
                     placeholder="Contraseña"
-                    className="w-full bg-transparent border-none focus:outline-none focus:ring-0 p-0 text-slate-800 text-sm font-semibold placeholder:text-slate-400"
+                    className="w-full bg-transparent border-none focus:outline-none focus:ring-0 p-0 text-slate-800 text-sm lg:text-base font-semibold placeholder:text-slate-400"
                   />
                 </div>
               </div>
@@ -202,13 +202,13 @@ export default function AdminLoginPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-primary hover:bg-primary/95 text-white font-bold py-3.5 px-6 rounded-full text-sm transition-all active:scale-[0.98] shadow-lg shadow-primary/10 flex items-center justify-center gap-2 cursor-pointer border-none"
+                  className="w-full bg-primary hover:bg-primary/95 text-white font-bold py-4 lg:py-5 px-6 rounded-full text-sm lg:text-base transition-all active:scale-[0.98] shadow-lg shadow-primary/10 flex items-center justify-center gap-2 cursor-pointer border-none"
                 >
                   {loading ? (
                     <span className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin"></span>
                   ) : (
                     <>
-                      <span className="material-symbols-outlined text-lg leading-none">login</span>
+                      <span className="material-symbols-outlined text-xl leading-none">login</span>
                       Iniciar Sesión
                     </>
                   )}
@@ -216,9 +216,9 @@ export default function AdminLoginPage() {
 
                 <Link
                   href="/"
-                  className="w-full bg-white hover:bg-slate-50 text-slate-700 border border-slate-200/85 font-bold py-3 px-6 rounded-full text-sm transition-all active:scale-[0.98] flex items-center justify-center gap-2 shadow-sm"
+                  className="w-full bg-white hover:bg-slate-50 text-slate-700 border border-slate-200/85 font-bold py-3.5 lg:py-4 px-6 rounded-full text-sm lg:text-base transition-all active:scale-[0.98] flex items-center justify-center gap-2 shadow-sm"
                 >
-                  <span className="material-symbols-outlined text-lg">arrow_back</span>
+                  <span className="material-symbols-outlined text-xl">arrow_back</span>
                   Volver a Inicio
                 </Link>
               </div>
