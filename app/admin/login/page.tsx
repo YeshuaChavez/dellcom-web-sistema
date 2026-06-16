@@ -166,10 +166,13 @@ export default function AdminLoginPage() {
           </div>
 
           {/* Auth Title */}
-          <div className="text-center mt-4">
-            <h3 className="font-headline text-xl font-bold text-slate-800 tracking-tight leading-none">
-              Inicio de Sesión
-            </h3>
+          <div className="space-y-2.5 mt-4">
+            <h2 className="font-headline text-3xl md:text-4xl font-black text-slate-800 tracking-tight text-center">
+              Welcome Back!
+            </h2>
+            <p className="text-xs text-slate-400 font-semibold leading-relaxed text-center">
+              Acceso exclusivo para personal técnico autorizado de DELLCOM.
+            </p>
           </div>
 
           {error && (
@@ -182,21 +185,21 @@ export default function AdminLoginPage() {
           {/* Form with icons and underlined fields */}
           <form onSubmit={handleSubmit} className="space-y-6 mt-6">
             
-            {/* Email Field Group */}
+            {/* Username Field Group */}
             <div className="group relative flex flex-col">
               <label className="block text-[10px] font-bold text-slate-450 uppercase tracking-wider mb-1">
-                Correo Electrónico
+                Usuario
               </label>
               <div className="relative flex items-center border-b-2 border-slate-200 focus-within:border-primary transition-all py-1">
-                <span className="material-symbols-outlined text-slate-450 group-focus-within:text-primary transition-colors mr-3 text-lg leading-none">mail</span>
+                <span className="material-symbols-outlined text-slate-450 group-focus-within:text-primary transition-colors mr-3 text-lg leading-none">person</span>
                 <input 
                   type="text" 
                   required
                   disabled={loading}
                   value={usuario}
                   onChange={(e) => setUsuario(e.target.value)}
-                  placeholder="Usuario o Correo"
-                  className="w-full bg-transparent border-none focus:outline-none focus:ring-0 px-0 py-1.5 text-slate-800 text-sm font-semibold placeholder:text-slate-350"
+                  placeholder="Ingresa tu usuario"
+                  className="w-full bg-transparent border-none focus:outline-none focus:ring-0 px-0 py-1.5 text-slate-800 text-sm font-semibold placeholder:text-slate-305"
                 />
               </div>
             </div>
@@ -215,12 +218,9 @@ export default function AdminLoginPage() {
                   value={contrasena}
                   onChange={(e) => setContrasena(e.target.value)}
                   placeholder="Contraseña"
-                  className="w-full bg-transparent border-none focus:outline-none focus:ring-0 px-0 py-1.5 text-slate-800 text-sm font-semibold placeholder:text-slate-350"
+                  className="w-full bg-transparent border-none focus:outline-none focus:ring-0 px-0 py-1.5 text-slate-800 text-sm font-semibold placeholder:text-slate-305"
                 />
               </div>
-              <span className="text-[11px] text-slate-400 hover:text-primary transition-colors cursor-pointer font-bold block text-right mt-2">
-                ¿Necesitas una Cuenta?
-              </span>
             </div>
 
             {/* Iniciar Sesión button (Pill shaped, Crimson Red) */}
