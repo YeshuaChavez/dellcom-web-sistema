@@ -155,7 +155,8 @@ export default function DescargasPage() {
     return date.toLocaleDateString("es-ES", {
       day: "2-digit",
       month: "short",
-      year: "numeric"
+      year: "numeric",
+      timeZone: "UTC"
     });
   };
 

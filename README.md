@@ -2,7 +2,9 @@
 
 Este repositorio contiene la solucion de software integral para la corporacion DELLCOM SAC, un centro tecnologico especializado en soporte tecnico de computadoras, redes y suministros IT, ubicado en Los Olivos, Lima. El proyecto combina un portal publico de alta gama con un panel administrativo protegido de nivel empresarial para tecnicos y administradores.
 
-La solucion esta desarrollada con Next.js 16 (App Router), TypeScript, Tailwind CSS v4, Prisma ORM con MySQL en Railway, NextAuth.js para autenticacion JWT, y un conjunto de herramientas de ingenieria de software de alta calidad (Zod, bcryptjs, Jest, GitHub Actions).
+La solucion esta desarrollada con Next.js 16.2.4 (App Router, Turbopack), TypeScript en modo estricto, Tailwind CSS v4, Prisma ORM 5.22 con MySQL en Railway, NextAuth.js 4 para autenticacion JWT, React 19.2.4, y un conjunto de herramientas de ingenieria de software de alta calidad (Zod, bcryptjs, Jest, GitHub Actions).
+
+**Produccion:** [dellcom-web.vercel.app](https://dellcom-web.vercel.app) — desplegado en Vercel con integracion continua via GitHub App (cada push a `main` dispara un build y deploy automatico, sin pasos manuales).
 
 ---
 
@@ -155,6 +157,8 @@ Acceso restringido por JWT. Los roles disponibles son `admin`, `tecnico` y `vend
 * **Carga de Archivos Hibrida (AWS S3 / Local)**: El endpoint `POST /api/admin/upload` detecta automaticamente si las credenciales de S3 estan configuradas. Si lo estan, sube el archivo al bucket S3. Si no, escribe en `public/uploads/` de forma transparente.
 * **Pruebas con Jest**: Suite de pruebas unitarias en `__tests__/` configurada con `ts-jest` para validar esquemas y logica de datos.
 * **Pipeline CI con GitHub Actions**: Se ejecuta en cada push a `main`: instala dependencias, genera cliente Prisma, corre ESLint, ejecuta Jest, valida TypeScript y compila el build de Next.js.
+* **Estados de Carga Explicitos**: Las paginas publicas que consumen datos via fetch del lado del cliente (p. ej. `/productos`) muestran un esqueleto de carga mientras la peticion esta en curso, en lugar de renderizar prematuramente un estado de "sin resultados" durante una red lenta o un cold-start del servidor.
+* **Renderizado de Fechas Seguro para Hidratacion**: Todo formato de fecha visible en paginas publicas (`toLocaleDateString`) fija explicitamente `timeZone: "UTC"`. Esto evita que el servidor (Vercel, UTC) y el navegador del visitante (zona horaria local, p. ej. Peru UTC-5) calculen un dia distinto para el mismo instante, lo que de otro modo produce un error de hidratacion de React (#418) visible en la consola del navegador.
 
 ---
 
@@ -235,6 +239,19 @@ CRON_SECRET="clave_aleatoria_segura_para_el_cron"
    ```
 
 La aplicacion estara disponible en `http://localhost:3000` y el panel admin en `http://localhost:3000/admin/login`.
+
+---
+
+## Arquitectura de Despliegue en Produccion
+
+| Componente | Proveedor | Detalle |
+|------------|-----------|---------|
+| Aplicacion Next.js (frontend + API routes) | Vercel | Deploy automatico en cada push a `main` via integracion GitHub App. Sin `vercel.json`; configuracion gestionada desde el dashboard de Vercel. |
+| Base de datos MySQL | Railway | Instancia gestionada, accesible via `DATABASE_URL` |
+| Almacenamiento de archivos e imagenes | AWS S3 | Bucket privado; `POST /api/admin/upload` sube directamente desde el panel admin. Si las credenciales no estan configuradas, el sistema usa `public/uploads/` como fallback transparente. |
+| Integracion Continua | GitHub Actions | Corre en cada push/PR a `main`/`master`: lint, Jest, `tsc --noEmit` y build. No despliega; el deploy lo gestiona Vercel de forma independiente. |
+
+El repositorio es publico en GitHub. **Recomendacion de seguridad:** las credenciales por defecto del seed (`admin` / `admin123`, documentadas mas arriba) deben cambiarse antes de operar el sistema con datos reales de clientes, ya que quedan visibles en texto plano en `scripts/seed.ts` para cualquiera que consulte el repositorio.
 
 ---
 

@@ -312,6 +312,7 @@ export default function ProductosPage() {
   const [selectedProductDetails, setSelectedProductDetails] = useState<Producto | null>(null);
   const [lightboxImgIdx, setLightboxImgIdx] = useState(0);
   const [mounted, setMounted] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Advanced Filters & Sorting
   const [priceLimit, setPriceLimit] = useState<number>(0);
@@ -395,6 +396,8 @@ export default function ProductosPage() {
         setPriceLimit(computedMaxPrice);
         setProductos(fallbackProducts);
         setCategorias(fallbackCategories);
+      } finally {
+        setIsLoading(false);
       }
     }
     loadData();
@@ -650,7 +653,13 @@ export default function ProductosPage() {
                     Filtros
                   </button>
                   <p className="text-xs text-slate-500 font-bold leading-none uppercase">
-                    Mostrando <span className="text-slate-800 font-extrabold">{sortedProducts.length}</span> de <span className="text-slate-800 font-extrabold">{productos.length}</span> resultados
+                    {isLoading ? (
+                      "Cargando productos..."
+                    ) : (
+                      <>
+                        Mostrando <span className="text-slate-800 font-extrabold">{sortedProducts.length}</span> de <span className="text-slate-800 font-extrabold">{productos.length}</span> resultados
+                      </>
+                    )}
                   </p>
                 </div>
 
@@ -672,7 +681,14 @@ export default function ProductosPage() {
 
               {/* Dynamic Products Grid */}
               <section className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
-                {sortedProducts.length > 0 ? (
+                {isLoading ? (
+                  Array.from({ length: 6 }).map((_, idx) => (
+                    <div
+                      key={idx}
+                      className="bg-slate-50 border border-slate-200 rounded-3xl h-72 animate-pulse"
+                    />
+                  ))
+                ) : sortedProducts.length > 0 ? (
                   sortedProducts.map((prod) => {
                     const cartItem = cart.find((item) => item.id === prod.id);
 
