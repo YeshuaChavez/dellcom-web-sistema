@@ -117,9 +117,18 @@ export function welcomeEmail(params: {
     <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#fffbeb;border:1px solid #fef3c7;border-radius:12px;margin-bottom:28px;border-collapse:collapse;">
       <tr>
         <td style="padding:16px 20px;">
-          <p style="margin:0;font-size:12.5px;color:#92400e;font-weight:600;line-height:1.6;font-family:'Outfit',sans-serif;">
-            ⚠️ Al ingresar por primera vez, el sistema te solicitará que establezcas tu propia contraseña de acceso segura. Esta contraseña temporal quedará invalidada inmediatamente después de realizar ese cambio.
-          </p>
+          <table cellpadding="0" cellspacing="0" border="0" width="100%" style="border-collapse:collapse;">
+            <tr>
+              <td style="vertical-align:top;width:24px;padding-top:2px;">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="#b45309" style="display:block;">
+                  <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
+                </svg>
+              </td>
+              <td style="vertical-align:top;font-size:12.5px;color:#92400e;font-weight:600;line-height:1.6;font-family:'Outfit',sans-serif;">
+                Al ingresar por primera vez, el sistema te solicitará que establezcas tu propia contraseña de acceso segura. Esta contraseña temporal quedará invalidada inmediatamente después de realizar ese cambio.
+              </td>
+            </tr>
+          </table>
         </td>
       </tr>
     </table>
@@ -156,9 +165,18 @@ export function resetPasswordEmail(params: {
     <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;margin-top:24px;border-collapse:collapse;">
       <tr>
         <td style="padding:16px 20px;">
-          <p style="margin:0;font-size:12.5px;color:#64748b;line-height:1.6;font-family:'Outfit',sans-serif;">
-            🔒 Este enlace de recuperación es de <strong>un solo uso</strong> y expira automáticamente en <strong>1 hora</strong>. Si no has solicitado este cambio, por favor ignora este correo de forma segura — tu contraseña actual no será modificada.
-          </p>
+          <table cellpadding="0" cellspacing="0" border="0" width="100%" style="border-collapse:collapse;">
+            <tr>
+              <td style="vertical-align:top;width:24px;padding-top:2px;">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="#64748b" style="display:block;">
+                  <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
+                </svg>
+              </td>
+              <td style="vertical-align:top;font-size:12.5px;color:#64748b;line-height:1.6;font-family:'Outfit',sans-serif;">
+                Este enlace de recuperación es de <strong>un solo uso</strong> y expira automáticamente en <strong>1 hora</strong>. Si no has solicitado este cambio, por favor ignora este correo de forma segura — tu contraseña actual no será modificada.
+              </td>
+            </tr>
+          </table>
         </td>
       </tr>
     </table>
