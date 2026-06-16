@@ -147,6 +147,8 @@ function ZoomableImage({ src, alt, categoryName }: { src?: string; alt: string; 
   );
 }
 
+const PRODUCTS_PER_SECTION = 9;
+
 const fallbackCategories = [
   { id: 0, nombre: "Todos" },
   { id: 1, nombre: "Ribbons y Tintas" },
@@ -497,6 +499,15 @@ export default function ProductosPage() {
     return 0;
   }), [filteredProducts, sortBy]);
 
+  // Split results into sections of at most 9 products each (Sección 1, 2, 3...)
+  const productSections = useMemo(() => {
+    const chunks: Producto[][] = [];
+    for (let i = 0; i < sortedProducts.length; i += PRODUCTS_PER_SECTION) {
+      chunks.push(sortedProducts.slice(i, i + PRODUCTS_PER_SECTION));
+    }
+    return chunks;
+  }, [sortedProducts]);
+
   // Render sidebar filters for reuse in desktop aside and mobile drawer
   const renderSidebarFilters = (isMobile: boolean = false) => {
     return (
@@ -679,22 +690,35 @@ export default function ProductosPage() {
                 </div>
               </div>
 
-              {/* Dynamic Products Grid */}
-              <section className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
-                {isLoading ? (
-                  Array.from({ length: 6 }).map((_, idx) => (
+              {/* Dynamic Products Grid, split into sections of up to 9 items */}
+              {isLoading ? (
+                <section className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+                  {Array.from({ length: 6 }).map((_, idx) => (
                     <div
                       key={idx}
                       className="bg-slate-50 border border-slate-200 rounded-3xl h-72 animate-pulse"
                     />
-                  ))
-                ) : sortedProducts.length > 0 ? (
-                  sortedProducts.map((prod) => {
-                    const cartItem = cart.find((item) => item.id === prod.id);
+                  ))}
+                </section>
+              ) : productSections.length > 0 ? (
+                <div className="space-y-12">
+                  {productSections.map((sectionProducts, sectionIdx) => (
+                    <section key={sectionIdx}>
+                      {productSections.length > 1 && (
+                        <div className="flex items-center gap-3 mb-6">
+                          <h2 className="font-headline text-xs font-extrabold text-slate-700 uppercase tracking-wider whitespace-nowrap">
+                            Sección {sectionIdx + 1}
+                          </h2>
+                          <div className="flex-1 h-px bg-slate-200" />
+                        </div>
+                      )}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+                        {sectionProducts.map((prod) => {
+                          const cartItem = cart.find((item) => item.id === prod.id);
 
-                    return (
-                      <article 
-                        key={prod.id} 
+                          return (
+                      <article
+                        key={prod.id}
                         className="bg-white rounded-3xl overflow-hidden border border-slate-200/80 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group flex flex-col justify-between relative"
                       >
                         {/* Dynamic Sale Badge (Visual Vibe) */}
@@ -777,15 +801,18 @@ export default function ProductosPage() {
                           </div>
                         </div>
                       </article>
-                    );
-                  })
-                ) : (
-                  <div className="col-span-full py-20 text-center text-on-surface-variant font-headline text-base bg-slate-50 border border-slate-200 rounded-3xl">
-                    <ShoppingBag className="w-12 h-12 text-slate-300 mb-3 mx-auto" />
-                    No se encontraron productos en esta categoría o precio.
-                  </div>
-                )}
-              </section>
+                          );
+                        })}
+                      </div>
+                    </section>
+                  ))}
+                </div>
+              ) : (
+                <div className="py-20 text-center text-on-surface-variant font-headline text-base bg-slate-50 border border-slate-200 rounded-3xl">
+                  <ShoppingBag className="w-12 h-12 text-slate-300 mb-3 mx-auto" />
+                  No se encontraron productos en esta categoría o precio.
+                </div>
+              )}
             </div>
           </div>
         </div>
