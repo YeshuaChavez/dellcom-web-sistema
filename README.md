@@ -1,6 +1,6 @@
 # DELLCOM SAC - Plataforma Corporativa y Sistema Administrativo IT
 
-Este repositorio contiene la solucion de software integral para la corporacion DELLCOM SAC, un centro tecnologico especializado en soporte tecnico de computadoras, redes y suministros IT, ubicado en Los Olivos, Lima. El proyecto combina un portal publico de alta gama con un panel administrativo protegido de nivel empresarial para tecnicos y administradores.
+Este repositorio contiene la solucion de software integral para la corporacion DELLCOM SAC, un centro tecnologico especializado en soporte tecnico de computadoras, redes y suministros IT, ubicado en Los Olivos, Lima. El proyecto combina un portal publico de alta gama con un panel administrativo protegido de nivel empresarial, con permisos diferenciados para administradores, tecnicos y vendedores.
 
 La solucion esta desarrollada con Next.js 16.2.4 (App Router, Turbopack), TypeScript en modo estricto, Tailwind CSS v4, Prisma ORM 5.22 con MySQL en Railway, NextAuth.js 4 para autenticacion JWT, React 19.2.4, y un conjunto de herramientas de ingenieria de software de alta calidad (Zod, bcryptjs, Jest, GitHub Actions).
 
@@ -27,7 +27,7 @@ DELLCOM-WEB/
 │   ├── api/
 │   │   ├── admin/
 │   │   │   ├── contacto/
-│   │   │   │   └── route.ts            # GET/PUT/DELETE mensajes de contacto (admin)
+│   │   │   │   └── route.ts            # GET/PUT mensajes de contacto (cualquier sesion) / DELETE (solo admin)
 │   │   │   ├── upload/
 │   │   │   │   └── route.ts            # POST carga de archivos: AWS S3 o fallback local
 │   │   │   └── usuarios/
@@ -92,6 +92,7 @@ DELLCOM-WEB/
 │   ├── layout.tsx                      # Raiz de la app: tipografia Outfit e iconos Material
 │   └── page.tsx                        # Landing page principal (Hero, Bento Grid, Portafolio)
 ├── lib/
+│   ├── apiAuth.ts                      # Helper requireRole(): autorizacion por rol reutilizable en rutas API
 │   ├── auth.ts                         # Configuracion de NextAuth: proveedor, callbacks JWT, roles
 │   └── prisma.ts                       # Cliente Prisma singleton (previene multiples instancias)
 ├── prisma/
@@ -133,16 +134,31 @@ DELLCOM-WEB/
 
 ### 2. Panel Administrativo Protegido (/admin/dashboard)
 
-Acceso restringido por JWT. Los roles disponibles son `admin`, `tecnico` y `vendedor`.
+Acceso restringido por JWT. Los roles disponibles son `admin`, `tecnico` y `vendedor`, cada uno con permisos delimitados por su funcion de trabajo (ver tabla de roles mas abajo).
 
-* **Gestion de Licencias**: Registro de cuentas de correo, claves y vigencias de licencias de software (Windows, Office, Antivirus) vendidas a clientes. Alertas visuales por proximidad de vencimiento (activo / por vencer / vencido).
-* **Archivos y Drivers**: Repositorio interno de ejecutables, drivers, planillas Excel y enlaces utiles con subida fisica via AWS S3 o fallback local.
-* **Catalogo de Productos**: CRUD completo de suministros (ribbons, tintas, memorias, accesorios). Incluye subida de imagen, asignacion de categoria y toggle de visibilidad en la web publica.
-* **Categorias de Productos**: Creacion y desactivacion de las categorias que agrupan el catalogo virtual.
-* **Gestion de Servicios**: Alta, edicion y desactivacion de los servicios de TI mostrados en la web publica. El icono se configura con un nombre de Material Symbol.
-* **Portafolio / Trabajos Realizados**: Registro de fotos y descripcion de proyectos completados, asociados opcionalmente a un servicio.
-* **Mensajes de Contacto**: Bandeja de entrada con mensajes del formulario publico. Permite marcar como leido/no leido y eliminar.
+* **Gestion de Licencias**: Registro de cuentas de correo, claves y vigencias de licencias de software (Windows, Office, Antivirus) vendidas a clientes. Alertas visuales por proximidad de vencimiento (activo / por vencer / vencido). Exclusivo de `admin`.
+* **Archivos y Drivers**: Repositorio interno de ejecutables, drivers, planillas Excel y enlaces utiles con subida fisica via AWS S3 o fallback local. Gestionado por `admin` y `tecnico`.
+* **Catalogo de Productos**: CRUD completo de suministros (ribbons, tintas, memorias, accesorios). Incluye subida de imagen, asignacion de categoria y toggle de visibilidad en la web publica. Gestionado por `admin` y `vendedor`.
+* **Categorias de Productos**: Creacion y desactivacion de las categorias que agrupan el catalogo virtual. Gestionado por `admin` y `vendedor`.
+* **Gestion de Servicios**: Alta, edicion y desactivacion de los servicios de TI mostrados en la web publica. El icono se configura con un nombre de Material Symbol. Gestionado por `admin` y `vendedor`.
+* **Portafolio / Trabajos Realizados**: Registro de fotos y descripcion de proyectos completados, asociados opcionalmente a un servicio. Gestionado por `admin` y `tecnico`.
+* **Mensajes de Contacto**: Bandeja de entrada con mensajes del formulario publico. El asunto y el cuerpo del mensaje se pueden abrir en un modal de lectura completa con un clic (remitente, fecha y texto integro). Permite marcar como leido/no leido (cualquier rol) y eliminar (solo `admin`).
 * **Gestion de Personal (solo admin)**: CRUD de usuarios con hash bcrypt de contrasenas, asignacion de roles y activacion/desactivacion de cuentas.
+
+#### Modelo de Permisos por Rol
+
+| Rol | Puede crear/editar | Solo lectura | Eliminar |
+|-----|---------------------|--------------|----------|
+| `admin` | Todos los modulos | — | Todos los modulos |
+| `tecnico` | Portafolio, Archivos/Drivers | Productos, Categorias, Servicios, Licencias | Ninguno |
+| `vendedor` | Productos, Categorias, Servicios | Portafolio, Archivos/Drivers, Licencias | Ninguno |
+
+Mensajes de contacto (lectura y marcado leido/no leido) y Gestion de Personal quedan fuera de esta tabla: el primero es comun a los tres roles, el segundo es exclusivo de `admin`. **Eliminar registros esta restringido a `admin` en todos los modulos** como medida de seguridad adicional, incluso en aquellos donde el rol tiene permiso de creacion/edicion.
+
+La restriccion se aplica en tres capas independientes (defensa en profundidad):
+1. **UI**: los botones de crear/editar/eliminar se ocultan segun el rol de la sesion activa.
+2. **Middleware** (`middleware.ts`, Edge Runtime): bloquea a nivel de borde la escritura en `/api/licencias` (no-admin) y `/api/archivos` (vendedor) antes de que la peticion llegue a la ruta.
+3. **Ruta API** (`requireRole()` en `lib/apiAuth.ts`): cada handler POST/PUT/DELETE valida el rol exacto contra la base de datos de la sesion, de modo que una llamada directa a la API (sin pasar por la UI) tambien queda bloqueada.
 
 ---
 
@@ -152,7 +168,7 @@ Acceso restringido por JWT. Los roles disponibles son `admin`, `tecnico` y `vend
 * **Seguridad Criptografica**: Contrasenas de personal hasheadas con `bcryptjs` (10 salt rounds) antes de persistirse. Nunca se almacenan en texto plano.
 * **Sanitizacion de Inputs**: Los campos de texto del formulario de contacto publico son sanitizados para eliminar etiquetas HTML antes de guardarse en la base de datos.
 * **Rate Limiting**: El endpoint `POST /api/contacto` limita a 5 envios por IP cada 10 minutos, retornando HTTP 429 si se supera el limite.
-* **Control de Acceso basado en Roles (RBAC)**: El middleware protege todas las rutas administrativas. Solo los administradores pueden gestionar usuarios; tecnicos y vendedores tienen acceso de solo lectura a licencias y archivos.
+* **Control de Acceso basado en Roles (RBAC)**: El middleware protege todas las rutas administrativas y cada ruta API valida el rol exacto con `requireRole()`. Solo `admin` gestiona usuarios y licencias; `tecnico` gestiona Portafolio y Archivos/Drivers; `vendedor` gestiona Productos, Categorias y Servicios; eliminar registros queda reservado a `admin` en todos los modulos.
 * **Automatizacion de Licencias (Cron Job)**: Endpoint `GET /api/cron/check-licencias` protegido por Bearer Token que actualiza automaticamente el estado de licencias cuya fecha de fin ya paso. Requiere la variable `CRON_SECRET` en produccion.
 * **Carga de Archivos Hibrida (AWS S3 / Local)**: El endpoint `POST /api/admin/upload` detecta automaticamente si las credenciales de S3 estan configuradas. Si lo estan, sube el archivo al bucket S3. Si no, escribe en `public/uploads/` de forma transparente.
 * **Pruebas con Jest**: Suite de pruebas unitarias en `__tests__/` configurada con `ts-jest` para validar esquemas y logica de datos.
@@ -271,36 +287,37 @@ El repositorio es publico en GitHub. **Recomendacion de seguridad:** las credenc
 
 ### Administrativos (requieren sesion activa)
 
-| Metodo | Endpoint | Rol minimo | Descripcion |
-|--------|----------|------------|-------------|
-| GET | `/api/licencias` | tecnico | Lista todas las licencias |
-| POST | `/api/licencias` | tecnico | Registra nueva licencia |
-| PUT | `/api/licencias/[id]` | tecnico | Edita licencia |
-| DELETE | `/api/licencias/[id]` | tecnico | Elimina licencia |
-| GET | `/api/archivos` | tecnico | Lista archivos tecnicos |
-| POST | `/api/archivos` | tecnico | Registra nuevo archivo |
-| PUT | `/api/archivos/[id]` | admin | Edita archivo |
+| Metodo | Endpoint | Rol requerido | Descripcion |
+|--------|----------|----------------|-------------|
+| GET | `/api/licencias` | cualquier sesion | Lista todas las licencias |
+| POST | `/api/licencias` | admin | Registra nueva licencia |
+| PUT | `/api/licencias/[id]` | admin | Edita licencia |
+| DELETE | `/api/licencias/[id]` | admin | Elimina licencia |
+| POST | `/api/archivos` | admin, tecnico | Registra nuevo archivo |
+| PUT | `/api/archivos/[id]` | admin, tecnico | Edita archivo |
 | DELETE | `/api/archivos/[id]` | admin | Elimina archivo |
-| POST | `/api/productos` | tecnico | Crea producto |
-| PUT | `/api/productos/[id]` | tecnico | Edita producto |
-| DELETE | `/api/productos/[id]` | tecnico | Desactiva producto (soft delete) |
-| POST | `/api/categorias` | tecnico | Crea categoria |
-| PUT | `/api/categorias/[id]` | tecnico | Edita categoria |
-| DELETE | `/api/categorias/[id]` | tecnico | Desactiva categoria |
-| POST | `/api/servicios` | tecnico | Crea servicio |
-| PUT | `/api/servicios/[id]` | tecnico | Edita servicio |
-| DELETE | `/api/servicios/[id]` | tecnico | Desactiva servicio |
-| POST | `/api/trabajos` | tecnico | Registra trabajo de portafolio |
-| PUT | `/api/trabajos/[id]` | tecnico | Edita trabajo |
-| DELETE | `/api/trabajos/[id]` | tecnico | Elimina trabajo |
-| POST | `/api/admin/upload` | tecnico | Sube archivo a S3 o local |
-| GET | `/api/admin/contacto` | tecnico | Lista mensajes de contacto |
-| PUT | `/api/admin/contacto` | tecnico | Marca mensaje como leido/no leido |
-| DELETE | `/api/admin/contacto?id=X` | tecnico | Elimina mensaje |
+| POST | `/api/productos` | admin, vendedor | Crea producto |
+| PUT | `/api/productos/[id]` | admin, vendedor | Edita producto |
+| DELETE | `/api/productos/[id]` | admin | Desactiva producto (soft delete) |
+| POST | `/api/categorias` | admin, vendedor | Crea categoria |
+| PUT | `/api/categorias/[id]` | admin, vendedor | Edita categoria |
+| DELETE | `/api/categorias/[id]` | admin | Desactiva categoria |
+| POST | `/api/servicios` | admin, vendedor | Crea servicio |
+| PUT | `/api/servicios/[id]` | admin, vendedor | Edita servicio |
+| DELETE | `/api/servicios/[id]` | admin | Desactiva servicio |
+| POST | `/api/trabajos` | admin, tecnico | Registra trabajo de portafolio |
+| PUT | `/api/trabajos/[id]` | admin, tecnico | Edita trabajo |
+| DELETE | `/api/trabajos/[id]` | admin | Elimina trabajo |
+| POST | `/api/admin/upload` | admin + (vendedor en `productos`, tecnico en `portfolio`/`uploads`) | Sube archivo a S3 o local segun la carpeta destino |
+| GET | `/api/admin/contacto` | cualquier sesion | Lista mensajes de contacto |
+| PUT | `/api/admin/contacto` | cualquier sesion | Marca mensaje como leido/no leido |
+| DELETE | `/api/admin/contacto?id=X` | admin | Elimina mensaje |
 | GET | `/api/admin/usuarios` | admin | Lista personal registrado |
 | POST | `/api/admin/usuarios` | admin | Crea nuevo usuario |
 | PUT | `/api/admin/usuarios` | admin | Edita perfil de usuario |
 | PATCH | `/api/admin/usuarios` | admin | Activa o desactiva cuenta |
+
+> `GET /api/archivos` no aparece en esta tabla porque es publico (ver tabla anterior); el resto de operaciones GET de los modulos administrativos (licencias, mensajes) requieren sesion activa pero no un rol especifico.
 
 ### Automatizacion
 
