@@ -84,18 +84,33 @@ export default function AdminLoginPage() {
   return (
     <div className="min-h-screen w-full flex flex-col md:flex-row bg-white selection:bg-primary/20 selection:text-primary overflow-hidden">
       
-      {/* Left Column: Visual Panel (Beautiful light red/rose gradient with geometric arcs) */}
-      <div className="w-full md:w-1/2 min-h-[350px] md:min-h-screen bg-gradient-to-br from-red-50/60 via-slate-50 to-rose-100/30 p-8 md:p-16 lg:p-24 flex flex-col justify-between relative overflow-hidden border-b md:border-b-0 md:border-r border-slate-200/50">
+      {/* Left Column: Visual Panel (Beautiful light red/rose gradient + video overlay + glassmorphic layers) */}
+      <div className="group w-full md:w-1/2 min-h-[380px] md:min-h-screen bg-gradient-to-br from-red-50/70 via-slate-50 to-rose-100/30 p-8 md:p-16 lg:p-24 flex flex-col justify-between relative overflow-hidden border-b md:border-b-0 md:border-r border-slate-200/50">
         
-        {/* Concentric tilted rounded box outlines matching the SaleSkip design pattern */}
-        <div className="absolute -right-20 -bottom-20 w-[420px] h-[520px] opacity-[0.06] pointer-events-none z-0 rotate-[22deg] border-2 border-slate-800 rounded-[3.5rem]" />
-        <div className="absolute -right-10 -bottom-10 w-[420px] h-[520px] opacity-[0.06] pointer-events-none z-0 rotate-[22deg] border-2 border-slate-800 rounded-[3.5rem]" />
-        <div className="absolute right-0 bottom-0 w-[420px] h-[520px] opacity-[0.06] pointer-events-none z-0 rotate-[22deg] border-2 border-slate-800 rounded-[3.5rem]" />
-        <div className="absolute right-10 bottom-10 w-[420px] h-[520px] opacity-[0.06] pointer-events-none z-0 rotate-[22deg] border-2 border-slate-800 rounded-[3.5rem]" />
+        {/* Background Video */}
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover z-0 opacity-[0.16] filter brightness-105 contrast-95 saturate-100 mix-blend-overlay pointer-events-none"
+        >
+          <source src="/vid/laptop_video.mp4" type="video/mp4" />
+        </video>
 
-        {/* 8-Point Asterisk Icon */}
-        <div className="relative z-10 text-primary">
-          <svg className="w-16 h-16 hover:scale-105 transition-transform duration-300" viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="6.5" strokeLinecap="round">
+        {/* Glowing Auroras */}
+        <div className="absolute top-1/4 left-1/4 w-[260px] h-[260px] bg-primary/6 rounded-full blur-[80px] pointer-events-none z-0"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-[260px] h-[260px] bg-rose-500/8 rounded-full blur-[90px] pointer-events-none z-0"></div>
+
+        {/* Concentric tilted rounded box outlines (Styled like 3D glass panes that shift on hover) */}
+        <div className="absolute -right-20 -bottom-20 w-[420px] h-[520px] opacity-[0.07] pointer-events-none z-0 rotate-[22deg] border border-slate-800 rounded-[3.5rem] bg-white/5 shadow-[0_8px_30px_rgba(0,0,0,0.01)] backdrop-blur-[1px] transition-all duration-700 ease-out group-hover:translate-x-3 group-hover:translate-y-3 group-hover:rotate-[24deg] group-hover:opacity-[0.1]" />
+        <div className="absolute -right-10 -bottom-10 w-[420px] h-[520px] opacity-[0.07] pointer-events-none z-0 rotate-[22deg] border border-slate-800 rounded-[3.5rem] bg-white/5 shadow-[0_8px_30px_rgba(0,0,0,0.01)] backdrop-blur-[1px] transition-all duration-700 ease-out group-hover:translate-x-1.5 group-hover:translate-y-1.5 group-hover:rotate-[23deg]" />
+        <div className="absolute right-0 bottom-0 w-[420px] h-[520px] opacity-[0.07] pointer-events-none z-0 rotate-[22deg] border border-slate-800 rounded-[3.5rem] bg-white/5 shadow-[0_8px_30px_rgba(0,0,0,0.01)] backdrop-blur-[1px] transition-all duration-700 ease-out" />
+        <div className="absolute right-10 bottom-10 w-[420px] h-[520px] opacity-[0.07] pointer-events-none z-0 rotate-[22deg] border border-slate-800 rounded-[3.5rem] bg-white/5 shadow-[0_8px_30px_rgba(0,0,0,0.01)] backdrop-blur-[1px] transition-all duration-700 ease-out group-hover:-translate-x-1.5 group-hover:-translate-y-1.5 group-hover:rotate-[21deg]" />
+
+        {/* 8-Point Asterisk Icon inside premium glass box */}
+        <div className="relative z-10 w-16 h-16 bg-white/70 backdrop-blur-md border border-white/80 shadow-lg shadow-red-100/30 rounded-2xl flex items-center justify-center text-primary transition-all duration-500 ease-out hover:scale-105 hover:rotate-[15deg]">
+          <svg className="w-9 h-9" viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="7.5" strokeLinecap="round">
             <line x1="50" y1="15" x2="50" y2="85" />
             <line x1="15" y1="50" x2="85" y2="50" />
             <line x1="25.2" y1="25.2" x2="74.8" y2="74.8" />
@@ -105,6 +120,10 @@ export default function AdminLoginPage() {
 
         {/* Main Headline & Paragraph */}
         <div className="relative z-10 my-auto py-12 space-y-6">
+          <span className="inline-flex items-center gap-1.5 py-1 px-3 bg-white/90 backdrop-blur-sm border border-slate-200/50 text-primary font-bold text-[9px] rounded-full uppercase tracking-widest shadow-sm">
+            <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+            Acceso Autorizado
+          </span>
           <h1 className="font-headline text-4xl md:text-5xl lg:text-6xl font-black text-slate-800 leading-none tracking-tight">
             ¡Hola <br />
             <span className="text-primary">Dellcom!</span>
@@ -152,8 +171,9 @@ export default function AdminLoginPage() {
 
           <form onSubmit={handleSubmit} className="space-y-6">
             
-            {/* Username/Email Input with Bottom-Border Style */}
-            <div className="relative">
+            {/* Username/Email Input with Bottom-Border Style + Icon */}
+            <div className="relative flex items-center border-b-2 border-slate-200 focus-within:border-primary transition-all py-1">
+              <span className="material-symbols-outlined text-slate-400 mr-3 text-lg leading-none">mail</span>
               <input 
                 type="text" 
                 required
@@ -161,12 +181,13 @@ export default function AdminLoginPage() {
                 value={usuario}
                 onChange={(e) => setUsuario(e.target.value)}
                 placeholder="Usuario o Correo"
-                className="w-full bg-transparent border-b-2 border-slate-200 focus:border-slate-800 focus:outline-none px-0 py-3.5 text-slate-800 text-sm font-semibold transition-all placeholder:text-slate-300"
+                className="w-full bg-transparent border-none focus:outline-none focus:ring-0 px-0 py-2.5 text-slate-800 text-sm font-semibold placeholder:text-slate-300"
               />
             </div>
 
-            {/* Password Input with Bottom-Border Style */}
-            <div className="relative">
+            {/* Password Input with Bottom-Border Style + Icon */}
+            <div className="relative flex items-center border-b-2 border-slate-200 focus-within:border-primary transition-all py-1">
+              <span className="material-symbols-outlined text-slate-400 mr-3 text-lg leading-none">lock</span>
               <input 
                 type="password" 
                 required
@@ -174,7 +195,7 @@ export default function AdminLoginPage() {
                 value={contrasena}
                 onChange={(e) => setContrasena(e.target.value)}
                 placeholder="Contraseña"
-                className="w-full bg-transparent border-b-2 border-slate-200 focus:border-slate-800 focus:outline-none px-0 py-3.5 text-slate-800 text-sm font-semibold transition-all placeholder:text-slate-300"
+                className="w-full bg-transparent border-none focus:outline-none focus:ring-0 px-0 py-2.5 text-slate-800 text-sm font-semibold placeholder:text-slate-300"
               />
             </div>
 
