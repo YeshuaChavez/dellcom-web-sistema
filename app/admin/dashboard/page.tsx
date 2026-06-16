@@ -438,24 +438,24 @@ export default function AdminDashboardPage() {
   const handleCreateOrUpdateUser = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const userData: any = {
-      nombre: formUserNombre,
-      usuario: formUserUsuario,
-      email: formUserEmail,
-      rol: formUserRol,
-    };
+    let userData: any;
 
     if (editingUser) {
-      userData.id = editingUser.id;
-      if (formUserContrasena) {
-        userData.contrasena = formUserContrasena;
-      }
+      userData = {
+        id: editingUser.id,
+        nombre: formUserNombre,
+        usuario: formUserUsuario,
+        email: formUserEmail,
+        rol: formUserRol,
+      };
+      if (formUserContrasena) userData.contrasena = formUserContrasena;
     } else {
-      if (!formUserContrasena) {
-        alert("La contrasena es obligatoria para nuevos usuarios.");
-        return;
-      }
-      userData.contrasena = formUserContrasena;
+      // Create: backend generates username and temp password
+      userData = {
+        nombre: formUserNombre,
+        email: formUserEmail,
+        rol: formUserRol,
+      };
     }
 
     try {
@@ -469,7 +469,11 @@ export default function AdminDashboardPage() {
       const data = await res.json();
 
       if (res.ok) {
-        alert(editingUser ? "Usuario actualizado con exito" : "Usuario creado con exito");
+        alert(
+          editingUser
+            ? "Usuario actualizado con exito."
+            : `Personal registrado. Se ha enviado el usuario y contraseña temporal al correo ${formUserEmail}.`
+        );
         fetchUsuarios();
         closeUserModal();
       } else {
@@ -482,7 +486,7 @@ export default function AdminDashboardPage() {
           alert(`Error: ${data.error || "No se pudo guardar el usuario"}`);
         }
       }
-    } catch (err) {
+    } catch {
       alert("Error de conexion al guardar el usuario.");
     }
   };
@@ -3208,8 +3212,8 @@ export default function AdminDashboardPage() {
             <form onSubmit={handleCreateOrUpdateUser} className="p-8 space-y-4">
               <div>
                 <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Nombre Completo</label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   required
                   value={formUserNombre}
                   onChange={(e) => setFormUserNombre(e.target.value)}
@@ -3218,21 +3222,36 @@ export default function AdminDashboardPage() {
                 />
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Nombre de Usuario</label>
-                  <input 
-                    type="text" 
-                    required
-                    value={formUserUsuario}
-                    onChange={(e) => setFormUserUsuario(e.target.value)}
-                    placeholder="Ej. jperez"
-                    className="w-full bg-slate-50 border border-slate-200 focus:border-red-600 focus:ring-1 focus:ring-red-600 focus:outline-none rounded-xl px-4 py-3 text-sm transition-all"
-                  />
+              {editingUser ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Nombre de Usuario</label>
+                    <input
+                      type="text"
+                      required
+                      value={formUserUsuario}
+                      onChange={(e) => setFormUserUsuario(e.target.value)}
+                      placeholder="Ej. jperez"
+                      className="w-full bg-slate-50 border border-slate-200 focus:border-red-600 focus:ring-1 focus:ring-red-600 focus:outline-none rounded-xl px-4 py-3 text-sm transition-all"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Rol</label>
+                    <select
+                      value={formUserRol}
+                      onChange={(e) => setFormUserRol(e.target.value)}
+                      className="w-full bg-slate-50 border border-slate-200 focus:border-red-600 focus:ring-1 focus:ring-red-600 focus:outline-none rounded-xl px-4 py-3 text-sm transition-all"
+                    >
+                      <option value="tecnico">Técnico</option>
+                      <option value="vendedor">Vendedor</option>
+                      <option value="admin">Administrador</option>
+                    </select>
+                  </div>
                 </div>
+              ) : (
                 <div>
                   <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Rol</label>
-                  <select 
+                  <select
                     value={formUserRol}
                     onChange={(e) => setFormUserRol(e.target.value)}
                     className="w-full bg-slate-50 border border-slate-200 focus:border-red-600 focus:ring-1 focus:ring-red-600 focus:outline-none rounded-xl px-4 py-3 text-sm transition-all"
@@ -3242,12 +3261,12 @@ export default function AdminDashboardPage() {
                     <option value="admin">Administrador</option>
                   </select>
                 </div>
-              </div>
+              )}
 
               <div>
                 <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Correo Electrónico</label>
-                <input 
-                  type="email" 
+                <input
+                  type="email"
                   required
                   value={formUserEmail}
                   onChange={(e) => setFormUserEmail(e.target.value)}
@@ -3256,19 +3275,27 @@ export default function AdminDashboardPage() {
                 />
               </div>
 
-              <div>
-                <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">
-                  Contraseña {editingUser && "(Dejar en blanco para conservar actual)"}
-                </label>
-                <input 
-                  type="password" 
-                  required={!editingUser}
-                  value={formUserContrasena}
-                  onChange={(e) => setFormUserContrasena(e.target.value)}
-                  placeholder="Mínimo 6 caracteres"
-                  className="w-full bg-slate-50 border border-slate-200 focus:border-red-600 focus:ring-1 focus:ring-red-600 focus:outline-none rounded-xl px-4 py-3 text-sm transition-all"
-                />
-              </div>
+              {editingUser ? (
+                <div>
+                  <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">
+                    Contraseña (Dejar en blanco para conservar actual)
+                  </label>
+                  <input
+                    type="password"
+                    value={formUserContrasena}
+                    onChange={(e) => setFormUserContrasena(e.target.value)}
+                    placeholder="Mínimo 6 caracteres"
+                    className="w-full bg-slate-50 border border-slate-200 focus:border-red-600 focus:ring-1 focus:ring-red-600 focus:outline-none rounded-xl px-4 py-3 text-sm transition-all"
+                  />
+                </div>
+              ) : (
+                <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 flex items-start gap-3">
+                  <span className="material-symbols-outlined text-amber-500 text-base mt-0.5 shrink-0">info</span>
+                  <p className="text-xs text-amber-700 font-semibold leading-relaxed">
+                    El usuario y contraseña temporal serán generados automáticamente y enviados al correo ingresado. El personal deberá establecer su propia contraseña al primer ingreso.
+                  </p>
+                </div>
+              )}
 
               <footer className="pt-4 border-t border-slate-100 flex justify-end gap-3">
                 <button 

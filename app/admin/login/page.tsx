@@ -100,21 +100,13 @@ export default function AdminLoginPage() {
         </video>
         <div className="absolute inset-0 bg-gradient-to-br from-red-950/10 via-black/55 to-black/75 z-0 pointer-events-none"></div>
 
-        {/* Acceso Técnico Pill Badge */}
-        <div className="relative z-20 flex justify-end">
-          <span className="inline-flex items-center gap-1.5 py-1.5 px-4 bg-black/40 backdrop-blur border border-white/10 text-white font-bold text-[10px] tracking-widest rounded-full uppercase leading-none shadow-lg shadow-black/20">
-            <span className="w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_8px_#ff0000] animate-pulse"></span>
-            Acceso Técnico
-          </span>
-        </div>
-
         {/* Centered Greeting and Slogans */}
         <div className="relative z-20 my-auto py-8 space-y-6">
           <h1 className="font-headline text-5xl lg:text-6xl xl:text-7xl font-black text-white leading-[1.1] tracking-tight">
             ¡Hola, <br />
             <span className="text-primary">Dellcom!</span>
           </h1>
-          <p className="text-sm lg:text-base text-slate-400 font-semibold leading-relaxed max-w-sm lg:max-w-md">
+          <p className="text-sm lg:text-base text-white font-semibold leading-relaxed max-w-sm lg:max-w-md">
             Soporte IT de primer nivel, repuestos y licencias originales. Gestiona los servicios técnicos de forma eficiente y segura desde un solo panel.
           </p>
 
@@ -171,7 +163,7 @@ export default function AdminLoginPage() {
 
         {/* Form Container */}
         <div className="max-w-md w-full mx-auto my-auto py-8 space-y-6">
-          <div className="space-y-2 text-center md:text-left">
+          <div className="space-y-2 text-center">
             <h2 className="font-headline text-3xl lg:text-4xl font-extrabold text-slate-800 tracking-tight">
               ¡Bienvenido <span className="text-primary">de nuevo!</span>
             </h2>
@@ -246,11 +238,7 @@ export default function AdminLoginPage() {
                 <span className="text-xs text-slate-500 font-semibold">Recordarme</span>
               </label>
               <NextLink
-                href="#"
-                onClick={(e) => {
-                  e.preventDefault();
-                  alert("Por favor, contacta al administrador del sistema para restablecer tu contraseña.");
-                }}
+                href="/admin/forgot-password"
                 className="text-xs font-bold text-primary hover:text-primary-dark hover:underline transition-all"
               >
                 ¿Olvidaste tu contraseña?
