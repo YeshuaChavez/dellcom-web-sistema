@@ -1417,6 +1417,21 @@ export default function AdminDashboardPage() {
           background-color: #1e293b !important;
           border-color: #334155 !important;
         }
+
+        /* Estilos del popup de guía en modo oscuro */
+        .dark-theme .text-on-background {
+          color: var(--text-main) !important;
+        }
+        .dark-theme .text-blue-900 {
+          color: #93c5fd !important;
+        }
+        .dark-theme .border-blue-100,
+        .dark-theme .border-blue-200,
+        .dark-theme .border-blue-300,
+        .dark-theme .border-blue-100\\/50,
+        .dark-theme .border-blue-100\\/60 {
+          border-color: rgba(59, 130, 246, 0.3) !important;
+        }
       ` }} />
       
       {/* Mobile/tablet backdrop overlay - click to close sidebar */}
@@ -1606,15 +1621,280 @@ export default function AdminDashboardPage() {
           {/* User Profile dropdown panel */}
           <div className="flex items-center gap-2">
             {/* Guía de sección */}
-            <button
-              onClick={() => setGuideVisible((v) => !v)}
-              className="w-10 h-10 rounded-xl flex items-center justify-center bg-slate-100 hover:bg-slate-200 dark-theme-toggle transition-all cursor-pointer text-slate-600 hover:text-on-surface"
-              title={guideVisible ? "Ocultar guía" : "Mostrar guía de esta sección"}
-            >
-              <span className="material-symbols-outlined text-[20px]">
-                {guideVisible ? "help" : "help_outline"}
-              </span>
-            </button>
+            {/* Guía de sección */}
+            <div className="relative">
+              <button
+                onClick={() => setGuideVisible((v) => !v)}
+                className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all cursor-pointer ${
+                  guideVisible
+                    ? "bg-blue-600 text-white shadow-sm shadow-blue-600/10"
+                    : "bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-on-surface dark-theme-toggle"
+                }`}
+                title={guideVisible ? "Ocultar guía" : "Mostrar guía de esta sección"}
+              >
+                <span className="material-symbols-outlined text-[20px]">
+                  {guideVisible ? "help" : "help_outline"}
+                </span>
+              </button>
+
+              {guideVisible && (() => {
+                const guides: Record<string, { icon: string; title: string; desc: string; steps: string[] }> = {
+                  overview: {
+                    icon: "dashboard", title: "Resumen General",
+                    desc: "Vista de alto nivel de toda la actividad del sistema.",
+                    steps: [
+                      "Monitorea las métricas clave de licencias, mensajes recibidos e ingresos en la barra de KPIs superior",
+                      "Consulta el gráfico de Tendencia de Consultas para ver el flujo de mensajes de la última semana",
+                      "Revisa la distribución de vigencias en la tarjeta 'Alertas y Estado de Licencias' (barra tricolor)",
+                      "Verifica los próximos vencimientos en la sección de Actividades Recientes (columna derecha)",
+                      "Utiliza los Accesos Rápidos para registrar una nueva licencia, subir archivos o registrar productos con un solo clic"
+                    ],
+                  },
+                  messages: {
+                    icon: "mail", title: "Mensajes de Contacto",
+                    desc: "Aquí llegan todos los mensajes enviados desde el formulario de contacto del sitio web.",
+                    steps: ["Los mensajes en negrita son no leídos", "Haz clic en un mensaje para ver el contenido completo", "Márcalos como leídos para limpiar la bandeja", "Solo el admin puede eliminar mensajes"],
+                  },
+                  licenses: {
+                    icon: "verified_user", title: "Gestión de Licencias",
+                    desc: "Registro de licencias de software vendidas a clientes, con alertas de vencimiento.",
+                    steps: ["Las licencias en rojo están vencidas, en naranja por vencer pronto", "Usa '+ Nueva Licencia' para registrar una venta", "Edita una licencia para actualizar su estado o fecha", "Filtra por estado para ver solo las activas o vencidas"],
+                  },
+                  products: {
+                    icon: "inventory_2", title: "Catálogo de Suministros",
+                    desc: "Gestiona los productos que aparecen en el catálogo público del sitio web.",
+                    steps: ["Sube imágenes desde tu PC o pega una URL directamente", "Asigna categorías para que los clientes puedan filtrar", "Activa/desactiva productos sin eliminarlos", "Los precios se muestran en soles (S/)"],
+                  },
+                  categories: {
+                    icon: "category", title: "Categorías del Catálogo",
+                    desc: "Las categorías organizan los productos del catálogo público.",
+                    steps: ["Crea categorías antes de agregar productos", "Desactiva una categoría para ocultar sus productos en la web", "Los nombres deben ser únicos"],
+                  },
+                  files: {
+                    icon: "folder_open", title: "Archivos y Drivers",
+                    desc: "Repositorio interno de controladores, programas y documentos para el equipo técnico.",
+                    steps: ["Sube archivos desde tu PC o pega un enlace (Drive, Dropbox, etc.)", "Clasifica por tipo: programa, driver, excel o link", "Solo técnicos y admins pueden subir archivos", "Los archivos solo son visibles para el personal con sesión activa"],
+                  },
+                  services: {
+                    icon: "build", title: "Gestión de Servicios",
+                    desc: "Los servicios que aparecen en la sección de servicios del sitio web público.",
+                    steps: ["Cada servicio tiene un icono de Material Symbols (ej: laptop_mac)", "Desactiva un servicio para ocultarlo del sitio sin eliminarlo", "Los trabajos del portafolio se asocian a servicios"],
+                  },
+                  portfolio: {
+                    icon: "photo_library", title: "Trabajos Realizados",
+                    desc: "Galería de proyectos completados que se muestra en el sitio web público.",
+                    steps: ["La foto principal es la portada que aparece en la cuadrícula", "Agrega fotos adicionales para crear un carrusel en el lightbox", "Asocia el trabajo a un servicio para que aparezca clasificado", "Los trabajos más recientes aparecen primero en la web"],
+                  },
+                  users: {
+                    icon: "group", title: "Gestión de Personal",
+                    desc: "Administra las cuentas de acceso al panel. Solo los administradores pueden ver y editar esta sección.",
+                    steps: ["Al crear un usuario, el sistema genera automáticamente su nombre de usuario y contraseña temporal", "Las credenciales se envían al correo del personal al crearse la cuenta", "El personal nuevo debe cambiar su contraseña en su primer ingreso", "Puedes desactivar cuentas sin eliminarlas"],
+                  },
+                };
+                const g = guides[activeTab];
+                if (!g) return null;
+
+                const tabCompleted = completedSteps[activeTab] || new Array(g.steps.length).fill(false);
+                const totalSteps = g.steps.length;
+                const completedCount = tabCompleted.filter(Boolean).length;
+                const percent = Math.round((completedCount / totalSteps) * 100);
+                const currentStepIdx = guideStepIndex[activeTab] || 0;
+
+                const toggleStep = (index: number) => {
+                  setCompletedSteps((prev) => {
+                    const current = prev[activeTab] ? [...prev[activeTab]] : new Array(totalSteps).fill(false);
+                    current[index] = !current[index];
+                    return { ...prev, [activeTab]: current };
+                  });
+                };
+
+                const resetProgress = () => {
+                  setCompletedSteps((prev) => ({ ...prev, [activeTab]: new Array(totalSteps).fill(false) }));
+                  setGuideStepIndex((prev) => ({ ...prev, [activeTab]: 0 }));
+                };
+
+                const setStepIdx = (index: number) => {
+                  setGuideStepIndex((prev) => ({ ...prev, [activeTab]: Math.max(0, Math.min(totalSteps - 1, index)) }));
+                };
+
+                return (
+                  <div className="fixed top-16 right-4 sm:absolute sm:right-0 sm:top-12 z-50 w-[calc(100vw-32px)] sm:w-[420px] bg-blue-50 border border-blue-100 rounded-2xl p-5 shadow-2xl animate-fade-in text-left text-on-background">
+                    
+                    {/* Header Row */}
+                    <div className="flex items-center justify-between border-b border-blue-100 pb-3 mb-3">
+                      <div className="flex items-center gap-2">
+                        <span className="material-symbols-outlined text-blue-600 text-lg">{g.icon}</span>
+                        <span className="text-xs font-bold text-blue-800 font-headline">Guía de {g.title}</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <button
+                          onClick={resetProgress}
+                          className="p-1 rounded-md text-blue-500 hover:text-blue-700 hover:bg-blue-100/50 transition-all cursor-pointer flex items-center"
+                          title="Reiniciar progreso"
+                          type="button"
+                        >
+                          <span className="material-symbols-outlined text-base">restart_alt</span>
+                        </button>
+                        <button
+                          onClick={() => setGuideVisible(false)}
+                          className="p-1 rounded-md text-blue-400 hover:text-blue-600 transition-colors cursor-pointer flex items-center"
+                          title="Cerrar"
+                          type="button"
+                        >
+                          <span className="material-symbols-outlined text-base">close</span>
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Mode selector */}
+                    <div className="flex items-center justify-between bg-blue-100/40 border border-blue-100 p-0.5 rounded-lg mb-3">
+                      <button
+                        onClick={() => setGuideMode("checklist")}
+                        className={`flex-1 py-1 rounded-md text-[10px] font-extrabold flex items-center justify-center gap-1 transition-all cursor-pointer ${
+                          guideMode === "checklist"
+                            ? "bg-blue-600 text-white shadow-xs"
+                            : "text-blue-600 hover:bg-blue-100/50"
+                        }`}
+                        type="button"
+                      >
+                        <span className="material-symbols-outlined text-xs">checklist</span>
+                        Lista de tareas
+                      </button>
+                      <button
+                        onClick={() => setGuideMode("stepper")}
+                        className={`flex-1 py-1 rounded-md text-[10px] font-extrabold flex items-center justify-center gap-1 transition-all cursor-pointer ${
+                          guideMode === "stepper"
+                            ? "bg-blue-600 text-white shadow-xs"
+                            : "text-blue-600 hover:bg-blue-100/50"
+                        }`}
+                        type="button"
+                      >
+                        <span className="material-symbols-outlined text-xs">auto_stories</span>
+                        Paso a paso
+                      </button>
+                    </div>
+
+                    {/* Content */}
+                    {guideMode === "checklist" ? (
+                      <div className="space-y-3">
+                        {/* Progress */}
+                        <div>
+                          <div className="flex justify-between items-center text-[9px] font-bold text-blue-800 tracking-wider">
+                            <span>PROGRESO</span>
+                            <span>{completedCount}/{totalSteps} ({percent}%)</span>
+                          </div>
+                          <div className="w-full bg-blue-200/50 rounded-full h-1.5 mt-1 overflow-hidden">
+                            <div className="bg-blue-600 h-full rounded-full transition-all duration-300" style={{ width: `${percent}%` }}></div>
+                          </div>
+                        </div>
+
+                        {/* List */}
+                        <div className="space-y-1.5 max-h-[200px] overflow-y-auto pr-1">
+                          {g.steps.map((step, i) => {
+                            const isDone = tabCompleted[i];
+                            return (
+                              <div
+                                key={i}
+                                onClick={() => toggleStep(i)}
+                                className={`flex items-start gap-2 p-1.5 rounded-lg transition-all cursor-pointer border select-none group ${
+                                  isDone
+                                    ? "bg-blue-100/10 border-blue-200/20"
+                                    : "bg-white border-white/60 hover:border-blue-200 hover:shadow-xs"
+                                }`}
+                              >
+                                <div className="mt-0.5 shrink-0">
+                                  {isDone ? (
+                                    <span className="material-symbols-outlined text-blue-600 text-[14px] bg-blue-100 rounded-full w-4.5 h-4.5 flex items-center justify-center font-bold">check</span>
+                                  ) : (
+                                    <span className="w-4.5 h-4.5 rounded-full border border-blue-300 group-hover:border-blue-500 transition-colors flex items-center justify-center text-[8px] text-blue-500 font-bold">{i + 1}</span>
+                                  )}
+                                </div>
+                                <span className={`text-[11px] font-semibold leading-normal ${isDone ? "text-blue-400/80 line-through" : "text-blue-800 group-hover:text-blue-900"}`}>
+                                  {step}
+                                </span>
+                              </div>
+                            );
+                          })}
+                        </div>
+
+                        {percent === 100 && (
+                          <div className="bg-green-100 border border-green-200 rounded-lg p-2 flex items-center gap-2 animate-fade-in">
+                            <span className="material-symbols-outlined text-green-600 text-base">workspace_premium</span>
+                            <p className="text-[10px] font-bold text-green-800 m-0">¡Felicidades! Has aprendido todo en este módulo.</p>
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="space-y-3">
+                        <div className="bg-white border border-blue-100/60 rounded-xl p-3.5 shadow-xs relative min-h-[95px] flex flex-col justify-between">
+                          <div>
+                            <div className="flex justify-between items-center">
+                              <span className="text-[8px] font-black text-blue-500 tracking-wider uppercase">Paso {currentStepIdx + 1} de {totalSteps}</span>
+                              <label className="flex items-center gap-1 cursor-pointer select-none text-[9px] font-bold text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-100/50">
+                                <input
+                                  type="checkbox"
+                                  checked={tabCompleted[currentStepIdx] || false}
+                                  onChange={() => toggleStep(currentStepIdx)}
+                                  className="rounded border-blue-300 text-blue-600 focus:ring-blue-500 w-2.5 h-2.5 cursor-pointer"
+                                />
+                                <span>Hecho</span>
+                              </label>
+                            </div>
+                            <p className="text-[11px] font-bold text-blue-900 mt-2 leading-relaxed">{g.steps[currentStepIdx]}</p>
+                          </div>
+
+                          <div className="flex items-center justify-between border-t border-slate-100 pt-2.5 mt-3">
+                            <button
+                              onClick={() => setStepIdx(currentStepIdx - 1)}
+                              disabled={currentStepIdx === 0}
+                              className={`px-2 py-1 rounded text-[10px] font-bold flex items-center gap-0.5 transition-all cursor-pointer ${
+                                currentStepIdx === 0 ? "text-slate-300 cursor-not-allowed" : "text-blue-600 hover:bg-blue-50"
+                              }`}
+                              type="button"
+                            >
+                              <span className="material-symbols-outlined text-xs">arrow_back</span>
+                              Atrás
+                            </button>
+
+                            <div className="flex items-center gap-1">
+                              {g.steps.map((_, i) => (
+                                <button
+                                  key={i}
+                                  onClick={() => setStepIdx(i)}
+                                  className={`w-1.5 h-1.5 rounded-full transition-all cursor-pointer ${
+                                    i === currentStepIdx ? "bg-blue-600 w-3" : tabCompleted[i] ? "bg-blue-300" : "bg-slate-200"
+                                  }`}
+                                  type="button"
+                                ></button>
+                              ))}
+                            </div>
+
+                            <button
+                              onClick={() => {
+                                if (currentStepIdx === totalSteps - 1) {
+                                  setStepIdx(0);
+                                  setGuideMode("checklist");
+                                } else {
+                                  setStepIdx(currentStepIdx + 1);
+                                }
+                              }}
+                              className="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-[10px] font-bold flex items-center gap-0.5 transition-all cursor-pointer"
+                              type="button"
+                            >
+                              {currentStepIdx === totalSteps - 1 ? "Fin" : "Siguiente"}
+                              <span className="material-symbols-outlined text-xs">
+                                {currentStepIdx === totalSteps - 1 ? "check" : "arrow_forward"}
+                              </span>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
+            </div>
+
 
             {/* Toggle Modo Oscuro */}
             <button
@@ -1659,299 +1939,7 @@ export default function AdminDashboardPage() {
             ))}
           </section>
 
-          {/* Section Guide Banner */}
-          {guideVisible && (() => {
-            const guides: Record<string, { icon: string; title: string; desc: string; steps: string[] }> = {
-              overview: {
-                icon: "dashboard", title: "Resumen General",
-                desc: "Vista de alto nivel de toda la actividad del sistema.",
-                steps: ["Revisa los mensajes sin leer en la tarjeta de alertas", "Consulta la tendencia de consultas de clientes esta semana", "Verifica las licencias próximas a vencer", "Usa el buscador superior para encontrar cualquier dato rápido"],
-              },
-              messages: {
-                icon: "mail", title: "Mensajes de Contacto",
-                desc: "Aquí llegan todos los mensajes enviados desde el formulario de contacto del sitio web.",
-                steps: ["Los mensajes en negrita son no leídos", "Haz clic en un mensaje para ver el contenido completo", "Márcalos como leídos para limpiar la bandeja", "Solo el admin puede eliminar mensajes"],
-              },
-              licenses: {
-                icon: "verified_user", title: "Gestión de Licencias",
-                desc: "Registro de licencias de software vendidas a clientes, con alertas de vencimiento.",
-                steps: ["Las licencias en rojo están vencidas, en naranja por vencer pronto", "Usa '+ Nueva Licencia' para registrar una venta", "Edita una licencia para actualizar su estado o fecha", "Filtra por estado para ver solo las activas o vencidas"],
-              },
-              products: {
-                icon: "inventory_2", title: "Catálogo de Suministros",
-                desc: "Gestiona los productos que aparecen en el catálogo público del sitio web.",
-                steps: ["Sube imágenes desde tu PC o pega una URL directamente", "Asigna categorías para que los clientes puedan filtrar", "Activa/desactiva productos sin eliminarlos", "Los precios se muestran en soles (S/)"],
-              },
-              categories: {
-                icon: "category", title: "Categorías del Catálogo",
-                desc: "Las categorías organizan los productos del catálogo público.",
-                steps: ["Crea categorías antes de agregar productos", "Desactiva una categoría para ocultar sus productos en la web", "Los nombres deben ser únicos"],
-              },
-              files: {
-                icon: "folder_open", title: "Archivos y Drivers",
-                desc: "Repositorio interno de controladores, programas y documentos para el equipo técnico.",
-                steps: ["Sube archivos desde tu PC o pega un enlace (Drive, Dropbox, etc.)", "Clasifica por tipo: programa, driver, excel o link", "Solo técnicos y admins pueden subir archivos", "Los archivos solo son visibles para el personal con sesión activa"],
-              },
-              services: {
-                icon: "build", title: "Gestión de Servicios",
-                desc: "Los servicios que aparecen en la sección de servicios del sitio web público.",
-                steps: ["Cada servicio tiene un icono de Material Symbols (ej: laptop_mac)", "Desactiva un servicio para ocultarlo del sitio sin eliminarlo", "Los trabajos del portafolio se asocian a servicios"],
-              },
-              portfolio: {
-                icon: "photo_library", title: "Trabajos Realizados",
-                desc: "Galería de proyectos completados que se muestra en el sitio web público.",
-                steps: ["La foto principal es la portada que aparece en la cuadrícula", "Agrega fotos adicionales para crear un carrusel en el lightbox", "Asocia el trabajo a un servicio para que aparezca clasificado", "Los trabajos más recientes aparecen primero en la web"],
-              },
-              users: {
-                icon: "group", title: "Gestión de Personal",
-                desc: "Administra las cuentas de acceso al panel. Solo los administradores pueden ver y editar esta sección.",
-                steps: ["Al crear un usuario, el sistema genera automáticamente su nombre de usuario y contraseña temporal", "Las credenciales se envían al correo del personal al crearse la cuenta", "El personal nuevo debe cambiar su contraseña en su primer ingreso", "Puedes desactivar cuentas sin eliminarlas"],
-              },
-            };
-            const g = guides[activeTab];
-            if (!g) return null;
 
-            const tabCompleted = completedSteps[activeTab] || new Array(g.steps.length).fill(false);
-            const totalSteps = g.steps.length;
-            const completedCount = tabCompleted.filter(Boolean).length;
-            const percent = Math.round((completedCount / totalSteps) * 100);
-            const currentStepIdx = guideStepIndex[activeTab] || 0;
-
-            const toggleStep = (index: number) => {
-              setCompletedSteps((prev) => {
-                const current = prev[activeTab] ? [...prev[activeTab]] : new Array(totalSteps).fill(false);
-                current[index] = !current[index];
-                return { ...prev, [activeTab]: current };
-              });
-            };
-
-            const resetProgress = () => {
-              setCompletedSteps((prev) => ({ ...prev, [activeTab]: new Array(totalSteps).fill(false) }));
-              setGuideStepIndex((prev) => ({ ...prev, [activeTab]: 0 }));
-            };
-
-            const setStepIdx = (index: number) => {
-              setGuideStepIndex((prev) => ({ ...prev, [activeTab]: Math.max(0, Math.min(totalSteps - 1, index)) }));
-            };
-
-            return (
-              <div className="mb-8 bg-blue-50 border border-blue-100 rounded-2xl p-5 md:p-6 animate-fade-in relative shadow-sm">
-                
-                {/* Header Row */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-blue-100 pb-4 mb-4">
-                  <div className="flex items-center gap-3">
-                    <div className="shrink-0 w-10 h-10 rounded-xl bg-blue-100/80 flex items-center justify-center text-blue-600">
-                      <span className="material-symbols-outlined text-xl">{g.icon}</span>
-                    </div>
-                    <div>
-                      <h4 className="text-sm font-black text-blue-800 font-headline leading-tight flex items-center gap-2">
-                        Guía de {g.title}
-                      </h4>
-                      <p className="text-xs text-blue-500/90 font-medium mt-0.5">{g.desc}</p>
-                    </div>
-                  </div>
-
-                  {/* Actions / Modes Selector */}
-                  <div className="flex items-center gap-2 self-end sm:self-auto">
-                    <div className="flex items-center bg-blue-100/40 border border-blue-100 p-0.5 rounded-lg gap-0.5">
-                      <button
-                        onClick={() => setGuideMode("checklist")}
-                        className={`px-3 py-1.5 rounded-md text-[11px] font-extrabold flex items-center gap-1 transition-all cursor-pointer ${
-                          guideMode === "checklist"
-                            ? "bg-blue-600 text-white shadow-sm"
-                            : "text-blue-600 hover:bg-blue-100/50"
-                        }`}
-                        title="Ver todas las tareas"
-                      >
-                        <span className="material-symbols-outlined text-xs">checklist</span>
-                        Tareas
-                      </button>
-                      <button
-                        onClick={() => setGuideMode("stepper")}
-                        className={`px-3 py-1.5 rounded-md text-[11px] font-extrabold flex items-center gap-1 transition-all cursor-pointer ${
-                          guideMode === "stepper"
-                            ? "bg-blue-600 text-white shadow-sm"
-                            : "text-blue-600 hover:bg-blue-100/50"
-                        }`}
-                        title="Modo paso a paso"
-                      >
-                        <span className="material-symbols-outlined text-xs">auto_stories</span>
-                        Paso a paso
-                      </button>
-                    </div>
-
-                    <button
-                      onClick={resetProgress}
-                      className="px-2 py-1.5 rounded-lg text-[11px] font-extrabold text-blue-500 hover:text-blue-700 hover:bg-blue-100/50 transition-all cursor-pointer flex items-center gap-1"
-                      title="Reiniciar progreso"
-                    >
-                      <span className="material-symbols-outlined text-sm leading-none">restart_alt</span>
-                      Reiniciar
-                    </button>
-
-                    <button
-                      onClick={() => setGuideVisible(false)}
-                      className="ml-1 shrink-0 text-blue-400 hover:text-blue-600 transition-colors cursor-pointer w-7 h-7 rounded-lg hover:bg-blue-100/50 flex items-center justify-center"
-                      title="Ocultar guía"
-                    >
-                      <span className="material-symbols-outlined text-lg">close</span>
-                    </button>
-                  </div>
-                </div>
-
-                {/* Content Render based on mode */}
-                {guideMode === "checklist" ? (
-                  <div className="space-y-4">
-                    {/* Progress bar */}
-                    <div className="flex items-center justify-between gap-4">
-                      <div className="flex-1">
-                        <div className="flex justify-between items-center text-[10px] font-bold text-blue-800 tracking-wider">
-                          <span>PROGRESO DE APRENDIZAJE</span>
-                          <span>{completedCount} de {totalSteps} ({percent}%)</span>
-                        </div>
-                        <div className="w-full bg-blue-200/50 rounded-full h-2 mt-1.5 overflow-hidden">
-                          <div
-                            className="bg-blue-600 h-full rounded-full transition-all duration-500"
-                            style={{ width: `${percent}%` }}
-                          ></div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Steps checklist */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                      {g.steps.map((step, i) => {
-                        const isDone = tabCompleted[i];
-                        return (
-                          <div
-                            key={i}
-                            onClick={() => toggleStep(i)}
-                            className={`flex items-start gap-2.5 p-2.5 rounded-xl transition-all cursor-pointer border select-none group ${
-                              isDone
-                                ? "bg-blue-100/10 border-blue-200/30"
-                                : "bg-white border-white/60 hover:border-blue-200 hover:shadow-sm"
-                            }`}
-                          >
-                            <div className="mt-0.5 shrink-0">
-                              {isDone ? (
-                                <span className="material-symbols-outlined text-blue-600 text-[16px] bg-blue-100 rounded-full w-5 h-5 flex items-center justify-center font-bold">check</span>
-                              ) : (
-                                <span className="w-5 h-5 rounded-full border-2 border-blue-300 group-hover:border-blue-500 transition-colors flex items-center justify-center text-[9px] text-blue-500 font-bold">{i + 1}</span>
-                              )}
-                            </div>
-                            <span
-                              className={`text-xs font-semibold leading-snug ${
-                                isDone ? "text-blue-400/80 line-through" : "text-blue-800 group-hover:text-blue-900"
-                              }`}
-                            >
-                              {step}
-                            </span>
-                          </div>
-                        );
-                      })}
-                    </div>
-
-                    {/* Celebration Alert */}
-                    {percent === 100 && (
-                      <div className="bg-green-100/80 border border-green-200 rounded-xl p-3 flex items-center gap-2.5 animate-fade-in">
-                        <span className="material-symbols-outlined text-green-600 text-lg">workspace_premium</span>
-                        <p className="text-xs font-bold text-green-800 m-0">
-                          ¡Excelente! Has completado todas las actividades guía para esta sección. ¡Ahora dominas el módulo!
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    {/* Stepper Card */}
-                    <div className="bg-white border border-blue-100/80 rounded-xl p-5 shadow-sm min-h-[140px] flex flex-col justify-between relative overflow-hidden">
-                      <div className="absolute top-0 right-0 w-24 h-24 bg-blue-50 rounded-bl-full -z-10 opacity-30"></div>
-
-                      <div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-[9px] font-black text-blue-500 tracking-widest uppercase">
-                            Paso {currentStepIdx + 1} de {totalSteps}
-                          </span>
-                          <label className="flex items-center gap-1.5 cursor-pointer select-none text-[10px] font-bold text-blue-700 bg-blue-50 px-2.5 py-1 rounded-md hover:bg-blue-100/60 transition-colors border border-blue-100/50">
-                            <input
-                              type="checkbox"
-                              checked={tabCompleted[currentStepIdx] || false}
-                              onChange={() => toggleStep(currentStepIdx)}
-                              className="rounded border-blue-300 text-blue-600 focus:ring-blue-500 w-3 h-3 cursor-pointer"
-                            />
-                            <span>Marcar como hecho</span>
-                          </label>
-                        </div>
-                        <p className="text-sm font-bold text-blue-900 mt-3.5 leading-relaxed">
-                          {g.steps[currentStepIdx]}
-                        </p>
-                      </div>
-
-                      {/* Navigation and Indicators */}
-                      <div className="flex items-center justify-between border-t border-slate-100 pt-4 mt-4">
-                        {/* Previous Button */}
-                        <button
-                          onClick={() => setStepIdx(currentStepIdx - 1)}
-                          disabled={currentStepIdx === 0}
-                          className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 transition-all cursor-pointer ${
-                            currentStepIdx === 0
-                              ? "text-slate-300 cursor-not-allowed"
-                              : "text-blue-600 hover:bg-blue-50"
-                          }`}
-                        >
-                          <span className="material-symbols-outlined text-sm leading-none">arrow_back</span>
-                          Anterior
-                        </button>
-
-                        {/* Dot Indicators */}
-                        <div className="flex items-center gap-1.5">
-                          {g.steps.map((_, i) => (
-                            <button
-                              key={i}
-                              onClick={() => setStepIdx(i)}
-                              className={`w-2 h-2 rounded-full transition-all cursor-pointer ${
-                                i === currentStepIdx
-                                  ? "bg-blue-600 w-4"
-                                  : tabCompleted[i]
-                                  ? "bg-blue-300"
-                                  : "bg-slate-200 hover:bg-blue-300/60"
-                              }`}
-                              title={`Ir al paso ${i + 1}`}
-                            ></button>
-                          ))}
-                        </div>
-
-                        {/* Next/Finish Button */}
-                        <button
-                          onClick={() => {
-                            if (currentStepIdx === totalSteps - 1) {
-                              setStepIdx(0);
-                              setGuideMode("checklist");
-                            } else {
-                              setStepIdx(currentStepIdx + 1);
-                            }
-                          }}
-                          className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold flex items-center gap-1 transition-all shadow-sm shadow-blue-600/10 cursor-pointer"
-                        >
-                          {currentStepIdx === totalSteps - 1 ? (
-                            <>
-                              Terminar
-                              <span className="material-symbols-outlined text-sm leading-none">check</span>
-                            </>
-                          ) : (
-                            <>
-                              Siguiente
-                              <span className="material-symbols-outlined text-sm leading-none">arrow_forward</span>
-                            </>
-                          )}
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            );
-          })()}
 
 
           {/* TAB: Overview (Resumen General) */}
@@ -2053,8 +2041,8 @@ export default function AdminDashboardPage() {
                 {/* Donut / Stacked Progress segment card (Estado de Licencias) */}
                 <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex flex-col justify-between">
                   <div>
-                    <h3 className="font-bold text-sm text-on-surface">Estado Operativo de Licencias</h3>
-                    <p className="text-xs text-slate-500">Distribución de estados y alertas críticas de vigencia.</p>
+                    <h3 className="font-bold text-sm text-on-surface">Alertas y Estado de Licencias</h3>
+                    <p className="text-xs text-slate-500">Distribución de vigencias y alertas críticas de expiración.</p>
                   </div>
                   
                   {(() => {
