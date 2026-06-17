@@ -82,7 +82,17 @@ export default function CleanFooter() {
           <ul className="space-y-4">
             <li className="flex items-start gap-3">
               <MapPin className="text-primary w-5 h-5 shrink-0 mt-0.5" />
-              <span className="text-sm text-on-surface-variant">Av. Santa Elvira, Mza. E, Lote 59, Urb. San Elías, Los Olivos, Lima.</span>
+              <div className="flex flex-col gap-1 min-w-0">
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none">Sede Los Olivos</span>
+                <span className="text-sm text-on-surface-variant leading-snug">Av. Santa Elvira, Mza. E, Lote 59, Urb. San Elías, Los Olivos, Lima.</span>
+              </div>
+            </li>
+            <li className="flex items-start gap-3">
+              <MapPin className="text-primary w-5 h-5 shrink-0 mt-0.5" />
+              <div className="flex flex-col gap-1 min-w-0">
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none">Sede Santa Anita</span>
+                <span className="text-sm text-on-surface-variant leading-snug">Av. Los Nogales 510 - Santa Anita, Lima.</span>
+              </div>
             </li>
             <li className="flex items-start gap-3">
               <Phone className="text-primary w-5 h-5 shrink-0 mt-0.5" />
