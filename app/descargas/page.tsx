@@ -206,42 +206,35 @@ export default function DescargasPage() {
           <section className="space-y-12">
             
             {/* Category Filters Row */}
-            <div className="space-y-8">
-              {/* Visual Category Cards Grid */}
-              <div className="grid grid-cols-2 md:grid-cols-5 gap-4 scroll-reveal">
-                {[
-                  { id: "Todos", label: "Todos", icon: "folder_open", count: archivos.length },
-                  { id: "Controladores", label: "Drivers", icon: "memory", count: archivos.filter(a => a.tipo === "driver").length },
-                  { id: "Programas", label: "Programas", icon: "laptop_mac", count: archivos.filter(a => a.tipo === "programa").length },
-                  { id: "Documentos", label: "Documentos", icon: "description", count: archivos.filter(a => a.tipo === "excel").length },
-                  { id: "Enlaces", label: "Enlaces", icon: "link", count: archivos.filter(a => a.tipo === "link").length }
-                ].map((cat) => {
-                  const isActive = selectedType === cat.id;
-                  return (
-                    <button
-                      key={cat.id}
-                      onClick={() => setSelectedType(cat.id)}
-                      className={`p-5 rounded-[2rem] border text-left flex flex-col justify-between gap-6 transition-all duration-300 cursor-pointer select-none group ${
-                        isActive 
-                          ? "bg-primary/10 border-primary/25 text-primary shadow-lg shadow-primary/5 -translate-y-1"
-                          : "bg-slate-50/50 border-slate-200/80 text-slate-700 hover:bg-white hover:border-slate-300 hover:shadow-md"
-                      }`}
-                    >
-                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${
-                        isActive ? "bg-primary text-white" : "bg-white border border-slate-200/60 text-primary group-hover:bg-primary group-hover:text-white"
-                      }`}>
-                        <span className="material-symbols-outlined text-xl">{cat.icon}</span>
-                      </div>
-                      <div>
-                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">{cat.label}</span>
-                        <span className={`text-xl font-extrabold font-headline mt-1 block leading-none ${isActive ? "text-primary" : "text-slate-800"}`}>
-                          {cat.count}
-                        </span>
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
+            <div className="flex flex-wrap items-center justify-center gap-3 scroll-reveal">
+              {[
+                { id: "Todos", label: "Todos", icon: "folder_open", count: archivos.length },
+                { id: "Controladores", label: "Drivers", icon: "memory", count: archivos.filter(a => a.tipo === "driver").length },
+                { id: "Programas", label: "Programas", icon: "laptop_mac", count: archivos.filter(a => a.tipo === "programa").length },
+                { id: "Documentos", label: "Documentos", icon: "description", count: archivos.filter(a => a.tipo === "excel").length },
+                { id: "Enlaces", label: "Enlaces", icon: "link", count: archivos.filter(a => a.tipo === "link").length }
+              ].map((cat) => {
+                const isActive = selectedType === cat.id;
+                return (
+                  <button
+                    key={cat.id}
+                    onClick={() => setSelectedType(cat.id)}
+                    className={`inline-flex items-center gap-2 px-5 py-3 rounded-full border text-xs font-bold transition-all duration-200 cursor-pointer select-none ${
+                      isActive 
+                        ? "bg-primary border-primary text-white shadow-md shadow-primary/10 -translate-y-0.5"
+                        : "bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100 hover:text-slate-800"
+                    }`}
+                  >
+                    <span className="material-symbols-outlined text-[18px] leading-none">{cat.icon}</span>
+                    <span>{cat.label}</span>
+                    <span className={`text-[10px] font-black px-2 py-0.5 rounded-full leading-none transition-all ${
+                      isActive ? "bg-white/20 text-white" : "bg-slate-200 text-slate-500"
+                    }`}>
+                      {cat.count}
+                    </span>
+                  </button>
+                );
+              })}
             </div>
 
             {/* List of Files (Detailed Rows Layout) */}
