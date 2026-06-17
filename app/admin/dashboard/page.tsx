@@ -1956,7 +1956,13 @@ export default function AdminDashboardPage() {
 
           {/* TAB: Overview (Resumen General) */}
           {activeTab === "overview" && (
-            <section className="animate-fade-in-up space-y-8">
+            <section className="animate-fade-in-up space-y-6">
+              <div className="flex justify-between items-end mb-2">
+                <div>
+                  <h2 className="text-xl font-bold text-on-surface font-headline">Resumen General del Sistema</h2>
+                  <p className="text-xs text-slate-500 mt-0.5">Métricas clave de desempeño, tendencias y próximos vencimientos de DELLCOM SAC.</p>
+                </div>
+              </div>
               
               {/* Analytics & Charts Row */}
               <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
