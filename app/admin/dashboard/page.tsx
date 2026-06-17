@@ -1285,14 +1285,8 @@ export default function AdminDashboardPage() {
           border-color: rgba(249, 115, 22, 0.35) !important;
         }
 
-        .dark-theme .bg-red-50,
-        .dark-theme .bg-red-100 {
-          background-color: rgba(255, 0, 0, 0.12) !important;
-        }
-        .dark-theme .text-red-500,
-        .dark-theme .text-red-600,
-        .dark-theme .text-red-800 {
-          color: #ff6666 !important;
+        .dark-theme .bg-red-50 {
+          background-color: rgba(255, 0, 0, 0.08) !important;
         }
 
         .dark-theme .text-amber-600 {
@@ -1421,28 +1415,18 @@ export default function AdminDashboardPage() {
         /* Estilos del popup de guía en modo oscuro */
         .dark-theme .guide-popup-card {
           background-color: #0f172a !important;
-          border-color: #ff0000 !important;
+          border-color: rgba(255, 0, 0, 0.4) !important;
           box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7) !important;
         }
         .dark-theme .guide-popup-card .bg-white {
           background-color: #1e293b !important;
-          border-color: rgba(255, 0, 0, 0.3) !important;
+          border-color: #334155 !important;
         }
         .dark-theme .guide-popup-card .border-white\\/60 {
           border-color: #334155 !important;
         }
         .dark-theme .text-on-background {
           color: var(--text-main) !important;
-        }
-        .dark-theme .text-red-900 {
-          color: #ffb3b3 !important;
-        }
-        .dark-theme .border-red-100,
-        .dark-theme .border-red-200,
-        .dark-theme .border-red-300,
-        .dark-theme .border-red-100\\/50,
-        .dark-theme .border-red-100\\/60 {
-          border-color: rgba(255, 0, 0, 0.3) !important;
         }
       ` }} />
       
@@ -1730,18 +1714,18 @@ export default function AdminDashboardPage() {
                 };
 
                 return (
-                  <div className="fixed top-16 right-4 sm:absolute sm:right-0 sm:top-12 z-50 w-[calc(100vw-32px)] sm:w-[420px] bg-red-50 border border-red-100 rounded-2xl p-5 shadow-2xl animate-fade-in text-left text-on-background guide-popup-card">
-                    
+                  <div className="fixed top-16 right-4 sm:absolute sm:right-0 sm:top-12 z-50 w-[calc(100vw-32px)] sm:w-[420px] bg-white border border-primary/20 rounded-2xl p-5 shadow-2xl animate-fade-in text-left text-on-background guide-popup-card">
+
                     {/* Header Row */}
-                    <div className="flex items-center justify-between border-b border-red-100 pb-3 mb-3">
+                    <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-3">
                       <div className="flex items-center gap-2">
                         <span className="material-symbols-outlined text-primary text-lg">{g.icon}</span>
-                        <span className="text-xs font-bold text-red-800 font-headline">Guía de {g.title}</span>
+                        <span className="text-xs font-bold text-slate-800 font-headline">Guía de {g.title}</span>
                       </div>
                       <div className="flex items-center gap-1">
                         <button
                           onClick={resetProgress}
-                          className="p-1 rounded-md text-red-500 hover:text-red-700 hover:bg-red-100/50 transition-all cursor-pointer flex items-center"
+                          className="p-1 rounded-md text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-all cursor-pointer flex items-center"
                           title="Reiniciar progreso"
                           type="button"
                         >
@@ -1749,7 +1733,7 @@ export default function AdminDashboardPage() {
                         </button>
                         <button
                           onClick={() => setGuideVisible(false)}
-                          className="p-1 rounded-md text-red-400 hover:text-red-600 transition-colors cursor-pointer flex items-center"
+                          className="p-1 rounded-md text-slate-400 hover:text-slate-600 transition-colors cursor-pointer flex items-center"
                           title="Cerrar"
                           type="button"
                         >
@@ -1759,13 +1743,13 @@ export default function AdminDashboardPage() {
                     </div>
 
                     {/* Mode selector */}
-                    <div className="flex items-center justify-between bg-red-100/40 border border-red-100 p-0.5 rounded-lg mb-3">
+                    <div className="flex items-center justify-between bg-slate-100 border border-slate-200 p-0.5 rounded-lg mb-3">
                       <button
                         onClick={() => setGuideMode("checklist")}
                         className={`flex-1 py-1 rounded-md text-[10px] font-extrabold flex items-center justify-center gap-1 transition-all cursor-pointer ${
                           guideMode === "checklist"
                             ? "bg-primary text-white shadow-xs"
-                            : "text-primary hover:bg-red-100/50"
+                            : "text-slate-500 hover:text-slate-700"
                         }`}
                         type="button"
                       >
@@ -1777,7 +1761,7 @@ export default function AdminDashboardPage() {
                         className={`flex-1 py-1 rounded-md text-[10px] font-extrabold flex items-center justify-center gap-1 transition-all cursor-pointer ${
                           guideMode === "stepper"
                             ? "bg-primary text-white shadow-xs"
-                            : "text-primary hover:bg-red-100/50"
+                            : "text-slate-500 hover:text-slate-700"
                         }`}
                         type="button"
                       >
@@ -1791,11 +1775,11 @@ export default function AdminDashboardPage() {
                       <div className="space-y-3">
                         {/* Progress */}
                         <div>
-                          <div className="flex justify-between items-center text-[9px] font-bold text-red-800 tracking-wider">
+                          <div className="flex justify-between items-center text-[9px] font-bold text-slate-400 tracking-wider">
                             <span>PROGRESO</span>
                             <span>{completedCount}/{totalSteps} ({percent}%)</span>
                           </div>
-                          <div className="w-full bg-red-200/50 rounded-full h-1.5 mt-1 overflow-hidden">
+                          <div className="w-full bg-slate-200 rounded-full h-1.5 mt-1 overflow-hidden">
                             <div className="bg-primary h-full rounded-full transition-all duration-300" style={{ width: `${percent}%` }}></div>
                           </div>
                         </div>
@@ -1810,18 +1794,18 @@ export default function AdminDashboardPage() {
                                 onClick={() => toggleStep(i)}
                                 className={`flex items-start gap-2 p-1.5 rounded-lg transition-all cursor-pointer border select-none group ${
                                   isDone
-                                    ? "bg-red-100/10 border-red-200/20"
-                                    : "bg-white border-white/60 hover:border-red-200 hover:shadow-xs"
+                                    ? "bg-slate-50 border-slate-200/60"
+                                    : "bg-white border-slate-100 hover:border-primary/30 hover:shadow-xs"
                                 }`}
                               >
                                 <div className="mt-0.5 shrink-0">
                                   {isDone ? (
-                                    <span className="material-symbols-outlined text-primary text-[14px] bg-red-100 rounded-full w-4.5 h-4.5 flex items-center justify-center font-bold">check</span>
+                                    <span className="material-symbols-outlined text-primary text-[14px] bg-red-50 rounded-full w-4.5 h-4.5 flex items-center justify-center font-bold">check</span>
                                   ) : (
-                                    <span className="w-4.5 h-4.5 rounded-full border border-red-300 group-hover:border-red-500 transition-colors flex items-center justify-center text-[8px] text-red-500 font-bold">{i + 1}</span>
+                                    <span className="w-4.5 h-4.5 rounded-full border border-slate-300 group-hover:border-primary transition-colors flex items-center justify-center text-[8px] text-slate-400 font-bold">{i + 1}</span>
                                   )}
                                 </div>
-                                <span className={`text-[11px] font-semibold leading-normal ${isDone ? "text-red-400/80 line-through" : "text-red-800 group-hover:text-red-900"}`}>
+                                <span className={`text-[11px] font-semibold leading-normal ${isDone ? "text-slate-400 line-through" : "text-slate-700 group-hover:text-slate-900"}`}>
                                   {step}
                                 </span>
                               </div>
@@ -1838,21 +1822,21 @@ export default function AdminDashboardPage() {
                       </div>
                     ) : (
                       <div className="space-y-3">
-                        <div className="bg-white border border-red-100/60 rounded-xl p-3.5 shadow-xs relative min-h-[95px] flex flex-col justify-between">
+                        <div className="bg-white border border-slate-200 rounded-xl p-3.5 shadow-xs relative min-h-[95px] flex flex-col justify-between">
                           <div>
                             <div className="flex justify-between items-center">
-                              <span className="text-[8px] font-black text-red-500 tracking-wider uppercase">Paso {currentStepIdx + 1} de {totalSteps}</span>
-                              <label className="flex items-center gap-1 cursor-pointer select-none text-[9px] font-bold text-red-700 bg-red-50 px-1.5 py-0.5 rounded border border-red-100/50">
+                              <span className="text-[8px] font-black text-primary tracking-wider uppercase">Paso {currentStepIdx + 1} de {totalSteps}</span>
+                              <label className="flex items-center gap-1 cursor-pointer select-none text-[9px] font-bold text-slate-500 bg-slate-50 px-1.5 py-0.5 rounded border border-slate-200">
                                 <input
                                   type="checkbox"
                                   checked={tabCompleted[currentStepIdx] || false}
                                   onChange={() => toggleStep(currentStepIdx)}
-                                  className="rounded border-red-300 text-primary focus:ring-primary w-2.5 h-2.5 cursor-pointer"
+                                  className="rounded border-slate-300 text-primary focus:ring-primary w-2.5 h-2.5 cursor-pointer"
                                 />
                                 <span>Hecho</span>
                               </label>
                             </div>
-                            <p className="text-[11px] font-bold text-red-900 mt-2 leading-relaxed">{g.steps[currentStepIdx]}</p>
+                            <p className="text-[11px] font-bold text-slate-800 mt-2 leading-relaxed">{g.steps[currentStepIdx]}</p>
                           </div>
 
                           <div className="flex items-center justify-between border-t border-slate-100 pt-2.5 mt-3">
@@ -1874,7 +1858,7 @@ export default function AdminDashboardPage() {
                                   key={i}
                                   onClick={() => setStepIdx(i)}
                                   className={`w-1.5 h-1.5 rounded-full transition-all cursor-pointer ${
-                                    i === currentStepIdx ? "bg-primary w-3" : tabCompleted[i] ? "bg-red-300" : "bg-slate-200"
+                                    i === currentStepIdx ? "bg-primary w-3" : tabCompleted[i] ? "bg-primary/30" : "bg-slate-200"
                                   }`}
                                   type="button"
                                 ></button>
