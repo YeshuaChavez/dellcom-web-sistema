@@ -164,6 +164,9 @@ export default function AdminDashboardPage() {
 
   // Section guide visibility — toggled via the ? button in the header
   const [guideVisible, setGuideVisible] = useState(false);
+  const [guideMode, setGuideMode] = useState<"checklist" | "stepper">("checklist");
+  const [guideStepIndex, setGuideStepIndex] = useState<Record<string, number>>({});
+  const [completedSteps, setCompletedSteps] = useState<Record<string, boolean[]>>({});
 
   // Load theme preference on mount
   useEffect(() => {
@@ -250,7 +253,9 @@ export default function AdminDashboardPage() {
   const [formPortfolioTitle, setFormPortfolioTitle] = useState("");
   const [formPortfolioDesc, setFormPortfolioDesc] = useState("");
   const [formPortfolioImgUrl, setFormPortfolioImgUrl] = useState("");
+  const [formPortfolioExtraImgs, setFormPortfolioExtraImgs] = useState<string[]>([]);
   const [formPortfolioServiceId, setFormPortfolioServiceId] = useState("");
+  const [uploadingPortfolioExtraIdx, setUploadingPortfolioExtraIdx] = useState<number | null>(null);
 
   // Form states for Category CRUD
   const [formCategoryName, setFormCategoryName] = useState("");
@@ -365,21 +370,23 @@ export default function AdminDashboardPage() {
 
   const handleUploadFile = async (
     e: React.ChangeEvent<HTMLInputElement>,
-    target: "product" | "file" | "portfolio",
-    productIdx?: number
+    target: "product" | "file" | "portfolio" | "portfolio-extra",
+    idx?: number
   ) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (target === "product" && productIdx !== undefined) {
-      setUploadingProductIdx(productIdx);
+    if (target === "product" && idx !== undefined) {
+      setUploadingProductIdx(idx);
+    } else if (target === "portfolio-extra" && idx !== undefined) {
+      setUploadingPortfolioExtraIdx(idx);
     } else {
       setUploading(true);
     }
 
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("folder", target === "product" ? "productos" : target === "portfolio" ? "portfolio" : "uploads");
+    formData.append("folder", target === "product" ? "productos" : (target === "portfolio" || target === "portfolio-extra") ? "portfolio" : "uploads");
 
     try {
       const res = await fetch("/api/admin/upload", {
@@ -390,8 +397,10 @@ export default function AdminDashboardPage() {
       if (!res.ok) throw new Error("No se pudo cargar el archivo");
 
       const data = await res.json();
-      if (target === "product" && productIdx !== undefined) {
-        setFormProductImages(prev => prev.map((u, i) => i === productIdx ? data.url : u));
+      if (target === "product" && idx !== undefined) {
+        setFormProductImages(prev => prev.map((u, i) => i === idx ? data.url : u));
+      } else if (target === "portfolio-extra" && idx !== undefined) {
+        setFormPortfolioExtraImgs(prev => prev.map((u, i) => i === idx ? data.url : u));
       } else if (target === "portfolio") {
         setFormPortfolioImgUrl(data.url);
       } else {
@@ -404,6 +413,8 @@ export default function AdminDashboardPage() {
     } finally {
       if (target === "product") {
         setUploadingProductIdx(null);
+      } else if (target === "portfolio-extra") {
+        setUploadingPortfolioExtraIdx(null);
       } else {
         setUploading(false);
       }
@@ -841,10 +852,12 @@ export default function AdminDashboardPage() {
       return;
     }
 
+    const allImgs = [formPortfolioImgUrl, ...formPortfolioExtraImgs.filter(u => u.trim())];
+
     const portfolioData = {
       titulo: formPortfolioTitle,
       descripcion: formPortfolioDesc || null,
-      imagen_url: formPortfolioImgUrl,
+      imagen_url: allImgs.join("||"),
       id_servicio: formPortfolioServiceId ? Number(formPortfolioServiceId) : null,
     };
 
@@ -889,7 +902,9 @@ export default function AdminDashboardPage() {
     setEditingPortfolio(job);
     setFormPortfolioTitle(job.titulo);
     setFormPortfolioDesc(job.descripcion || "");
-    setFormPortfolioImgUrl(job.imagen_url);
+    const imgParts = job.imagen_url.split("||").filter(Boolean);
+    setFormPortfolioImgUrl(imgParts[0] || "");
+    setFormPortfolioExtraImgs(imgParts.slice(1));
     setFormPortfolioServiceId(job.id_servicio ? String(job.id_servicio) : "");
     setShowPortfolioModal(true);
   };
@@ -899,6 +914,7 @@ export default function AdminDashboardPage() {
     setFormPortfolioTitle("");
     setFormPortfolioDesc("");
     setFormPortfolioImgUrl("");
+    setFormPortfolioExtraImgs([]);
     setFormPortfolioServiceId("");
     setShowPortfolioModal(false);
   };
@@ -1684,7 +1700,7 @@ export default function AdminDashboardPage() {
               portfolio: {
                 icon: "photo_library", title: "Trabajos Realizados",
                 desc: "Galería de proyectos completados que se muestra en el sitio web público.",
-                steps: ["Agrega una imagen representativa del trabajo", "Asocia el trabajo a un servicio para que aparezca clasificado", "Los trabajos más recientes aparecen primero en la web"],
+                steps: ["La foto principal es la portada que aparece en la cuadrícula", "Agrega fotos adicionales para crear un carrusel en el lightbox", "Asocia el trabajo a un servicio para que aparezca clasificado", "Los trabajos más recientes aparecen primero en la web"],
               },
               users: {
                 icon: "group", title: "Gestión de Personal",
@@ -1694,32 +1710,249 @@ export default function AdminDashboardPage() {
             };
             const g = guides[activeTab];
             if (!g) return null;
+
+            const tabCompleted = completedSteps[activeTab] || new Array(g.steps.length).fill(false);
+            const totalSteps = g.steps.length;
+            const completedCount = tabCompleted.filter(Boolean).length;
+            const percent = Math.round((completedCount / totalSteps) * 100);
+            const currentStepIdx = guideStepIndex[activeTab] || 0;
+
+            const toggleStep = (index: number) => {
+              setCompletedSteps((prev) => {
+                const current = prev[activeTab] ? [...prev[activeTab]] : new Array(totalSteps).fill(false);
+                current[index] = !current[index];
+                return { ...prev, [activeTab]: current };
+              });
+            };
+
+            const resetProgress = () => {
+              setCompletedSteps((prev) => ({ ...prev, [activeTab]: new Array(totalSteps).fill(false) }));
+              setGuideStepIndex((prev) => ({ ...prev, [activeTab]: 0 }));
+            };
+
+            const setStepIdx = (index: number) => {
+              setGuideStepIndex((prev) => ({ ...prev, [activeTab]: Math.max(0, Math.min(totalSteps - 1, index)) }));
+            };
+
             return (
-              <div className="mb-6 bg-blue-50 border border-blue-100 rounded-2xl p-4 flex gap-4 items-start animate-fade-in">
-                <div className="shrink-0 w-9 h-9 rounded-xl bg-blue-100 flex items-center justify-center">
-                  <span className="material-symbols-outlined text-blue-500 text-lg">{g.icon}</span>
+              <div className="mb-8 bg-blue-50 border border-blue-100 rounded-2xl p-5 md:p-6 animate-fade-in relative shadow-sm">
+                
+                {/* Header Row */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-blue-100 pb-4 mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="shrink-0 w-10 h-10 rounded-xl bg-blue-100/80 flex items-center justify-center text-blue-600">
+                      <span className="material-symbols-outlined text-xl">{g.icon}</span>
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-black text-blue-800 font-headline leading-tight flex items-center gap-2">
+                        Guía de {g.title}
+                      </h4>
+                      <p className="text-xs text-blue-500/90 font-medium mt-0.5">{g.desc}</p>
+                    </div>
+                  </div>
+
+                  {/* Actions / Modes Selector */}
+                  <div className="flex items-center gap-2 self-end sm:self-auto">
+                    <div className="flex items-center bg-blue-100/40 border border-blue-100 p-0.5 rounded-lg gap-0.5">
+                      <button
+                        onClick={() => setGuideMode("checklist")}
+                        className={`px-3 py-1.5 rounded-md text-[11px] font-extrabold flex items-center gap-1 transition-all cursor-pointer ${
+                          guideMode === "checklist"
+                            ? "bg-blue-600 text-white shadow-sm"
+                            : "text-blue-600 hover:bg-blue-100/50"
+                        }`}
+                        title="Ver todas las tareas"
+                      >
+                        <span className="material-symbols-outlined text-xs">checklist</span>
+                        Tareas
+                      </button>
+                      <button
+                        onClick={() => setGuideMode("stepper")}
+                        className={`px-3 py-1.5 rounded-md text-[11px] font-extrabold flex items-center gap-1 transition-all cursor-pointer ${
+                          guideMode === "stepper"
+                            ? "bg-blue-600 text-white shadow-sm"
+                            : "text-blue-600 hover:bg-blue-100/50"
+                        }`}
+                        title="Modo paso a paso"
+                      >
+                        <span className="material-symbols-outlined text-xs">auto_stories</span>
+                        Paso a paso
+                      </button>
+                    </div>
+
+                    <button
+                      onClick={resetProgress}
+                      className="px-2 py-1.5 rounded-lg text-[11px] font-extrabold text-blue-500 hover:text-blue-700 hover:bg-blue-100/50 transition-all cursor-pointer flex items-center gap-1"
+                      title="Reiniciar progreso"
+                    >
+                      <span className="material-symbols-outlined text-sm leading-none">restart_alt</span>
+                      Reiniciar
+                    </button>
+
+                    <button
+                      onClick={() => setGuideVisible(false)}
+                      className="ml-1 shrink-0 text-blue-400 hover:text-blue-600 transition-colors cursor-pointer w-7 h-7 rounded-lg hover:bg-blue-100/50 flex items-center justify-center"
+                      title="Ocultar guía"
+                    >
+                      <span className="material-symbols-outlined text-lg">close</span>
+                    </button>
+                  </div>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs font-extrabold text-blue-800 mb-0.5">{g.title} — {g.desc}</p>
-                  <ol className="mt-1.5 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-0.5">
-                    {g.steps.map((step, i) => (
-                      <li key={i} className="text-[11px] text-blue-700 font-medium flex items-start gap-1.5">
-                        <span className="shrink-0 font-black text-blue-400">{i + 1}.</span>
-                        {step}
-                      </li>
-                    ))}
-                  </ol>
-                </div>
-                <button
-                  onClick={() => setGuideVisible(false)}
-                  className="shrink-0 text-blue-300 hover:text-blue-500 transition-colors cursor-pointer"
-                  title="Cerrar guía"
-                >
-                  <span className="material-symbols-outlined text-lg">close</span>
-                </button>
+
+                {/* Content Render based on mode */}
+                {guideMode === "checklist" ? (
+                  <div className="space-y-4">
+                    {/* Progress bar */}
+                    <div className="flex items-center justify-between gap-4">
+                      <div className="flex-1">
+                        <div className="flex justify-between items-center text-[10px] font-bold text-blue-800 tracking-wider">
+                          <span>PROGRESO DE APRENDIZAJE</span>
+                          <span>{completedCount} de {totalSteps} ({percent}%)</span>
+                        </div>
+                        <div className="w-full bg-blue-200/50 rounded-full h-2 mt-1.5 overflow-hidden">
+                          <div
+                            className="bg-blue-600 h-full rounded-full transition-all duration-500"
+                            style={{ width: `${percent}%` }}
+                          ></div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Steps checklist */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                      {g.steps.map((step, i) => {
+                        const isDone = tabCompleted[i];
+                        return (
+                          <div
+                            key={i}
+                            onClick={() => toggleStep(i)}
+                            className={`flex items-start gap-2.5 p-2.5 rounded-xl transition-all cursor-pointer border select-none group ${
+                              isDone
+                                ? "bg-blue-100/10 border-blue-200/30"
+                                : "bg-white border-white/60 hover:border-blue-200 hover:shadow-sm"
+                            }`}
+                          >
+                            <div className="mt-0.5 shrink-0">
+                              {isDone ? (
+                                <span className="material-symbols-outlined text-blue-600 text-[16px] bg-blue-100 rounded-full w-5 h-5 flex items-center justify-center font-bold">check</span>
+                              ) : (
+                                <span className="w-5 h-5 rounded-full border-2 border-blue-300 group-hover:border-blue-500 transition-colors flex items-center justify-center text-[9px] text-blue-500 font-bold">{i + 1}</span>
+                              )}
+                            </div>
+                            <span
+                              className={`text-xs font-semibold leading-snug ${
+                                isDone ? "text-blue-400/80 line-through" : "text-blue-800 group-hover:text-blue-900"
+                              }`}
+                            >
+                              {step}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {/* Celebration Alert */}
+                    {percent === 100 && (
+                      <div className="bg-green-100/80 border border-green-200 rounded-xl p-3 flex items-center gap-2.5 animate-fade-in">
+                        <span className="material-symbols-outlined text-green-600 text-lg">workspace_premium</span>
+                        <p className="text-xs font-bold text-green-800 m-0">
+                          ¡Excelente! Has completado todas las actividades guía para esta sección. ¡Ahora dominas el módulo!
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {/* Stepper Card */}
+                    <div className="bg-white border border-blue-100/80 rounded-xl p-5 shadow-sm min-h-[140px] flex flex-col justify-between relative overflow-hidden">
+                      <div className="absolute top-0 right-0 w-24 h-24 bg-blue-50 rounded-bl-full -z-10 opacity-30"></div>
+
+                      <div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-[9px] font-black text-blue-500 tracking-widest uppercase">
+                            Paso {currentStepIdx + 1} de {totalSteps}
+                          </span>
+                          <label className="flex items-center gap-1.5 cursor-pointer select-none text-[10px] font-bold text-blue-700 bg-blue-50 px-2.5 py-1 rounded-md hover:bg-blue-100/60 transition-colors border border-blue-100/50">
+                            <input
+                              type="checkbox"
+                              checked={tabCompleted[currentStepIdx] || false}
+                              onChange={() => toggleStep(currentStepIdx)}
+                              className="rounded border-blue-300 text-blue-600 focus:ring-blue-500 w-3 h-3 cursor-pointer"
+                            />
+                            <span>Marcar como hecho</span>
+                          </label>
+                        </div>
+                        <p className="text-sm font-bold text-blue-900 mt-3.5 leading-relaxed">
+                          {g.steps[currentStepIdx]}
+                        </p>
+                      </div>
+
+                      {/* Navigation and Indicators */}
+                      <div className="flex items-center justify-between border-t border-slate-100 pt-4 mt-4">
+                        {/* Previous Button */}
+                        <button
+                          onClick={() => setStepIdx(currentStepIdx - 1)}
+                          disabled={currentStepIdx === 0}
+                          className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 transition-all cursor-pointer ${
+                            currentStepIdx === 0
+                              ? "text-slate-300 cursor-not-allowed"
+                              : "text-blue-600 hover:bg-blue-50"
+                          }`}
+                        >
+                          <span className="material-symbols-outlined text-sm leading-none">arrow_back</span>
+                          Anterior
+                        </button>
+
+                        {/* Dot Indicators */}
+                        <div className="flex items-center gap-1.5">
+                          {g.steps.map((_, i) => (
+                            <button
+                              key={i}
+                              onClick={() => setStepIdx(i)}
+                              className={`w-2 h-2 rounded-full transition-all cursor-pointer ${
+                                i === currentStepIdx
+                                  ? "bg-blue-600 w-4"
+                                  : tabCompleted[i]
+                                  ? "bg-blue-300"
+                                  : "bg-slate-200 hover:bg-blue-300/60"
+                              }`}
+                              title={`Ir al paso ${i + 1}`}
+                            ></button>
+                          ))}
+                        </div>
+
+                        {/* Next/Finish Button */}
+                        <button
+                          onClick={() => {
+                            if (currentStepIdx === totalSteps - 1) {
+                              setStepIdx(0);
+                              setGuideMode("checklist");
+                            } else {
+                              setStepIdx(currentStepIdx + 1);
+                            }
+                          }}
+                          className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold flex items-center gap-1 transition-all shadow-sm shadow-blue-600/10 cursor-pointer"
+                        >
+                          {currentStepIdx === totalSteps - 1 ? (
+                            <>
+                              Terminar
+                              <span className="material-symbols-outlined text-sm leading-none">check</span>
+                            </>
+                          ) : (
+                            <>
+                              Siguiente
+                              <span className="material-symbols-outlined text-sm leading-none">arrow_forward</span>
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             );
           })()}
+
 
           {/* TAB: Overview (Resumen General) */}
           {activeTab === "overview" && (
@@ -2747,7 +2980,7 @@ export default function AdminDashboardPage() {
                           <tr key={job.id} className="transition-colors hover:bg-slate-50/50">
                             <td className="px-6 py-3">
                               <div className="w-12 h-12 rounded-xl overflow-hidden border border-slate-200 bg-slate-50 flex items-center justify-center">
-                                <img src={job.imagen_url} alt={job.titulo} className="w-full h-full object-cover" />
+                                <img src={job.imagen_url.split("||")[0]} alt={job.titulo} className="w-full h-full object-cover" />
                               </div>
                             </td>
                             <td className="px-6 py-4 text-xs font-semibold text-on-surface">
@@ -3532,10 +3765,10 @@ export default function AdminDashboardPage() {
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Imagen del Trabajo (AWS S3)</label>
+                <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Foto principal (portada)</label>
                 <div className="flex gap-3 items-center">
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     required
                     value={formPortfolioImgUrl}
                     onChange={(e) => setFormPortfolioImgUrl(e.target.value)}
@@ -3543,14 +3776,14 @@ export default function AdminDashboardPage() {
                     className="flex-1 bg-slate-50 border border-slate-200 focus:border-red-600 focus:ring-1 focus:ring-red-600 focus:outline-none rounded-xl px-4 py-3 text-sm transition-all"
                   />
                   <div className="relative">
-                    <input 
-                      type="file" 
+                    <input
+                      type="file"
                       id="formPortfolioImgFile"
                       onChange={(e) => handleUploadFile(e, "portfolio")}
                       className="hidden"
                       accept="image/*"
                     />
-                    <label 
+                    <label
                       htmlFor="formPortfolioImgFile"
                       className="px-4 py-3 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-bold transition-all cursor-pointer inline-flex items-center gap-1.5"
                     >
@@ -3560,6 +3793,67 @@ export default function AdminDashboardPage() {
                   </div>
                 </div>
                 {uploading && <span className="text-[10px] text-red-600 font-bold block mt-1">Cargando archivo...</span>}
+                {formPortfolioImgUrl && (
+                  <img src={formPortfolioImgUrl} alt="portada" className="mt-2 w-20 h-20 object-cover rounded-xl border border-slate-200" />
+                )}
+              </div>
+
+              <div>
+                <div className="flex justify-between items-center mb-2">
+                  <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider">Fotos adicionales (carrusel)</label>
+                  <button
+                    type="button"
+                    onClick={() => setFormPortfolioExtraImgs(prev => [...prev, ""])}
+                    className="inline-flex items-center gap-1 text-[10px] font-bold text-red-600 hover:text-red-700 transition-colors cursor-pointer"
+                  >
+                    <span className="material-symbols-outlined text-sm">add_photo_alternate</span>
+                    Agregar foto
+                  </button>
+                </div>
+                {formPortfolioExtraImgs.length === 0 && (
+                  <p className="text-[10px] text-slate-400 italic">Sin fotos adicionales — solo se mostrará la portada en el carrusel.</p>
+                )}
+                <div className="space-y-2">
+                  {formPortfolioExtraImgs.map((url, idx) => (
+                    <div key={idx} className="flex gap-2 items-center">
+                      <div className="w-10 h-10 flex-shrink-0 rounded-lg overflow-hidden border border-slate-200 bg-slate-100">
+                        {url && <img src={url} alt="" className="w-full h-full object-cover" />}
+                      </div>
+                      <input
+                        type="text"
+                        value={url}
+                        onChange={(e) => setFormPortfolioExtraImgs(prev => prev.map((u, i) => i === idx ? e.target.value : u))}
+                        placeholder="https://..."
+                        className="flex-1 bg-slate-50 border border-slate-200 focus:border-red-600 focus:ring-1 focus:ring-red-600 focus:outline-none rounded-xl px-3 py-2 text-sm transition-all"
+                      />
+                      <div className="relative flex-shrink-0">
+                        <input
+                          type="file"
+                          id={`formPortfolioExtra_${idx}`}
+                          onChange={(e) => handleUploadFile(e, "portfolio-extra", idx)}
+                          className="hidden"
+                          accept="image/*"
+                        />
+                        <label
+                          htmlFor={`formPortfolioExtra_${idx}`}
+                          className="px-3 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-xl text-xs font-bold transition-all cursor-pointer inline-flex items-center gap-1"
+                        >
+                          {uploadingPortfolioExtraIdx === idx
+                            ? <span className="material-symbols-outlined text-sm animate-spin">progress_activity</span>
+                            : <span className="material-symbols-outlined text-sm">upload</span>
+                          }
+                        </label>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setFormPortfolioExtraImgs(prev => prev.filter((_, i) => i !== idx))}
+                        className="flex-shrink-0 p-2 text-slate-400 hover:text-red-600 transition-colors cursor-pointer"
+                      >
+                        <span className="material-symbols-outlined text-sm">delete</span>
+                      </button>
+                    </div>
+                  ))}
+                </div>
               </div>
 
               <footer className="pt-4 border-t border-slate-100 flex justify-end gap-3">
