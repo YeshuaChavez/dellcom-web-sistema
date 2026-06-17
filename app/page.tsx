@@ -209,23 +209,25 @@ export default async function Home() {
               <div className="absolute -bottom-8 -left-8 w-28 h-28 border border-primary/10 rounded-full pointer-events-none -z-10" />
               <div className="absolute -bottom-12 -left-2 w-20 h-20 border border-primary/5 rounded-full pointer-events-none -z-10" />
               
-              {/* Rectangular/Square Framed Image with Rounded Corners */}
-              <div className="relative z-10 w-full max-w-[480px] aspect-[4/3] overflow-hidden rounded-[2rem] border-[6px] border-white shadow-2xl hover:scale-[1.02] transition-transform duration-500">
-                <img 
-                  alt="Sede DELLCOM SAC Counter" 
-                  className="w-full h-full object-cover" 
-                  src="/img/portafolio/WhatsApp Image 2026-06-14 at 9.36.54 PM.jpeg"
-                />
-              </div>
-
-              {/* Floating Badge 1: Soporte Técnico Certificado */}
-              <div className="absolute -bottom-4 -right-4 bg-white/95 backdrop-blur-md border border-slate-200/60 py-2.5 px-4 rounded-2xl shadow-xl flex items-center gap-2.5 transform rotate-2 hover:rotate-0 transition-transform duration-300 z-20">
-                <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
-                  <span className="material-symbols-outlined text-[18px] font-bold animate-pulse">workspace_premium</span>
+              {/* Rectangular/Square Framed Image wrapper with localized relative context */}
+              <div className="relative z-10 w-full max-w-[480px]">
+                <div className="relative aspect-[4/3] overflow-hidden rounded-[2rem] border-[6px] border-white shadow-2xl hover:scale-[1.02] transition-transform duration-500">
+                  <img 
+                    alt="Sede DELLCOM SAC Counter" 
+                    className="w-full h-full object-cover" 
+                    src="/img/portafolio/WhatsApp Image 2026-06-14 at 9.36.54 PM.jpeg"
+                  />
                 </div>
-                <div>
-                  <p className="text-[9px] text-slate-400 font-extrabold uppercase tracking-wider leading-none">Soporte Técnico</p>
-                  <p className="text-xs text-slate-800 font-bold mt-0.5 leading-none">100% Certificado</p>
+
+                {/* Floating Badge: Soporte Técnico Certificado (Overlaying the bottom-right corner of the image) */}
+                <div className="absolute bottom-6 right-6 bg-white/95 backdrop-blur-md border border-slate-200/60 py-2.5 px-4 rounded-2xl shadow-xl flex items-center gap-2.5 transform rotate-2 hover:rotate-0 transition-transform duration-300 z-20">
+                  <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+                    <span className="material-symbols-outlined text-[18px] font-bold animate-pulse">workspace_premium</span>
+                  </div>
+                  <div>
+                    <p className="text-[9px] text-slate-400 font-extrabold uppercase tracking-wider leading-none">Soporte Técnico</p>
+                    <p className="text-xs text-slate-800 font-bold mt-0.5 leading-none">100% Certificado</p>
+                  </div>
                 </div>
               </div>
             </div>
