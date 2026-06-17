@@ -220,7 +220,7 @@ export default async function Home() {
                 </div>
 
                 {/* Floating Badge: Soporte Técnico Certificado (Overlaying the bottom-right corner of the image) */}
-                <div className="absolute bottom-6 right-6 bg-white/95 backdrop-blur-md border border-slate-200/60 py-2.5 px-4 rounded-2xl shadow-xl flex items-center gap-2.5 transform rotate-2 hover:rotate-0 transition-transform duration-300 z-20">
+                <div className="absolute bottom-1 right-[-30] bg-white/95 backdrop-blur-md border border-slate-200/60 py-2.5 px-4 rounded-2xl shadow-xl flex items-center gap-2.5 transform rotate-2 hover:rotate-0 transition-transform duration-300 z-20">
                   <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
                     <span className="material-symbols-outlined text-[18px] font-bold animate-pulse">workspace_premium</span>
                   </div>
