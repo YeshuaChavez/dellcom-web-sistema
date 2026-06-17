@@ -114,8 +114,6 @@ export default function CleanFooter() {
           © 2026 DELLCOM SAC. Precision IT Engineering. Todos los derechos reservados.
         </p>
         <div className="flex gap-6">
-          <Link className="text-xs text-on-surface-variant hover:text-primary" href="/#">Términos</Link>
-          <Link className="text-xs text-on-surface-variant hover:text-primary" href="/#">Privacidad</Link>
           <Link className="text-xs text-on-surface-variant hover:text-primary" href="/admin/login">Panel Técnico</Link>
         </div>
       </div>

@@ -166,116 +166,42 @@ export default function DescargasPage() {
       <StatusHeader />
 
       <main className="pt-16">
-        {/* Asymmetric Header Banner */}
-        <section className="relative py-20 bg-slate-50/50 overflow-hidden border-b border-slate-100">
+        {/* Page Header (Consistent centered layout) */}
+        <section className="relative py-16 bg-slate-50/50 overflow-hidden border-b border-slate-100">
           <div className="absolute inset-0 opacity-[0.02] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#000 1px, transparent 1px)', backgroundSize: '16px 16px' }} />
           {/* Glowing bubbles in the background */}
           <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
           <div className="absolute -bottom-20 -left-20 w-[400px] h-[400px] bg-primary/5 rounded-full blur-[100px] pointer-events-none" />
 
-          <div className="relative px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto w-full z-10">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-              <div className="lg:col-span-7 text-left space-y-5 scroll-reveal">
-                <span className="inline-flex items-center gap-2 bg-primary/10 border border-primary/15 text-primary font-bold text-[10px] rounded-full uppercase tracking-widest px-3.5 py-1">
-                  <span className="material-symbols-outlined text-[14px]">download_done</span>
-                  Recursos Oficiales Dellcom
-                </span>
-                <h1 className="font-headline text-4xl md:text-5xl font-black text-on-surface leading-tight tracking-tight">
-                  Soporte y <span className="text-primary">Descargas</span>
-                </h1>
-                <p className="text-xs md:text-sm text-on-surface-variant max-w-xl leading-relaxed font-semibold">
-                  Accede a nuestro repositorio oficial de utilidades de diagnóstico, plantillas administrativas y controladores autorizados para impresoras Zebra, Epson y equipos corporativos.
-                </p>
-                <div className="pt-2 max-w-md">
-                  <div className="relative bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden focus-within:border-primary/50 focus-within:ring-2 focus-within:ring-primary/10 transition-all">
-                    <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 select-none">search</span>
-                    <input 
-                      className="w-full pl-12 pr-4 py-3.5 bg-transparent border-none focus:outline-none text-on-surface text-sm placeholder:text-slate-400 font-semibold"
-                      placeholder="Buscar controlador, programa, manual..." 
-                      type="text"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Decorative floating card stack representation of file items */}
-              <div className="lg:col-span-5 hidden lg:flex justify-center items-center relative py-6 scroll-reveal" style={{ transitionDelay: '150ms' }}>
-                <div className="w-72 h-44 bg-white border border-slate-100 rounded-3xl shadow-xl p-5 transform -rotate-6 translate-y-4 translate-x-4 absolute z-0 opacity-40">
-                  <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center mb-4"><span className="material-symbols-outlined text-sm">memory</span></div>
-                  <div className="w-24 h-3 bg-slate-200 rounded"></div>
-                  <div className="w-40 h-2 bg-slate-100 rounded mt-2"></div>
-                </div>
-                <div className="w-72 h-44 bg-white border border-slate-100 rounded-3xl shadow-xl p-5 transform rotate-3 translate-x-8 absolute z-10 opacity-70">
-                  <div className="w-8 h-8 rounded-lg bg-teal-50 text-teal-600 flex items-center justify-center mb-4"><span className="material-symbols-outlined text-sm">description</span></div>
-                  <div className="w-24 h-3 bg-slate-200 rounded"></div>
-                  <div className="w-40 h-2 bg-slate-100 rounded mt-2"></div>
-                </div>
-                <div className="w-72 h-44 bg-white border border-slate-200 rounded-3xl shadow-2xl p-6 transform -rotate-3 z-20 animate-float">
-                  <div className="flex justify-between items-start mb-4">
-                    <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shadow-sm"><span className="material-symbols-outlined">download</span></div>
-                    <span className="text-[9px] bg-slate-100 text-slate-500 font-bold px-2 py-0.5 rounded-full">v8.0.10</span>
-                  </div>
-                  <h4 className="font-headline font-bold text-xs text-on-surface">AnyDesk Remote Access</h4>
-                  <p className="text-[10px] text-on-surface-variant mt-1 leading-snug">Control de diagnóstico remoto oficial.</p>
-                  <div className="w-full bg-slate-100 h-1 rounded mt-4 overflow-hidden">
-                    <div className="bg-primary h-full w-[85%]"></div>
-                  </div>
-                </div>
+          <div className="relative px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto w-full text-center z-10 scroll-reveal">
+            <span className="inline-block py-1 px-3.5 mb-4 bg-primary/10 border border-primary/15 text-primary font-bold text-[10px] rounded-full uppercase tracking-widest">
+              Soporte y Utilidades
+            </span>
+            <h1 className="font-headline text-3xl md:text-5xl font-black text-on-surface leading-tight tracking-tight">
+              Soporte y <span className="text-primary">Descargas</span>
+            </h1>
+            <p className="text-xs md:text-sm font-semibold text-on-surface-variant max-w-xl mx-auto mt-2 leading-relaxed">
+              Accede a nuestro repositorio oficial de utilidades de diagnóstico, plantillas administrativas y controladores autorizados para impresoras Zebra, Epson y equipos corporativos.
+            </p>
+            
+            <div className="pt-6 max-w-md mx-auto">
+              <div className="relative bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden focus-within:border-primary/50 focus-within:ring-2 focus-within:ring-primary/10 transition-all">
+                <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 select-none">search</span>
+                <input 
+                  className="w-full pl-12 pr-4 py-3.5 bg-transparent border-none focus:outline-none text-on-surface text-sm placeholder:text-slate-400 font-semibold"
+                  placeholder="Buscar controlador, programa, manual..." 
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
               </div>
             </div>
           </div>
         </section>
 
         {/* Main Downloads View Container */}
-        <div className="py-16 max-w-container-max mx-auto w-full px-margin-mobile md:px-margin-desktop space-y-16">
+        <div className="py-16 max-w-container-max mx-auto w-full px-margin-mobile md:px-margin-desktop space-y-20">
           
-          {/* Featured Remote Support Section (Helpful Technical Desk) */}
-          <section className="bg-gradient-to-br from-slate-50 to-white border-l-4 border-l-primary border-t border-r border-b border-slate-200/80 text-on-surface rounded-[2.5rem] p-8 md:p-12 relative overflow-hidden shadow-sm scroll-reveal">
-            <div className="absolute inset-0 opacity-[0.01] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#000 1px, transparent 1px)', backgroundSize: '16px 16px' }} />
-            <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-primary/5 rounded-full blur-[80px] pointer-events-none" />
-            
-            <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-              <div className="lg:col-span-8 space-y-5">
-                <span className="inline-flex items-center gap-1.5 py-1 px-3 bg-primary/10 border border-primary/15 text-primary font-bold text-[10px] rounded-full uppercase tracking-widest">
-                  <span className="material-symbols-outlined text-[14px]">support_agent</span>
-                  Asistencia Inmediata en Línea
-                </span>
-                <h2 className="font-headline text-2xl md:text-3xl font-black text-on-surface leading-tight">
-                  ¿Necesitas soporte técnico <span className="text-primary">remoto en tiempo real</span>?
-                </h2>
-                <p className="text-xs md:text-sm text-on-surface-variant max-w-xl leading-relaxed font-semibold">
-                  Descarga AnyDesk, la herramienta oficial recomendada por nuestro laboratorio. Un ingeniero certificado te guiará y tomará control remoto para solucionar problemas de impresión, atascos o activación de software.
-                </p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-                  {[
-                    "Instalación de controladores Zebra/Epson",
-                    "Configuración de red e impresoras de tickets",
-                    "Saneamiento y optimización de software",
-                    "Diagnóstico a nivel lógico de Bios"
-                  ].map((bullet, idx) => (
-                    <div key={idx} className="flex items-center gap-2 text-xs text-slate-600 font-semibold">
-                      <span className="material-symbols-outlined text-primary text-[18px] font-bold">check_circle</span>
-                      <span>{bullet}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <div className="lg:col-span-4 flex justify-center lg:justify-end">
-                <a 
-                  href="https://anydesk.com/download"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2.5 px-8 py-4 bg-primary hover:bg-primary/95 text-white font-bold text-xs uppercase tracking-wider rounded-2xl transition-all duration-300 shadow-md shadow-primary/15 hover:scale-[1.03] active:scale-95 cursor-pointer border-none no-underline"
-                >
-                  <span className="material-symbols-outlined text-base">laptop_mac</span>
-                  Descargar AnyDesk
-                </a>
-              </div>
-            </div>
-          </section>
-
           {/* Resources Control Section */}
           <section className="space-y-12">
             
@@ -417,6 +343,51 @@ export default function DescargasPage() {
                   No se encontraron recursos técnicos de esta categoría o búsqueda.
                 </div>
               )}
+            </div>
+          </section>
+
+          {/* Featured Remote Support Section (Helpful Technical Desk - Moved to the bottom as a CTA) */}
+          <section className="bg-gradient-to-br from-slate-50 to-white border-l-4 border-l-primary border-t border-r border-b border-slate-200/80 text-on-surface rounded-[2.5rem] p-8 md:p-12 relative overflow-hidden shadow-sm scroll-reveal">
+            <div className="absolute inset-0 opacity-[0.01] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#000 1px, transparent 1px)', backgroundSize: '16px 16px' }} />
+            <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-primary/5 rounded-full blur-[80px] pointer-events-none" />
+            
+            <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+              <div className="lg:col-span-8 space-y-5">
+                <span className="inline-flex items-center gap-1.5 py-1 px-3 bg-primary/10 border border-primary/15 text-primary font-bold text-[10px] rounded-full uppercase tracking-widest">
+                  <span className="material-symbols-outlined text-[14px]">support_agent</span>
+                  Asistencia Inmediata en Línea
+                </span>
+                <h2 className="font-headline text-2xl md:text-3xl font-black text-on-surface leading-tight">
+                  ¿Necesitas soporte técnico <span className="text-primary">remoto en tiempo real</span>?
+                </h2>
+                <p className="text-xs md:text-sm text-on-surface-variant max-w-xl leading-relaxed font-semibold">
+                  Descarga AnyDesk, la herramienta oficial recomendada por nuestro laboratorio. Un ingeniero certificado te guiará y tomará control remoto para solucionar problemas de impresión, atascos o activación de software.
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                  {[
+                    "Instalación de controladores Zebra/Epson",
+                    "Configuración de red e impresoras de tickets",
+                    "Saneamiento y optimización de software",
+                    "Diagnóstico a nivel lógico de Bios"
+                  ].map((bullet, idx) => (
+                    <div key={idx} className="flex items-center gap-2 text-xs text-slate-600 font-semibold">
+                      <span className="material-symbols-outlined text-primary text-[18px] font-bold">check_circle</span>
+                      <span>{bullet}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="lg:col-span-4 flex justify-center lg:justify-end">
+                <a 
+                  href="https://anydesk.com/download"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2.5 px-8 py-4 bg-primary hover:bg-primary/95 text-white font-bold text-xs uppercase tracking-wider rounded-2xl transition-all duration-300 shadow-md shadow-primary/15 hover:scale-[1.03] active:scale-95 cursor-pointer border-none no-underline"
+                >
+                  <span className="material-symbols-outlined text-base">laptop_mac</span>
+                  Descargar AnyDesk
+                </a>
+              </div>
             </div>
           </section>
         </div>
