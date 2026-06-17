@@ -345,25 +345,61 @@ export default async function Home() {
             {/* Right stats cards/visual container */}
             <div className="scroll-reveal grid grid-cols-2 gap-4 bg-white p-8 rounded-[2rem] border border-slate-200/60 shadow-sm relative overflow-hidden" style={{ transitionDelay: "150ms" }}>
               <div className="absolute top-0 right-0 w-24 h-24 bg-primary/10 rounded-full blur-2xl"></div>
-              <div className="p-5 bg-slate-50/50 rounded-2xl border border-slate-100">
-                <span className="material-symbols-outlined text-primary text-3xl mb-2">devices</span>
-                <h4 className="font-headline font-bold text-on-surface text-sm">Reparaciones</h4>
-                <p className="text-[11px] text-on-surface-variant mt-1 leading-snug">Laptops, impresoras térmicas, láser y matriciales.</p>
+              
+              {/* Card 1: Reparaciones */}
+              <div className="group relative p-5 bg-slate-50/40 hover:bg-red-50/5 rounded-2xl border border-slate-100 hover:border-red-500/30 transition-all duration-300 overflow-hidden cursor-pointer shadow-xs hover:shadow-md hover:shadow-red-600/5 hover:-translate-y-0.5 flex flex-col justify-between min-h-[140px]">
+                <div 
+                  className="absolute inset-0 bg-cover bg-center opacity-[0.08] group-hover:opacity-[0.14] blur-[3px] group-hover:blur-[1px] group-hover:scale-110 transition-all duration-500 -z-10" 
+                  style={{ backgroundImage: `url('/img/servicios/reparacion_laptop.jpg')` }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-white/95 via-white/80 to-white/50 -z-10" />
+                <div>
+                  <span className="material-symbols-outlined text-primary text-3xl mb-2 group-hover:scale-110 transition-transform duration-300 block">devices</span>
+                  <h4 className="font-headline font-bold text-on-surface text-sm group-hover:text-primary transition-colors">Reparaciones</h4>
+                  <p className="text-[11px] text-on-surface-variant mt-1 leading-snug font-medium">Laptops, impresoras térmicas, láser y matriciales.</p>
+                </div>
               </div>
-              <div className="p-5 bg-slate-50/50 rounded-2xl border border-slate-100">
-                <span className="material-symbols-outlined text-primary text-3xl mb-2">lan</span>
-                <h4 className="font-headline font-bold text-on-surface text-sm">Redes</h4>
-                <p className="text-[11px] text-on-surface-variant mt-1 leading-snug">Cableado estructurado y armado de gabinetes rack.</p>
+
+              {/* Card 2: Redes */}
+              <div className="group relative p-5 bg-slate-50/40 hover:bg-red-50/5 rounded-2xl border border-slate-100 hover:border-red-500/30 transition-all duration-300 overflow-hidden cursor-pointer shadow-xs hover:shadow-md hover:shadow-red-600/5 hover:-translate-y-0.5 flex flex-col justify-between min-h-[140px]">
+                <div 
+                  className="absolute inset-0 bg-cover bg-center opacity-[0.08] group-hover:opacity-[0.14] blur-[3px] group-hover:blur-[1px] group-hover:scale-110 transition-all duration-500 -z-10" 
+                  style={{ backgroundImage: `url('/img/servicios/cableado_estructurado.png')` }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-white/95 via-white/80 to-white/50 -z-10" />
+                <div>
+                  <span className="material-symbols-outlined text-primary text-3xl mb-2 group-hover:scale-110 transition-transform duration-300 block">lan</span>
+                  <h4 className="font-headline font-bold text-on-surface text-sm group-hover:text-primary transition-colors">Redes</h4>
+                  <p className="text-[11px] text-on-surface-variant mt-1 leading-snug font-medium">Cableado estructurado y armado de gabinetes rack.</p>
+                </div>
               </div>
-              <div className="p-5 bg-slate-50/50 rounded-2xl border border-slate-100">
-                <span className="material-symbols-outlined text-primary text-3xl mb-2">security</span>
-                <h4 className="font-headline font-bold text-on-surface text-sm">Licencias</h4>
-                <p className="text-[11px] text-on-surface-variant mt-1 leading-snug">Windows, Office, Antivirus certificados.</p>
+
+              {/* Card 3: Licencias */}
+              <div className="group relative p-5 bg-slate-50/40 hover:bg-red-50/5 rounded-2xl border border-slate-100 hover:border-red-500/30 transition-all duration-300 overflow-hidden cursor-pointer shadow-xs hover:shadow-md hover:shadow-red-600/5 hover:-translate-y-0.5 flex flex-col justify-between min-h-[140px]">
+                <div 
+                  className="absolute inset-0 bg-cover bg-center opacity-[0.08] group-hover:opacity-[0.14] blur-[3px] group-hover:blur-[1px] group-hover:scale-110 transition-all duration-500 -z-10" 
+                  style={{ backgroundImage: `url('/img/servicios/licencias_software.png')` }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-white/95 via-white/80 to-white/50 -z-10" />
+                <div>
+                  <span className="material-symbols-outlined text-primary text-3xl mb-2 group-hover:scale-110 transition-transform duration-300 block">security</span>
+                  <h4 className="font-headline font-bold text-on-surface text-sm group-hover:text-primary transition-colors">Licencias</h4>
+                  <p className="text-[11px] text-on-surface-variant mt-1 leading-snug font-medium">Windows, Office, Antivirus certificados.</p>
+                </div>
               </div>
-              <div className="p-5 bg-slate-50/50 rounded-2xl border border-slate-100">
-                <span className="material-symbols-outlined text-primary text-3xl mb-2">print</span>
-                <h4 className="font-headline font-bold text-on-surface text-sm">Ribbons y Zebra</h4>
-                <p className="text-[11px] text-on-surface-variant mt-1 leading-snug">Suministros originales de ribbons, tintas y tarjetas Zebra.</p>
+
+              {/* Card 4: Ribbons y Zebra */}
+              <div className="group relative p-5 bg-slate-50/40 hover:bg-red-50/5 rounded-2xl border border-slate-100 hover:border-red-500/30 transition-all duration-300 overflow-hidden cursor-pointer shadow-xs hover:shadow-md hover:shadow-red-600/5 hover:-translate-y-0.5 flex flex-col justify-between min-h-[140px]">
+                <div 
+                  className="absolute inset-0 bg-cover bg-center opacity-[0.08] group-hover:opacity-[0.14] blur-[3px] group-hover:blur-[1px] group-hover:scale-110 transition-all duration-500 -z-10" 
+                  style={{ backgroundImage: `url('/img/servicios/impresora_zebra_mantenimiento.png')` }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-white/95 via-white/80 to-white/50 -z-10" />
+                <div>
+                  <span className="material-symbols-outlined text-primary text-3xl mb-2 group-hover:scale-110 transition-transform duration-300 block">print</span>
+                  <h4 className="font-headline font-bold text-on-surface text-sm group-hover:text-primary transition-colors">Ribbons y Zebra</h4>
+                  <p className="text-[11px] text-on-surface-variant mt-1 leading-snug font-medium">Suministros originales de ribbons, tintas y tarjetas Zebra.</p>
+                </div>
               </div>
             </div>
           </div>
