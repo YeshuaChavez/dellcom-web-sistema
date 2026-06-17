@@ -103,11 +103,10 @@ export default function HomePortfolioBubblePreview({ trabajos = [] }: HomePortfo
 
   const parsedData = useMemo(() => {
     if (!activeTrabajo) return { text: "", images: [] as string[] };
-    const parts = activeTrabajo.descripcion?.split("||") || [];
-    const text = parts[0] || "";
-    const extraImagesString = parts[1] || "";
-    const imagesList = extraImagesString ? extraImagesString.split(",") : [activeTrabajo.imagen_url];
-    return { text, images: imagesList };
+    const images = activeTrabajo.imagen_url.split("||").map(u => u.trim()).filter(Boolean);
+    const rawDesc = activeTrabajo.descripcion ?? "";
+    const text = rawDesc.includes("||") ? rawDesc.split("||")[0].trim() : rawDesc;
+    return { text, images: images.length > 0 ? images : [activeTrabajo.imagen_url] };
   }, [activeTrabajo]);
 
   const handleNextImage = (e: React.MouseEvent) => {
@@ -145,7 +144,7 @@ export default function HomePortfolioBubblePreview({ trabajos = [] }: HomePortfo
                 className={`absolute ${style.position} ${style.size} rounded-full overflow-hidden border-2 border-slate-200/80 shadow-lg hover:shadow-2xl hover:scale-105 hover:border-primary transition-all duration-500 cursor-pointer group z-10`}
               >
                 <img
-                  src={trabajo.imagen_url}
+                  src={trabajo.imagen_url.split("||")[0]}
                   alt={trabajo.titulo}
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                 />
@@ -164,16 +163,16 @@ export default function HomePortfolioBubblePreview({ trabajos = [] }: HomePortfo
         </div>
 
         {/* Responsive Mobile Flex Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-6 lg:hidden px-4">
+        <div className="flex flex-wrap justify-center gap-6 lg:hidden px-4">
           {previewTrabajos.map((trabajo) => (
             <div
               key={trabajo.id}
               onClick={() => handleOpenLightbox(trabajo)}
-              className="flex flex-col items-center text-center space-y-2 cursor-pointer group"
+              className="flex flex-col items-center text-center space-y-2 cursor-pointer group w-[calc(50%-12px)] sm:w-[calc(33.333%-16px)]"
             >
               <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full overflow-hidden border-2 border-slate-200 shadow-md group-hover:border-primary transition-all duration-300">
                 <img
-                  src={trabajo.imagen_url}
+                  src={trabajo.imagen_url.split("||")[0]}
                   alt={trabajo.titulo}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />

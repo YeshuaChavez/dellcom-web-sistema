@@ -95,11 +95,15 @@ export default function PortfolioGallery({ trabajos = [] }: PortfolioGalleryProp
   // Parse description and optional slider images from description field
   const parsedData = useMemo(() => {
     if (!activeTrabajo) return { text: "", images: [] as string[] };
+    // Images come from imagen_url split by "||" (new format)
     const images = activeTrabajo.imagen_url
       .split("||")
       .map((u) => u.trim())
       .filter(Boolean);
-    return { text: activeTrabajo.descripcion ?? "", images: images.length > 0 ? images : [activeTrabajo.imagen_url] };
+    // Strip any legacy "||imageUrl" suffix that may exist in old descripcion records
+    const rawDesc = activeTrabajo.descripcion ?? "";
+    const text = rawDesc.includes("||") ? rawDesc.split("||")[0].trim() : rawDesc;
+    return { text, images: images.length > 0 ? images : [activeTrabajo.imagen_url] };
   }, [activeTrabajo]);
 
   const handleNextImage = (e: React.MouseEvent) => {
@@ -155,14 +159,26 @@ export default function PortfolioGallery({ trabajos = [] }: PortfolioGalleryProp
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
             {visibleTrabajos.map((trabajo, index) => {
-              const cardDesc = trabajo.descripcion || "";
+              const rawDesc = trabajo.descripcion || "";
+              const cardDesc = rawDesc.includes("||") ? rawDesc.split("||")[0].trim() : rawDesc;
               const cardThumb = trabajo.imagen_url.split("||")[0];
+              const total = visibleTrabajos.length;
+              const remainder = total % 3;
+              // 1 orphan → center in middle column (no stretch)
+              const isSingleOrphan = remainder === 1 && index === total - 1;
+              // 2 orphans → first takes col-span-2 to fill the empty column
+              const isFeaturedWide = remainder === 2 && index === total - 2;
+              const colSpanClass = isSingleOrphan
+                ? "lg:col-start-2"
+                : isFeaturedWide
+                ? "lg:col-span-2"
+                : "";
 
               return (
                 <article
                   key={trabajo.id}
                   onClick={() => handleOpenLightbox(trabajo)}
-                  className="group bg-white rounded-[2rem] border border-slate-200/60 overflow-hidden hover:shadow-xl hover:border-primary/20 transition-all duration-500 flex flex-col justify-between cursor-pointer h-full relative"
+                  className={`group bg-white rounded-[2rem] border border-slate-200/60 overflow-hidden hover:shadow-xl hover:border-primary/20 transition-all duration-500 flex flex-col justify-between cursor-pointer h-full relative${colSpanClass ? ` ${colSpanClass}` : ""}`}
                   style={{
                     animationDelay: `${(index % 3) * 100}ms`,
                   }}
@@ -176,8 +192,6 @@ export default function PortfolioGallery({ trabajos = [] }: PortfolioGalleryProp
                       loading="lazy"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-slate-950/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                    
-                    {/* Category Badge */}
                     <div className="absolute top-4 left-4 bg-black/60 backdrop-blur-sm text-white px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider">
                       {trabajo.servicio?.nombre || "Servicio Técnico"}
                     </div>

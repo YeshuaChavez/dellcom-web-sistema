@@ -105,7 +105,7 @@ model TrabajoRealizado {
   servicio     Servicio? @relation(fields: [id_servicio], references: [id])
   titulo       String
   descripcion  String?  @db.Text
-  imagen_url   String
+  imagen_url   String   @db.Text
   fecha        DateTime @default(now())
 }
 

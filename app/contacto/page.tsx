@@ -224,7 +224,7 @@ export default function ContactoPage() {
                     <option value="Cotización de Servicio">Cotización de Servicio</option>
                     <option value="Reparación de Hardware">Reparación de Hardware</option>
                     <option value="Licencias y Software">Licencias y Software</option>
-                    <option value="Infraestructura de Redes">Infraestructura de Redes</option>
+
                   </select>
                 </div>
                 {errors.asunto && (

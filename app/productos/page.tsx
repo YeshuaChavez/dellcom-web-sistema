@@ -154,7 +154,6 @@ const fallbackCategories = [
   { id: 1, nombre: "Ribbons y Tintas" },
   { id: 2, nombre: "Memorias y Discos" },
   { id: 3, nombre: "Tarjetas ZEBRA" },
-  { id: 4, nombre: "Redes y Conectividad" },
   { id: 5, nombre: "Periféricos y Accesorios" },
   { id: 6, nombre: "Licencias de Software" }
 ];
@@ -255,30 +254,6 @@ const fallbackProducts: Producto[] = [
     precio: 45.00,
     imagen_url: "/img/productos/etiquetas-termicas.jpg",
     categoria: { nombre: "Ribbons y Tintas" }
-  },
-  {
-    id: 61,
-    nombre: "Router Inalámbrico TP-Link TL-WR840N N300",
-    descripcion: "Router de banda única de 2.4GHz a 300Mbps. Cuenta con 4 puertos LAN de 10/100Mbps y 2 antenas fijas de alto alcance. Modos router, repetidor y access point.",
-    precio: 75.00,
-    imagen_url: "/img/productos/router-tplink.jpg",
-    categoria: { nombre: "Redes y Conectividad" }
-  },
-  {
-    id: 62,
-    nombre: "Cable de Red Cat6 UTP Dixon 100% Cobre (Caja 305m)",
-    descripcion: "Caja de cable UTP categoría 6 Dixon de cobre puro. Excelente rendimiento de transmisión Gigabit, conductor multifilar ideal para tendido estructurado.",
-    precio: 480.00,
-    imagen_url: "/img/productos/cable-cat6.jpg",
-    categoria: { nombre: "Redes y Conectividad" }
-  },
-  {
-    id: 63,
-    nombre: "Adaptador USB 3.0 a Ethernet RJ45 Gigabit TP-Link",
-    descripcion: "Adaptador de red portátil USB a RJ45 hembra. Proporciona conectividad a internet de alta velocidad de hasta 1000Mbps para laptops sin puerto ethernet.",
-    precio: 65.00,
-    imagen_url: "/img/productos/adaptador-usb-ethernet.jpg",
-    categoria: { nombre: "Redes y Conectividad" }
   },
   {
     id: 64,
