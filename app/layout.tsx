@@ -10,7 +10,7 @@ import SmartAssistant from "./components/SmartAssistant";
 
 export const metadata: Metadata = {
   title: "DELLCOM SAC | Tu centro de confianza",
-  description: "Servicios tecnológicos y soporte de TI de alto nivel en Los Olivos, Lima. Reparación, redes, licencias y microelectrónica.",
+  description: "Servicios tecnológicos y soporte de TI de alto nivel en Los Olivos, Lima. Reparación, licencias y microelectrónica.",
 };
 
 export default function RootLayout({

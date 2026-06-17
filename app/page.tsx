@@ -16,7 +16,7 @@ import HomePortfolioBubblePreview from "./components/HomePortfolioBubblePreview"
 
 export const metadata = {
   title: "DELLCOM SAC | Tu centro de confianza",
-  description: "Servicios tecnológicos y soporte de TI de alto nivel en Los Olivos, Lima. Reparación de laptops, estructurado de redes, licenciamiento oficial y microelectrónica.",
+  description: "Servicios tecnológicos y soporte de TI de alto nivel en Los Olivos, Lima. Reparación de laptops, licenciamiento oficial y microelectrónica.",
 };
 
 const serviceVisuals: Record<string, { image: string; icon: string }> = {
@@ -27,10 +27,6 @@ const serviceVisuals: Record<string, { image: string; icon: string }> = {
   "microelectrónica": {
     image: "/img/servicios/microelectronica.jpg",
     icon: "memory"
-  },
-  "redes": {
-    image: "/img/servicios/cableado_estructurado.png",
-    icon: "dns"
   },
   "soporte": {
     image: "https://portalinnova.cl/wp-content/uploads/2021/06/Soporte-remoto-de-alta-confiabilidad-Plataforma-resuelve-problemas-tecnicos-en-segundos-y-con-la-maxima-seguridad-que-existe-en-el-mercado-scaled.jpg",
@@ -43,6 +39,10 @@ const serviceVisuals: Record<string, { image: string; icon: string }> = {
   "licencia": {
     image: "/img/servicios/licencias_software.png",
     icon: "verified_user"
+  },
+  "repuesto": {
+    image: "https://s.alicdn.com/@sc04/kf/Hc979084a7689417abcbb22e7beb812cc4/Wholesale-Laptop-Spare-Parts-All-Models-Computer-Accessories-LCD-Screen-Keyboard-Adapter-Computer-Repair-Parts-Replacement.jpg",
+    icon: "storefront"
   }
 };
 
@@ -62,6 +62,7 @@ async function getServices() {
   try {
     const dbServices = await prisma.servicio.findMany({
       where: { activo: true },
+      orderBy: { id: "asc" },
     });
     if (dbServices && dbServices.length > 0) {
       return dbServices.map(s => ({
@@ -89,12 +90,6 @@ async function getServices() {
       icono_url: "memory",
     },
     {
-      id: 3,
-      nombre: "Redes y Servidores",
-      descripcion: "Diseño, estructurado y montaje de redes de datos, racks de servidores y mantenimiento de conectividad empresarial.",
-      icono_url: "dns",
-    },
-    {
       id: 4,
       nombre: "Soporte Remoto (AnyDesk)",
       descripcion: "Asistencia técnica remota inmediata para mantenimiento de sistemas operativos, virus, configuraciones y software de oficina.",
@@ -102,15 +97,21 @@ async function getServices() {
     },
     {
       id: 5,
-      nombre: "Correos Corporativos",
-      descripcion: "Configuración, migración y administración de correos profesionales en Google Workspace, Microsoft 365 y Webmail corporativo.",
-      icono_url: "mail",
+      nombre: "Venta de Repuestos de Laptops",
+      descripcion: "Distribución de repuestos originales y compatibles para laptops multimarca: pantallas, teclados, baterías, cargadores, placas y carcasas.",
+      icono_url: "storefront",
     },
     {
       id: 6,
       nombre: "Licencias de Software",
       descripcion: "Venta e instalación de licencias de software originales para sistemas operativos Windows, suites de Office y antivirus corporativos.",
       icono_url: "verified_user",
+    },
+    {
+      id: 7,
+      nombre: "Correos Corporativos",
+      descripcion: "Configuración, migración y administración de correos profesionales en Google Workspace, Microsoft 365 y Webmail corporativo.",
+      icono_url: "mail",
     },
   ];
 }
@@ -143,14 +144,6 @@ async function getTrabajos() {
       imagen_url: "/img/servicios/microelectronica.jpg",
       fecha: new Date("2026-05-10"),
       servicio: { nombre: "Microelectrónica y Placas" }
-    },
-    {
-      id: 2,
-      titulo: "Instalación y Configuración de Cableado Estructurado Cat6",
-      descripcion: "Montaje y peinado de rack de telecomunicaciones, certificación de 48 puntos de red Gigabit y ordenamiento de switches de núcleo en oficinas corporativas.",
-      imagen_url: "/img/servicios/cableado_estructurado.png",
-      fecha: new Date("2026-05-05"),
-      servicio: { nombre: "Redes y Servidores" }
     },
     {
       id: 3,
@@ -195,7 +188,7 @@ export default async function Home() {
                   <span className="text-primary italic">Alta Precisión</span>
                 </h1>
                 <p className="text-sm md:text-base text-on-surface-variant max-w-lg leading-relaxed">
-                  Desde reparación electrónica a nivel de placa madre y configuración de redes estructuradas, hasta licenciamiento oficial. Garantizamos la continuidad operativa de tu empresa con soluciones inmediatas.
+                  Desde reparación electrónica a nivel de placa madre hasta licenciamiento oficial. Garantizamos la continuidad operativa de tu empresa con soluciones inmediatas.
                 </p>
               </div>
               
@@ -235,15 +228,19 @@ export default async function Home() {
               {servicios.map((service, index) => {
                 const visuals = getServiceVisuals(service.nombre, service.icono_url || "devices");
                 
-                // Asymmetric layout config to make the grid 100% complete and balanced:
-                // Index 0 (Hardware), Index 2 (Redes) & Index 5 (Licencias) span 2 columns on desktop
-                const isFeatured = index === 0 || index === 2 || index === 5;
+                const count = servicios.length;
+                // Universal layout: pairs of featured(2col)+normal(1col) fill each row perfectly.
+                // Odd totals → last item alone gets col-span-3 (full width).
+                const isLastAlone = count % 2 === 1 && index === count - 1;
+                // Alternating rows: even rows = wide+narrow, odd rows = narrow+wide
+                // index % 4: 0=wide, 1=narrow, 2=narrow, 3=wide → repeats
+                const isFeatured = !isLastAlone && (index % 4 === 0 || index % 4 === 3);
 
                 return (
                   <div 
                     key={service.id} 
                     className={`scroll-reveal group bg-slate-50/60 border border-slate-200/60 rounded-3xl overflow-hidden hover:border-primary/50 transition-all duration-500 hover:shadow-xl hover:bg-white flex flex-col justify-between ${
-                      isFeatured ? "lg:col-span-2" : "lg:col-span-1"
+                      isLastAlone ? "lg:col-span-3" : isFeatured ? "lg:col-span-2" : "lg:col-span-1"
                     }`}
                     style={{ transitionDelay: `${(index % 3) * 100}ms` }}
                   >
@@ -310,7 +307,7 @@ export default async function Home() {
               </div>
               <h2 className="font-headline text-3xl md:text-4xl font-bold text-on-surface">Trabajos Técnicos <span className="text-primary">Realizados</span></h2>
               <p className="text-sm md:text-base text-on-surface-variant max-w-2xl mx-auto leading-relaxed font-semibold">
-                Una muestra de nuestra experiencia en el campo: soluciones precisas en microelectrónica, redes estructuradas y soporte de hardware certificado.
+                Una muestra de nuestra experiencia en el campo: soluciones precisas en microelectrónica y soporte de hardware certificado.
               </p>
             </div>
 
@@ -326,7 +323,7 @@ export default async function Home() {
             <div className="scroll-reveal space-y-6">
               <h2 className="font-headline text-3xl md:text-4xl font-bold text-on-surface">¿Por qué confiar en <span className="text-primary">DELLCOM</span>?</h2>
               <p className="text-sm md:text-base text-on-surface-variant leading-relaxed">
-                En DELLCOM SAC somos especialistas en brindar soluciones de infraestructura y soporte tecnológico diseñadas para asegurar la continuidad operativa de tu negocio. Nos enfocamos en diagnósticos de alta precisión a nivel de hardware, estructuración de redes de alto rendimiento, licenciamiento oficial y suministro de consumibles Zebra.
+                En DELLCOM SAC somos especialistas en brindar soluciones de soporte tecnológico diseñadas para asegurar la continuidad operativa de tu negocio. Nos enfocamos en diagnósticos de alta precisión a nivel de hardware, licenciamiento oficial y suministro de consumibles Zebra.
               </p>
               <p className="text-sm md:text-base text-on-surface-variant leading-relaxed">
                 Brindamos atención personalizada para empresas, colegios e institutos, con soluciones presenciales y soporte remoto inmediato a nivel nacional, respaldados por personal técnico certificado.
@@ -348,9 +345,13 @@ export default async function Home() {
               
               {/* Card 1: Reparaciones */}
               <div className="group relative p-5 rounded-2xl border border-slate-100 hover:border-primary/20 hover:shadow-md transition-all duration-300 overflow-hidden flex flex-col justify-between min-h-[140px]">
-                <div 
-                  className="absolute inset-0 bg-cover bg-center opacity-[0.25] group-hover:opacity-[0.40] group-hover:scale-105 transition-all duration-500" 
-                  style={{ backgroundImage: `url('/img/servicios/reparacion_laptop.jpg')` }}
+                <video 
+                  src="/img/videos/reparacion.mp4" 
+                  autoPlay 
+                  loop 
+                  muted 
+                  playsInline 
+                  className="absolute inset-0 w-full h-full object-cover opacity-[0.25] group-hover:opacity-[0.40] group-hover:scale-105 transition-all duration-500"
                 />
                 <div className="absolute inset-0 bg-white/75 group-hover:bg-primary/95 transition-all duration-300" />
                 <div className="relative z-10 flex flex-col justify-between h-full">
@@ -362,27 +363,35 @@ export default async function Home() {
                 </div>
               </div>
 
-              {/* Card 2: Redes */}
+              {/* Card 2: Soporte Remoto */}
               <div className="group relative p-5 rounded-2xl border border-slate-100 hover:border-primary/20 hover:shadow-md transition-all duration-300 overflow-hidden flex flex-col justify-between min-h-[140px]">
-                <div 
-                  className="absolute inset-0 bg-cover bg-center opacity-[0.25] group-hover:opacity-[0.40] group-hover:scale-105 transition-all duration-500" 
-                  style={{ backgroundImage: `url('/img/servicios/cableado_estructurado.png')` }}
+                <video 
+                  src="/img/videos/soporte_remoto.mp4" 
+                  autoPlay 
+                  loop 
+                  muted 
+                  playsInline 
+                  className="absolute inset-0 w-full h-full object-cover opacity-[0.25] group-hover:opacity-[0.40] group-hover:scale-105 transition-all duration-500"
                 />
                 <div className="absolute inset-0 bg-white/75 group-hover:bg-primary/95 transition-all duration-300" />
                 <div className="relative z-10 flex flex-col justify-between h-full">
                   <div>
-                    <span className="material-symbols-outlined text-primary group-hover:text-white text-3xl mb-2 group-hover:scale-110 transition-all duration-300 block">lan</span>
-                    <h4 className="font-headline font-bold text-on-surface group-hover:text-white text-sm transition-colors duration-300">Redes</h4>
-                    <p className="text-[11px] text-on-surface-variant group-hover:text-white/90 mt-1 leading-snug font-medium transition-colors duration-300">Cableado estructurado y armado de gabinetes rack.</p>
+                    <span className="material-symbols-outlined text-primary group-hover:text-white text-3xl mb-2 group-hover:scale-110 transition-all duration-300 block">support_agent</span>
+                    <h4 className="font-headline font-bold text-on-surface group-hover:text-white text-sm transition-colors duration-300">Soporte Remoto</h4>
+                    <p className="text-[11px] text-on-surface-variant group-hover:text-white/90 mt-1 leading-snug font-medium transition-colors duration-300">Asistencia técnica remota inmediata vía AnyDesk.</p>
                   </div>
                 </div>
               </div>
 
               {/* Card 3: Licencias */}
               <div className="group relative p-5 rounded-2xl border border-slate-100 hover:border-primary/20 hover:shadow-md transition-all duration-300 overflow-hidden flex flex-col justify-between min-h-[140px]">
-                <div 
-                  className="absolute inset-0 bg-cover bg-center opacity-[0.25] group-hover:opacity-[0.40] group-hover:scale-105 transition-all duration-500" 
-                  style={{ backgroundImage: `url('/img/servicios/licencias_software.png')` }}
+                <video 
+                  src="/img/videos/licencias.mp4" 
+                  autoPlay 
+                  loop 
+                  muted 
+                  playsInline 
+                  className="absolute inset-0 w-full h-full object-cover opacity-[0.25] group-hover:opacity-[0.40] group-hover:scale-105 transition-all duration-500"
                 />
                 <div className="absolute inset-0 bg-white/75 group-hover:bg-primary/95 transition-all duration-300" />
                 <div className="relative z-10 flex flex-col justify-between h-full">
@@ -396,9 +405,13 @@ export default async function Home() {
 
               {/* Card 4: Ribbons y Zebra */}
               <div className="group relative p-5 rounded-2xl border border-slate-100 hover:border-primary/20 hover:shadow-md transition-all duration-300 overflow-hidden flex flex-col justify-between min-h-[140px]">
-                <div 
-                  className="absolute inset-0 bg-cover bg-center opacity-[0.25] group-hover:opacity-[0.40] group-hover:scale-105 transition-all duration-500" 
-                  style={{ backgroundImage: `url('/img/servicios/impresora_zebra_mantenimiento.png')` }}
+                <video 
+                  src="/img/videos/ribbons_zebra.mp4" 
+                  autoPlay 
+                  loop 
+                  muted 
+                  playsInline 
+                  className="absolute inset-0 w-full h-full object-cover opacity-[0.25] group-hover:opacity-[0.40] group-hover:scale-105 transition-all duration-500"
                 />
                 <div className="absolute inset-0 bg-white/75 group-hover:bg-primary/95 transition-all duration-300" />
                 <div className="relative z-10 flex flex-col justify-between h-full">

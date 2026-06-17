@@ -14,7 +14,7 @@ import PortfolioGallery from "../components/PortfolioGallery";
 
 export const metadata = {
   title: "Servicios — DELLCOM SAC | Soporte de TI y Hardware en Lima Norte",
-  description: "Reparación avanzada de laptops, microelectrónica a nivel componente, estructurado de redes rack, licenciamiento y consumibles Zebra en Los Olivos, Lima.",
+  description: "Reparación avanzada de laptops, microelectrónica a nivel componente, licenciamiento y consumibles Zebra en Los Olivos, Lima.",
 };
 
 interface ServiceVisual {
@@ -34,17 +34,7 @@ const serviceVisuals: Record<string, ServiceVisual> = {
     icon: "memory",
     specs: ["Diagnóstico electrónico avanzado por osciloscopio", "Reballing de microprocesadores y GPUs", "Recuperación de placas mojadas o en cortocircuito", "Reemplazo de integrados y puertos de carga"]
   },
-  "redes": { 
-    image: "/img/servicios/cableado_estructurado.png", 
-    icon: "dns",
-    specs: ["Cableado estructurado Cat6 y Cat6A certificado", "Montaje, peinado y rotulado de racks de comunicación", "Configuración de enrutadores, firewalls y switches", "Diagnóstico de interferencias y optimización WiFi"]
-  },
-  "infraestructura": { 
-    image: "/img/servicios/cableado_estructurado.png", 
-    icon: "dns",
-    specs: ["Cableado estructurado Cat6 y Cat6A certificado", "Montaje, peinado y rotulado de racks de comunicación", "Configuración de enrutadores, firewalls y switches", "Diagnóstico de interferencias y optimización WiFi"]
-  },
-  "soporte": { 
+  "soporte": {
     image: "https://portalinnova.cl/wp-content/uploads/2021/06/Soporte-remoto-de-alta-confiabilidad-Plataforma-resuelve-problemas-tecnicos-en-segundos-y-con-la-maxima-seguridad-que-existe-en-el-mercado-scaled.jpg", 
     icon: "support_agent",
     specs: ["Soporte técnico remoto rápido (AnyDesk/RustDesk)", "Configuración de correos corporativos Workspace/365", "Eliminación activa de virus y optimización de sistema", "Mantenimiento preventivo periódico para oficinas"]
@@ -83,6 +73,11 @@ const serviceVisuals: Record<string, ServiceVisual> = {
     image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=800&q=80",
     icon: "psychology",
     specs: ["Inventariado técnico inicial de parque informático", "Planificación de migraciones de servidores y hosting", "Diseño de topologías de red de alta disponibilidad", "Optimización de inversiones en licencias y hardware"]
+  },
+  "repuesto": {
+    image: "https://s.alicdn.com/@sc04/kf/Hc979084a7689417abcbb22e7beb812cc4/Wholesale-Laptop-Spare-Parts-All-Models-Computer-Accessories-LCD-Screen-Keyboard-Adapter-Computer-Repair-Parts-Replacement.jpg",
+    icon: "storefront",
+    specs: ["Pantallas LCD/LED originales y compatibles multimarca", "Teclados, baterías y cargadores certificados", "Placas madre, módulos RAM y discos SSD de reemplazo", "Carcasas, bisagras y repuestos de estructura"]
   }
 };
 
@@ -108,6 +103,7 @@ async function getServices() {
   try {
     const dbServices = await prisma.servicio.findMany({
       where: { activo: true },
+      orderBy: { id: "asc" },
     });
     if (dbServices && dbServices.length > 0) {
       return dbServices.map(s => ({
@@ -127,12 +123,6 @@ async function getServices() {
       nombre: "Reparación de Hardware",
       descripcion: "Diagnóstico avanzado y reparación de nivel componente para laptops, PCs de alto rendimiento y servidores corporativos.",
       icono_url: "computer",
-    },
-    {
-      id: 2,
-      nombre: "Infraestructura de Red",
-      descripcion: "Diseño e implementación de cableado estructurado, fibra óptica y gestión de redes empresariales escalables.",
-      icono_url: "router",
     },
     {
       id: 3,
@@ -157,6 +147,12 @@ async function getServices() {
       nombre: "Consultoría IT",
       descripcion: "Planeación estratégica para el crecimiento tecnológico, optimización de presupuestos y arquitectura de soluciones.",
       icono_url: "psychology",
+    },
+    {
+      id: 7,
+      nombre: "Venta de Repuestos de Laptops",
+      descripcion: "Distribución de repuestos originales y compatibles para laptops multimarca: pantallas, teclados, baterías, cargadores, placas y carcasas.",
+      icono_url: "storefront",
     },
   ];
 }
@@ -198,14 +194,6 @@ async function getTrabajos() {
       fecha: new Date("2026-06-15T11:00:00Z"),
       servicio: { nombre: "Reparación de Laptops e Impresoras" }
     },
-    {
-      id: 3,
-      titulo: "Instalación de Cableado Estructurado Cat6 y Racks de Servidor",
-      descripcion: "Montaje y estructurado de cableado de red de datos Cat6 para oficinas. Peinado de cables, ponchado en patch panel, ordenamiento en gabinete rack de servidores, instalación de switches administrables y enrutadores MikroTik/Ubiquiti, y puesta en marcha de servidores NAS de almacenamiento local centralizado con políticas de backup automático.",
-      imagen_url: "/img/portafolio/WhatsApp Image 2026-06-14 at 9.41.12 PM (6).jpeg",
-      fecha: new Date("2026-06-15T09:00:00Z"),
-      servicio: { nombre: "Redes y Servidores" }
-    }
   ];
 }
 
@@ -233,7 +221,7 @@ export default async function ServiciosPage() {
               Nuestros <span className="text-primary">Servicios</span>
             </h1>
             <p className="text-xs md:text-sm text-on-surface-variant max-w-xl mx-auto mt-2 leading-relaxed">
-              Diagnósticos rigurosos, microelectrónica de precisión, y estructuración de redes. Haz clic para cotizar o revisar casos de éxito.
+              Diagnósticos rigurosos y microelectrónica de precisión. Haz clic para cotizar o revisar casos de éxito.
             </p>
           </div>
         </section>
@@ -321,7 +309,7 @@ export default async function ServiciosPage() {
               </div>
               <h2 className="font-headline text-3xl md:text-4xl font-bold text-on-surface">Trabajos <span className="text-primary">Realizados</span></h2>
               <p className="text-sm md:text-base text-on-surface-variant max-w-2xl mx-auto leading-relaxed font-semibold">
-                Explora el registro completo de nuestras reparaciones de hardware, instalaciones de redes y configuraciones corporativas.
+                Explora el registro completo de nuestras reparaciones de hardware y configuraciones corporativas.
               </p>
             </div>
 

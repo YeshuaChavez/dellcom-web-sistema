@@ -35,7 +35,7 @@ const DEVICES: DeviceOption[] = [
   { id: "laptop", name: "Laptop / Notebook", icon: "laptop_mac", basePriceMin: 80, basePriceMax: 150 },
   { id: "pc", name: "PC de Escritorio / Servidor", icon: "computer", basePriceMin: 90, basePriceMax: 200 },
   { id: "zebra", name: "Impresora Térmica / Zebra", icon: "print", basePriceMin: 120, basePriceMax: 250 },
-  { id: "network", name: "Cableado / Redes", icon: "lan", basePriceMin: 150, basePriceMax: 400 }
+  { id: "other", name: "Otro Equipo", icon: "devices_other", basePriceMin: 80, basePriceMax: 200 }
 ];
 
 const FAILURES: FailureOption[] = [
