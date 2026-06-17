@@ -347,58 +347,66 @@ export default async function Home() {
               <div className="absolute top-0 right-0 w-24 h-24 bg-primary/10 rounded-full blur-2xl"></div>
               
               {/* Card 1: Reparaciones */}
-              <div className="group relative p-5 bg-slate-50 rounded-2xl border border-slate-100 hover:border-primary/20 hover:shadow-md transition-all duration-300 overflow-hidden flex flex-col justify-between min-h-[140px]">
+              <div className="group relative p-5 rounded-2xl border border-slate-100 hover:border-primary/20 hover:shadow-md transition-all duration-300 overflow-hidden flex flex-col justify-between min-h-[140px]">
                 <div 
-                  className="absolute inset-0 bg-cover bg-center opacity-[0.25] group-hover:opacity-[0.40] blur-[1px] group-hover:blur-0 group-hover:scale-105 transition-all duration-500 -z-10" 
+                  className="absolute inset-0 bg-cover bg-center opacity-[0.25] group-hover:opacity-[0.40] group-hover:scale-105 transition-all duration-500" 
                   style={{ backgroundImage: `url('/img/servicios/reparacion_laptop.jpg')` }}
                 />
-                <div className="absolute inset-0 bg-white/75 group-hover:bg-primary/95 transition-all duration-300 -z-10" />
-                <div>
-                  <span className="material-symbols-outlined text-primary group-hover:text-white text-3xl mb-2 group-hover:scale-110 transition-all duration-300 block">devices</span>
-                  <h4 className="font-headline font-bold text-on-surface group-hover:text-white text-sm transition-colors duration-300">Reparaciones</h4>
-                  <p className="text-[11px] text-on-surface-variant group-hover:text-white/90 mt-1 leading-snug font-medium transition-colors duration-300">Laptops, impresoras térmicas, láser y matriciales.</p>
+                <div className="absolute inset-0 bg-white/75 group-hover:bg-primary/95 transition-all duration-300" />
+                <div className="relative z-10 flex flex-col justify-between h-full">
+                  <div>
+                    <span className="material-symbols-outlined text-primary group-hover:text-white text-3xl mb-2 group-hover:scale-110 transition-all duration-300 block">devices</span>
+                    <h4 className="font-headline font-bold text-on-surface group-hover:text-white text-sm transition-colors duration-300">Reparaciones</h4>
+                    <p className="text-[11px] text-on-surface-variant group-hover:text-white/90 mt-1 leading-snug font-medium transition-colors duration-300">Laptops, impresoras térmicas, láser y matriciales.</p>
+                  </div>
                 </div>
               </div>
 
               {/* Card 2: Redes */}
-              <div className="group relative p-5 bg-slate-50 rounded-2xl border border-slate-100 hover:border-primary/20 hover:shadow-md transition-all duration-300 overflow-hidden flex flex-col justify-between min-h-[140px]">
+              <div className="group relative p-5 rounded-2xl border border-slate-100 hover:border-primary/20 hover:shadow-md transition-all duration-300 overflow-hidden flex flex-col justify-between min-h-[140px]">
                 <div 
-                  className="absolute inset-0 bg-cover bg-center opacity-[0.25] group-hover:opacity-[0.40] blur-[1px] group-hover:blur-0 group-hover:scale-105 transition-all duration-500 -z-10" 
+                  className="absolute inset-0 bg-cover bg-center opacity-[0.25] group-hover:opacity-[0.40] group-hover:scale-105 transition-all duration-500" 
                   style={{ backgroundImage: `url('/img/servicios/cableado_estructurado.png')` }}
                 />
-                <div className="absolute inset-0 bg-white/75 group-hover:bg-primary/95 transition-all duration-300 -z-10" />
-                <div>
-                  <span className="material-symbols-outlined text-primary group-hover:text-white text-3xl mb-2 group-hover:scale-110 transition-all duration-300 block">lan</span>
-                  <h4 className="font-headline font-bold text-on-surface group-hover:text-white text-sm transition-colors duration-300">Redes</h4>
-                  <p className="text-[11px] text-on-surface-variant group-hover:text-white/90 mt-1 leading-snug font-medium transition-colors duration-300">Cableado estructurado y armado de gabinetes rack.</p>
+                <div className="absolute inset-0 bg-white/75 group-hover:bg-primary/95 transition-all duration-300" />
+                <div className="relative z-10 flex flex-col justify-between h-full">
+                  <div>
+                    <span className="material-symbols-outlined text-primary group-hover:text-white text-3xl mb-2 group-hover:scale-110 transition-all duration-300 block">lan</span>
+                    <h4 className="font-headline font-bold text-on-surface group-hover:text-white text-sm transition-colors duration-300">Redes</h4>
+                    <p className="text-[11px] text-on-surface-variant group-hover:text-white/90 mt-1 leading-snug font-medium transition-colors duration-300">Cableado estructurado y armado de gabinetes rack.</p>
+                  </div>
                 </div>
               </div>
 
               {/* Card 3: Licencias */}
-              <div className="group relative p-5 bg-slate-50 rounded-2xl border border-slate-100 hover:border-primary/20 hover:shadow-md transition-all duration-300 overflow-hidden flex flex-col justify-between min-h-[140px]">
+              <div className="group relative p-5 rounded-2xl border border-slate-100 hover:border-primary/20 hover:shadow-md transition-all duration-300 overflow-hidden flex flex-col justify-between min-h-[140px]">
                 <div 
-                  className="absolute inset-0 bg-cover bg-center opacity-[0.25] group-hover:opacity-[0.40] blur-[1px] group-hover:blur-0 group-hover:scale-105 transition-all duration-500 -z-10" 
+                  className="absolute inset-0 bg-cover bg-center opacity-[0.25] group-hover:opacity-[0.40] group-hover:scale-105 transition-all duration-500" 
                   style={{ backgroundImage: `url('/img/servicios/licencias_software.png')` }}
                 />
-                <div className="absolute inset-0 bg-white/75 group-hover:bg-primary/95 transition-all duration-300 -z-10" />
-                <div>
-                  <span className="material-symbols-outlined text-primary group-hover:text-white text-3xl mb-2 group-hover:scale-110 transition-all duration-300 block">security</span>
-                  <h4 className="font-headline font-bold text-on-surface group-hover:text-white text-sm transition-colors duration-300">Licencias</h4>
-                  <p className="text-[11px] text-on-surface-variant group-hover:text-white/90 mt-1 leading-snug font-medium transition-colors duration-300">Windows, Office, Antivirus certificados.</p>
+                <div className="absolute inset-0 bg-white/75 group-hover:bg-primary/95 transition-all duration-300" />
+                <div className="relative z-10 flex flex-col justify-between h-full">
+                  <div>
+                    <span className="material-symbols-outlined text-primary group-hover:text-white text-3xl mb-2 group-hover:scale-110 transition-all duration-300 block">security</span>
+                    <h4 className="font-headline font-bold text-on-surface group-hover:text-white text-sm transition-colors duration-300">Licencias</h4>
+                    <p className="text-[11px] text-on-surface-variant group-hover:text-white/90 mt-1 leading-snug font-medium transition-colors duration-300">Windows, Office, Antivirus certificados.</p>
+                  </div>
                 </div>
               </div>
 
               {/* Card 4: Ribbons y Zebra */}
-              <div className="group relative p-5 bg-slate-50 rounded-2xl border border-slate-100 hover:border-primary/20 hover:shadow-md transition-all duration-300 overflow-hidden flex flex-col justify-between min-h-[140px]">
+              <div className="group relative p-5 rounded-2xl border border-slate-100 hover:border-primary/20 hover:shadow-md transition-all duration-300 overflow-hidden flex flex-col justify-between min-h-[140px]">
                 <div 
-                  className="absolute inset-0 bg-cover bg-center opacity-[0.25] group-hover:opacity-[0.40] blur-[1px] group-hover:blur-0 group-hover:scale-105 transition-all duration-500 -z-10" 
+                  className="absolute inset-0 bg-cover bg-center opacity-[0.25] group-hover:opacity-[0.40] group-hover:scale-105 transition-all duration-500" 
                   style={{ backgroundImage: `url('/img/servicios/impresora_zebra_mantenimiento.png')` }}
                 />
-                <div className="absolute inset-0 bg-white/75 group-hover:bg-primary/95 transition-all duration-300 -z-10" />
-                <div>
-                  <span className="material-symbols-outlined text-primary group-hover:text-white text-3xl mb-2 group-hover:scale-110 transition-all duration-300 block">print</span>
-                  <h4 className="font-headline font-bold text-on-surface group-hover:text-white text-sm transition-colors duration-300">Ribbons y Zebra</h4>
-                  <p className="text-[11px] text-on-surface-variant group-hover:text-white/90 mt-1 leading-snug font-medium transition-colors duration-300">Suministros originales de ribbons, tintas y tarjetas Zebra.</p>
+                <div className="absolute inset-0 bg-white/75 group-hover:bg-primary/95 transition-all duration-300" />
+                <div className="relative z-10 flex flex-col justify-between h-full">
+                  <div>
+                    <span className="material-symbols-outlined text-primary group-hover:text-white text-3xl mb-2 group-hover:scale-110 transition-all duration-300 block">print</span>
+                    <h4 className="font-headline font-bold text-on-surface group-hover:text-white text-sm transition-colors duration-300">Ribbons y Zebra</h4>
+                    <p className="text-[11px] text-on-surface-variant group-hover:text-white/90 mt-1 leading-snug font-medium transition-colors duration-300">Suministros originales de ribbons, tintas y tarjetas Zebra.</p>
+                  </div>
                 </div>
               </div>
             </div>
