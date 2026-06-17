@@ -21,10 +21,18 @@ export default function SmartAssistant() {
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
+  const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Initialize with greeting
+  // Initialize: restore session or show greeting
   useEffect(() => {
+    try {
+      const saved = sessionStorage.getItem("dellcom_chat");
+      if (saved) {
+        setMessages(JSON.parse(saved));
+        return;
+      }
+    } catch {}
     const time = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
     setMessages([
       {
@@ -35,6 +43,13 @@ export default function SmartAssistant() {
       },
     ]);
   }, []);
+
+  // Persist messages to sessionStorage on every change
+  useEffect(() => {
+    if (messages.length > 0) {
+      try { sessionStorage.setItem("dellcom_chat", JSON.stringify(messages)); } catch {}
+    }
+  }, [messages]);
 
   // Auto scroll to bottom
   useEffect(() => {
@@ -169,20 +184,23 @@ export default function SmartAssistant() {
 
     setMessages((prev) => [...prev, userMsg]);
     setInput("");
+    setIsTyping(true);
 
-    // Simulate response delay
+    // Delay proportional to response length, capped at 1200ms
+    const reply = getBotResponse(textToSend);
+    const delay = Math.min(600 + reply.length * 1.2, 1200);
     setTimeout(() => {
-      const botReplyText = getBotResponse(textToSend);
+      setIsTyping(false);
       setMessages((prev) => [
         ...prev,
         {
           id: Date.now() + 1,
           sender: "bot",
-          text: botReplyText,
+          text: reply,
           timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
         },
       ]);
-    }, 400);
+    }, delay);
   };
 
   return (
@@ -244,6 +262,15 @@ export default function SmartAssistant() {
                 </span>
               </div>
             ))}
+            {isTyping && (
+              <div className="flex flex-col max-w-[80%] mr-auto items-start">
+                <div className="px-4 py-3 rounded-2xl bg-white border border-slate-100 rounded-tl-none shadow-sm flex items-center gap-1.5">
+                  <span className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
+                  <span className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
+                  <span className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+                </div>
+              </div>
+            )}
             <div ref={messagesEndRef} />
           </div>
 
