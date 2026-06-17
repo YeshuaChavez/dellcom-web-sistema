@@ -1419,6 +1419,18 @@ export default function AdminDashboardPage() {
         }
 
         /* Estilos del popup de guía en modo oscuro */
+        .dark-theme .guide-popup-card {
+          background-color: #0f172a !important; /* fondo sólido oscuro slate-900 */
+          border-color: #3b82f6 !important; /* borde azul nítido */
+          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7) !important;
+        }
+        .dark-theme .guide-popup-card .bg-white {
+          background-color: #1e293b !important; /* sub-tarjetas opacas */
+          border-color: rgba(59, 130, 246, 0.3) !important;
+        }
+        .dark-theme .guide-popup-card .border-white\\/60 {
+          border-color: #334155 !important;
+        }
         .dark-theme .text-on-background {
           color: var(--text-main) !important;
         }
@@ -1718,7 +1730,7 @@ export default function AdminDashboardPage() {
                 };
 
                 return (
-                  <div className="fixed top-16 right-4 sm:absolute sm:right-0 sm:top-12 z-50 w-[calc(100vw-32px)] sm:w-[420px] bg-blue-50 border border-blue-100 rounded-2xl p-5 shadow-2xl animate-fade-in text-left text-on-background">
+                  <div className="fixed top-16 right-4 sm:absolute sm:right-0 sm:top-12 z-50 w-[calc(100vw-32px)] sm:w-[420px] bg-blue-50 border border-blue-100 rounded-2xl p-5 shadow-2xl animate-fade-in text-left text-on-background guide-popup-card">
                     
                     {/* Header Row */}
                     <div className="flex items-center justify-between border-b border-blue-100 pb-3 mb-3">
