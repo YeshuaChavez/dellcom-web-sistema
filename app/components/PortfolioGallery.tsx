@@ -95,17 +95,11 @@ export default function PortfolioGallery({ trabajos = [] }: PortfolioGalleryProp
   // Parse description and optional slider images from description field
   const parsedData = useMemo(() => {
     if (!activeTrabajo) return { text: "", images: [] as string[] };
-    
-    const parts = activeTrabajo.descripcion?.split("||") || [];
-    const text = parts[0] || "";
-    const extraImagesString = parts[1] || "";
-    
-    // Fallback if no extra images: use the main imagen_url
-    const imagesList = extraImagesString
-      ? extraImagesString.split(",")
-      : [activeTrabajo.imagen_url];
-      
-    return { text, images: imagesList };
+    const images = activeTrabajo.imagen_url
+      .split("||")
+      .map((u) => u.trim())
+      .filter(Boolean);
+    return { text: activeTrabajo.descripcion ?? "", images: images.length > 0 ? images : [activeTrabajo.imagen_url] };
   }, [activeTrabajo]);
 
   const handleNextImage = (e: React.MouseEvent) => {
@@ -161,9 +155,8 @@ export default function PortfolioGallery({ trabajos = [] }: PortfolioGalleryProp
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
             {visibleTrabajos.map((trabajo, index) => {
-              // Parse out only the text for card preview
-              const cardParts = trabajo.descripcion?.split("||") || [];
-              const cardDesc = cardParts[0] || "";
+              const cardDesc = trabajo.descripcion || "";
+              const cardThumb = trabajo.imagen_url.split("||")[0];
 
               return (
                 <article
@@ -177,7 +170,7 @@ export default function PortfolioGallery({ trabajos = [] }: PortfolioGalleryProp
                   {/* Image Area */}
                   <div className="relative h-52 w-full overflow-hidden bg-slate-50 border-b border-slate-100">
                     <img
-                      src={trabajo.imagen_url}
+                      src={cardThumb}
                       alt={trabajo.titulo}
                       className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-700"
                       loading="lazy"
