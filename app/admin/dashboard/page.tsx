@@ -1365,8 +1365,42 @@ export default function AdminDashboardPage() {
           background-color: rgba(255, 0, 0, 0.08) !important;
         }
 
+        .dark-theme .bg-blue-50,
+        .dark-theme .bg-blue-100 {
+          background-color: rgba(59, 130, 246, 0.15) !important;
+        }
+        .dark-theme .text-blue-600,
+        .dark-theme .text-blue-500 {
+          color: #60a5fa !important;
+        }
+        .dark-theme .border-blue-100,
+        .dark-theme .border-blue-200 {
+          border-color: rgba(59, 130, 246, 0.35) !important;
+        }
+
+        .dark-theme .bg-purple-50,
+        .dark-theme .bg-purple-100 {
+          background-color: rgba(168, 85, 247, 0.15) !important;
+        }
+        .dark-theme .text-purple-600,
+        .dark-theme .text-purple-500 {
+          color: #c084fc !important;
+        }
+        .dark-theme .border-purple-100,
+        .dark-theme .border-purple-200 {
+          border-color: rgba(168, 85, 247, 0.35) !important;
+        }
+
+        .dark-theme .bg-amber-50,
+        .dark-theme .bg-amber-100 {
+          background-color: rgba(245, 158, 11, 0.15) !important;
+        }
         .dark-theme .text-amber-600 {
           color: #fbbf24 !important;
+        }
+        .dark-theme .border-amber-100,
+        .dark-theme .border-amber-200 {
+          border-color: rgba(245, 158, 11, 0.35) !important;
         }
 
         .dark-theme table thead tr {
