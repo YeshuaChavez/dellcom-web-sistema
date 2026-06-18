@@ -3843,16 +3843,62 @@ export default function AdminDashboardPage() {
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Nombre del Icono (Google Material Icon)</label>
-                <input 
-                  type="text" 
-                  required
-                  value={formServiceIcon}
-                  onChange={(e) => setFormServiceIcon(e.target.value)}
-                  placeholder="Ej: computer, router, memory, print, security"
-                  className="w-full bg-slate-50 border border-slate-200 focus:border-red-600 focus:ring-1 focus:ring-red-600 focus:outline-none rounded-xl px-4 py-3 text-sm transition-all font-mono"
-                />
-                <span className="text-[10px] text-slate-400 mt-1 block">Ingresa un nombre de Material Symbols válido.</span>
+                <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Icono del Servicio</label>
+                
+                {/* Grid de Iconos Comunes */}
+                <div className="grid grid-cols-4 sm:grid-cols-6 gap-2 mb-3">
+                  {[
+                    { name: "laptop_mac", label: "Laptop" },
+                    { name: "devices", label: "Equipos" },
+                    { name: "memory", label: "Chip/Placa" },
+                    { name: "dns", label: "Servidores" },
+                    { name: "lan", label: "Red / LAN" },
+                    { name: "router", label: "Router/Wifi" },
+                    { name: "print", label: "Impresora" },
+                    { name: "verified_user", label: "Licencia" },
+                    { name: "security", label: "Seguridad" },
+                    { name: "support_agent", label: "Soporte" },
+                    { name: "mail", label: "Correo" },
+                    { name: "psychology", label: "Asesoría" }
+                  ].map((ico) => {
+                    const isSelected = formServiceIcon === ico.name;
+                    return (
+                      <button
+                        key={ico.name}
+                        type="button"
+                        onClick={() => setFormServiceIcon(ico.name)}
+                        className={`flex flex-col items-center justify-center p-2.5 rounded-xl border text-center transition-all cursor-pointer select-none ${
+                          isSelected
+                            ? "bg-red-50 border-red-600 text-red-600 font-bold"
+                            : "bg-slate-50 border-slate-200 text-slate-500 hover:bg-slate-100 hover:text-slate-700"
+                        }`}
+                      >
+                        <span className="material-symbols-outlined text-lg mb-1">{ico.name}</span>
+                        <span className="text-[9px] block truncate max-w-full leading-none">{ico.label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Input para Icono Personalizado */}
+                <div className="flex gap-3 items-center">
+                  <div className="flex-1">
+                    <input 
+                      type="text" 
+                      required
+                      value={formServiceIcon}
+                      onChange={(e) => setFormServiceIcon(e.target.value)}
+                      placeholder="Nombre de icono personalizado (ej: computer)"
+                      className="w-full bg-slate-50 border border-slate-200 focus:border-red-600 focus:ring-1 focus:ring-red-600 focus:outline-none rounded-xl px-4 py-2 text-xs transition-all font-mono"
+                    />
+                  </div>
+                  <div className="w-10 h-10 border border-slate-200 rounded-xl bg-slate-50 flex items-center justify-center text-red-600 shadow-sm shrink-0">
+                    <span className="material-symbols-outlined text-lg">{formServiceIcon || "help"}</span>
+                  </div>
+                </div>
+                <span className="text-[9px] text-slate-400 mt-1.5 block">
+                  Puedes seleccionar un icono predeterminado arriba o escribir uno libremente desde <a href="https://fonts.google.com/icons" target="_blank" rel="noopener noreferrer" className="text-red-600 hover:underline">Google Icons</a>.
+                </span>
               </div>
 
               <div className="flex items-center gap-2 pt-2">
