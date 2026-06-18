@@ -1332,7 +1332,8 @@ export default function AdminDashboardPage() {
         .dark-theme .text-red-800 {
           color: #ff7878 !important;
         }
-        .dark-theme .border-red-200 {
+        .dark-theme .border-red-200,
+        .dark-theme .border-red-100 {
           border-color: rgba(255, 0, 0, 0.35) !important;
         }
 
@@ -1345,7 +1346,8 @@ export default function AdminDashboardPage() {
         .dark-theme .text-emerald-800 {
           color: #34d399 !important;
         }
-        .dark-theme .border-emerald-200 {
+        .dark-theme .border-emerald-200,
+        .dark-theme .border-emerald-100 {
           border-color: rgba(16, 185, 129, 0.35) !important;
         }
 
