@@ -29,7 +29,7 @@ export default function NosotrosPage() {
           <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[100px] pointer-events-none" />
 
           <div className="relative max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop text-center z-10 scroll-reveal">
-            <span className="inline-block py-1 px-3.5 mb-4 bg-slate-100 border border-slate-200/80 text-slate-700 font-bold text-[10px] rounded-full uppercase tracking-widest">
+            <span className="inline-block py-1 px-3.5 mb-4 bg-primary/10 border border-primary/15 text-primary font-bold text-[10px] rounded-full uppercase tracking-widest">
               Nuestra Historia
             </span>
             <h1 className="font-headline text-3xl md:text-5xl font-black text-on-surface leading-tight tracking-tight">
