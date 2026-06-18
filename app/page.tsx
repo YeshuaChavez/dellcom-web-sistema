@@ -32,13 +32,33 @@ const serviceVisuals: Record<string, { image: string; icon: string }> = {
     image: "https://portalinnova.cl/wp-content/uploads/2021/06/Soporte-remoto-de-alta-confiabilidad-Plataforma-resuelve-problemas-tecnicos-en-segundos-y-con-la-maxima-seguridad-que-existe-en-el-mercado-scaled.jpg",
     icon: "support_agent"
   },
-  "correo": {
-    image: "https://images.unsplash.com/photo-1557200134-90327ee9fafa?auto=format&fit=crop&w=600&q=80",
-    icon: "mail"
+  "corporativo": {
+    image: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?auto=format&fit=crop&w=800&q=80",
+    icon: "support_agent"
   },
   "licencia": {
     image: "/img/servicios/licencias_software.png",
     icon: "verified_user"
+  },
+  "software": {
+    image: "/img/servicios/licencias_software.png",
+    icon: "verified_user"
+  },
+  "ciberseguridad": {
+    image: "https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=800&q=80",
+    icon: "security"
+  },
+  "seguridad": {
+    image: "https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=800&q=80",
+    icon: "security"
+  },
+  "consultoría": {
+    image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=800&q=80",
+    icon: "psychology"
+  },
+  "it": {
+    image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=800&q=80",
+    icon: "psychology"
   },
   "repuesto": {
     image: "https://s.alicdn.com/@sc04/kf/Hc979084a7689417abcbb22e7beb812cc4/Wholesale-Laptop-Spare-Parts-All-Models-Computer-Accessories-LCD-Screen-Keyboard-Adapter-Computer-Repair-Parts-Replacement.jpg",
