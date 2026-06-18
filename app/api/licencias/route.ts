@@ -13,11 +13,18 @@ import { z } from "zod";
 
 // Esquema Zod para crear una licencia nueva
 const LicenciaSchema = z.object({
-  software: z.string().min(1, "El software es requerido"),
+  software: z.string().min(3, "El nombre del software debe tener al menos 3 caracteres"),
   correo_cuenta: z.string().email("El correo de la cuenta no es válido"),
-  contrasena: z.string().min(1, "La contraseña es requerida"),
-  nombre_cliente: z.string().min(1, "El nombre del cliente es requerido"),
-  telefono: z.string().nullable().optional(),
+  contrasena: z.string().min(4, "La contraseña/clave debe tener al menos 4 caracteres"),
+  nombre_cliente: z.string().min(3, "El nombre del cliente debe tener al menos 3 caracteres"),
+  telefono: z
+    .string()
+    .regex(/^[0-9]+$/, "El teléfono debe contener solo números")
+    .min(7, "El teléfono debe tener al menos 7 dígitos")
+    .max(15, "El teléfono no debe superar los 15 dígitos")
+    .optional()
+    .nullable()
+    .or(z.literal("")),
   fecha_inicio: z.string().min(1, "La fecha de inicio es requerida"),
   fecha_fin: z.string().nullable().optional(),
   observaciones: z.string().nullable().optional(),
@@ -50,7 +57,8 @@ export async function POST(req: NextRequest) {
   // Valida el cuerpo antes de tocar la base de datos
   const result = LicenciaSchema.safeParse(body);
   if (!result.success) {
-    return NextResponse.json({ errors: result.error.flatten().fieldErrors }, { status: 400 });
+    const errorMsg = Object.values(result.error.flatten().fieldErrors).flat().join(", ");
+    return NextResponse.json({ error: errorMsg, errors: result.error.flatten().fieldErrors }, { status: 400 });
   }
 
   // Convierte las fechas de string ISO a objetos Date para Prisma

@@ -11,11 +11,18 @@ import { z } from "zod";
 
 // Todos los campos son opcionales para permitir actualizaciones parciales
 const LicenciaUpdateSchema = z.object({
-  software: z.string().min(1, "El software es requerido").optional(),
+  software: z.string().min(3, "El nombre del software debe tener al menos 3 caracteres").optional(),
   correo_cuenta: z.string().email("El correo de la cuenta no es válido").optional(),
-  contrasena: z.string().min(1, "La contraseña es requerida").optional(),
-  nombre_cliente: z.string().min(1, "El nombre del cliente es requerido").optional(),
-  telefono: z.string().nullable().optional(),
+  contrasena: z.string().min(4, "La contraseña/clave debe tener al menos 4 caracteres").optional(),
+  nombre_cliente: z.string().min(3, "El nombre del cliente debe tener al menos 3 caracteres").optional(),
+  telefono: z
+    .string()
+    .regex(/^[0-9]+$/, "El teléfono debe contener solo números")
+    .min(7, "El teléfono debe tener al menos 7 dígitos")
+    .max(15, "El teléfono no debe superar los 15 dígitos")
+    .optional()
+    .nullable()
+    .or(z.literal("")),
   fecha_inicio: z.string().optional(),
   fecha_fin: z.string().nullable().optional(),
   observaciones: z.string().nullable().optional(),
@@ -32,7 +39,8 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 
   const result = LicenciaUpdateSchema.safeParse(body);
   if (!result.success) {
-    return NextResponse.json({ errors: result.error.flatten().fieldErrors }, { status: 400 });
+    const errorMsg = Object.values(result.error.flatten().fieldErrors).flat().join(", ");
+    return NextResponse.json({ error: errorMsg, errors: result.error.flatten().fieldErrors }, { status: 400 });
   }
 
   // Extrae fechas para convertirlas a Date; el resto va directo a Prisma
