@@ -172,7 +172,7 @@ export default function ContactoPage() {
                       type="tel"
                       placeholder="Ej. 987654321"
                       value={telefono}
-                      onChange={(e) => setTelefono(e.target.value)}
+                      onChange={(e) => setTelefono(e.target.value.replace(/\D/g, "").slice(0, 15))}
                       required
                       className="w-full py-3.5 bg-transparent border-none text-xs font-semibold focus:outline-none text-on-surface placeholder:text-slate-300"
                     />
@@ -237,12 +237,12 @@ export default function ContactoPage() {
               {/* Mensaje */}
               <div className="space-y-2">
                 <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-                  Detalle del Mensaje o Síntoma del Equipo
+                  Detalle del Mensaje o Síntoma del Equipo (Mínimo 20 caracteres)
                 </label>
                 <div className="flex items-start gap-3 bg-white border border-slate-200 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary/20 rounded-2xl px-4 py-3.5 transition-all">
                   <span className="material-symbols-outlined text-slate-400 text-lg select-none mt-1">edit_note</span>
                   <textarea
-                    placeholder="Describe aquí detalladamente el requerimiento de soporte o cotización..."
+                    placeholder="Describe aquí detalladamente el requerimiento de soporte o cotización (mínimo 20 caracteres)..."
                     value={mensaje}
                     onChange={(e) => setMensaje(e.target.value)}
                     rows={4}

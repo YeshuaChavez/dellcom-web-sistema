@@ -26,9 +26,14 @@ function stripHtml(value: string): string {
 const ContactSchema = z.object({
   nombre: z.string().min(3, "El nombre debe tener al menos 3 caracteres").transform(stripHtml),
   correo: z.string().email("El correo electrónico no es válido"),
-  telefono: z.string().nullable().optional().transform((v) => (v ? stripHtml(v) : v)),
+  telefono: z
+    .string()
+    .min(7, "El teléfono debe tener al menos 7 dígitos")
+    .max(15, "El teléfono no debe superar los 15 dígitos")
+    .regex(/^[0-9]+$/, "El teléfono debe contener solo números")
+    .transform(stripHtml),
   asunto: z.string().min(3, "El asunto debe tener al menos 3 caracteres").transform(stripHtml),
-  mensaje: z.string().min(5, "El mensaje debe tener al menos 5 caracteres").transform(stripHtml),
+  mensaje: z.string().min(20, "El mensaje debe tener al menos 20 caracteres para detallar su solicitud").transform(stripHtml),
 });
 
 export async function POST(req: NextRequest) {
