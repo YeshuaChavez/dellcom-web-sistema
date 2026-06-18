@@ -55,22 +55,22 @@ const serviceVisuals: Record<string, ServiceVisual> = {
     specs: ["Venta de claves de activación originales Windows Retail/OEM", "Licencias permanentes Office 2021 Hogar y Empresa", "Suscripciones antivirus ESET, Kaspersky y Defender", "Auditoría legal y saneamiento de licenciamiento corporativo"]
   },
   "ciberseguridad": {
-    image: "https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=800&q=80",
+    image: "https://tecnicana.org/wp-content/uploads/2026/06/AreaTematica-Ciberseguridad.png",
     icon: "security",
     specs: ["Auditoría de puertos y vulnerabilidades en red", "Instalación de cortafuegos dedicados (pfSense/Fortinet)", "Políticas de copias de seguridad híbridas e inmutables", "Configuración de accesos VPN seguros para trabajo remoto"]
   },
   "seguridad": {
-    image: "https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=800&q=80",
+    image: "https://tecnicana.org/wp-content/uploads/2026/06/AreaTematica-Ciberseguridad.png",
     icon: "security",
     specs: ["Auditoría de puertos y vulnerabilidades en red", "Instalación de cortafuegos dedicados (pfSense/Fortinet)", "Políticas de copias de seguridad híbridas e inmutables", "Configuración de accesos VPN seguros para trabajo remoto"]
   },
   "consultoría": {
-    image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=800&q=80",
+    image: "https://castellanaconsultores.com/wp-content/uploads/2024/05/consultoria-it.jpg",
     icon: "psychology",
     specs: ["Inventariado técnico inicial de parque informático", "Planificación de migraciones de servidores y hosting", "Diseño de topologías de red de alta disponibilidad", "Optimización de inversiones en licencias y hardware"]
   },
   "it": {
-    image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=800&q=80",
+    image: "https://otrs.com/wp-content/uploads/IT_Infrastructure_-_Blog_Image.jpg",
     icon: "psychology",
     specs: ["Inventariado técnico inicial de parque informático", "Planificación de migraciones de servidores y hosting", "Diseño de topologías de red de alta disponibilidad", "Optimización de inversiones en licencias y hardware"]
   },
