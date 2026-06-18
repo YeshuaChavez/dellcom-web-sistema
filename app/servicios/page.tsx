@@ -17,6 +17,8 @@ export const metadata = {
   description: "Reparación avanzada de laptops, microelectrónica a nivel componente, licenciamiento y consumibles Zebra en Los Olivos, Lima.",
 };
 
+export const dynamic = "force-dynamic";
+
 interface ServiceVisual {
   image: string;
   icon: string;

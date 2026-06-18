@@ -19,6 +19,8 @@ export const metadata = {
   description: "Servicios tecnológicos y soporte de TI de alto nivel en Los Olivos, Lima. Reparación de laptops, licenciamiento oficial y microelectrónica.",
 };
 
+export const dynamic = "force-dynamic";
+
 const serviceVisuals: Record<string, { image: string; icon: string }> = {
   "reparación": {
     image: "/img/servicios/reparacion_laptop.png",
@@ -45,19 +47,19 @@ const serviceVisuals: Record<string, { image: string; icon: string }> = {
     icon: "verified_user"
   },
   "ciberseguridad": {
-    image: "https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=800&q=80",
+    image: "https://tecnicana.org/wp-content/uploads/2026/06/AreaTematica-Ciberseguridad.png",
     icon: "security"
   },
   "seguridad": {
-    image: "https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=800&q=80",
+    image: "https://tecnicana.org/wp-content/uploads/2026/06/AreaTematica-Ciberseguridad.png",
     icon: "security"
   },
   "consultoría": {
-    image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=800&q=80",
+    image: "https://castellanaconsultores.com/wp-content/uploads/2024/05/consultoria-it.jpg",
     icon: "psychology"
   },
   "it": {
-    image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=800&q=80",
+    image: "https://otrs.com/wp-content/uploads/IT_Infrastructure_-_Blog_Image.jpg",
     icon: "psychology"
   },
   "repuesto": {
