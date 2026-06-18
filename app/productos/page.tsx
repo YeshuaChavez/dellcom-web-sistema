@@ -398,7 +398,7 @@ export default function ProductosPage() {
           nombre: product.nombre,
           precio: Number(product.precio),
           cantidad: 1,
-          imagen_url: product.imagen_url || "",
+          imagen_url: (product.imagen_url || "").split("||")[0],
           categoriaNombre: product.categoria?.nombre || "General",
         },
       ];
@@ -731,7 +731,7 @@ export default function ProductosPage() {
                           className="aspect-square bg-slate-50/40 p-4 flex items-center justify-center border-b border-slate-100/80 relative overflow-hidden select-none cursor-pointer group/img"
                         >
                           <ProductImage 
-                            src={prod.imagen_url} 
+                            src={prod.imagen_url?.split("||")[0]} 
                             alt={prod.nombre} 
                             categoryName={prod.categoria?.nombre || "General"} 
                           />
@@ -942,7 +942,7 @@ export default function ProductosPage() {
                     <div className="w-16 h-16 bg-white rounded-xl border border-slate-200 p-2 flex items-center justify-center shrink-0 overflow-hidden relative">
                       {(() => {
                         if (item.imagen_url && !item.imagen_url.includes("placeholder")) {
-                          return <img src={item.imagen_url} alt={item.nombre} className="w-full h-full object-contain" />;
+                          return <img src={item.imagen_url.split("||")[0]} alt={item.nombre} className="w-full h-full object-contain" />;
                         }
                         const name = item.categoriaNombre.toLowerCase();
                         let Icon = Monitor;
@@ -1066,7 +1066,7 @@ export default function ProductosPage() {
                 <div className="md:w-1/2 bg-slate-50/50 p-8 flex items-center justify-center border-b md:border-b-0 md:border-r border-slate-100 relative min-h-[250px] md:min-h-[380px]">
                   <div className="w-full h-full max-h-[380px] flex items-center justify-center">
                     <ZoomableImage
-                      src={imgs[activeIdx] || selectedProductDetails.imagen_url}
+                      src={imgs[activeIdx] || (selectedProductDetails.imagen_url || "").split("||")[0]}
                       alt={selectedProductDetails.nombre}
                       categoryName={selectedProductDetails.categoria?.nombre || "General"}
                     />

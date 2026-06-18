@@ -2779,7 +2779,7 @@ export default function AdminDashboardPage() {
                               <div className="flex items-center gap-3">
                                 {prod.imagen_url && !prod.imagen_url.includes("placeholder.png") ? (
                                   <img 
-                                    src={prod.imagen_url.startsWith("http") || prod.imagen_url.startsWith("/") ? prod.imagen_url : `/${prod.imagen_url}`} 
+                                    src={(() => { const firstImg = prod.imagen_url!.split("||")[0]; return firstImg.startsWith("http") || firstImg.startsWith("/") ? firstImg : `/${firstImg}`; })()} 
                                     alt={prod.nombre} 
                                     className="w-10 h-10 object-contain rounded-lg border border-slate-200 bg-slate-50"
                                     onError={(e) => {
@@ -3597,10 +3597,10 @@ export default function AdminDashboardPage() {
                 </div>
                 <div className="space-y-3">
                   {formProductImages.map((imgUrl, idx) => (
-                    <div key={idx} className="border border-slate-200 rounded-xl p-3 bg-slate-50/50 space-y-1.5">
+                    <div key={idx} className="border border-slate-200 dark:border-slate-600 rounded-xl p-3 bg-slate-50/50 dark:bg-slate-700/50 space-y-1.5">
                       <div className="flex gap-2 items-center">
                         {/* Thumbnail preview beside input */}
-                        <div className="img-thumb-wrap shrink-0 w-12 h-12 rounded-lg overflow-hidden bg-white border border-slate-200 flex items-center justify-center">
+                        <div className="img-thumb-wrap shrink-0 w-12 h-12 rounded-lg overflow-hidden bg-white dark:bg-slate-600 border border-slate-200 dark:border-slate-500 flex items-center justify-center">
                           {imgUrl.trim() ? (
                             <img
                               src={imgUrl}
@@ -3609,7 +3609,7 @@ export default function AdminDashboardPage() {
                               onError={(e) => { (e.target as HTMLImageElement).src = ""; (e.target as HTMLImageElement).style.display = "none"; }}
                             />
                           ) : (
-                            <span className="material-symbols-outlined text-slate-300 text-xl leading-none">image</span>
+                            <span className="material-symbols-outlined text-slate-300 dark:text-slate-400 text-xl leading-none">image</span>
                           )}
                         </div>
                         <input
@@ -3617,11 +3617,11 @@ export default function AdminDashboardPage() {
                           value={imgUrl}
                           onChange={(e) => updateProductImage(idx, e.target.value)}
                           placeholder="URL de imagen o sube un archivo →"
-                          className="flex-1 bg-white border border-slate-200 focus:border-red-600 focus:ring-1 focus:ring-red-600 focus:outline-none rounded-xl px-3 py-2.5 text-xs transition-all font-mono"
+                          className="flex-1 bg-white dark:bg-slate-600 border border-slate-200 dark:border-slate-500 focus:border-red-600 focus:ring-1 focus:ring-red-600 focus:outline-none rounded-xl px-3 py-2.5 text-xs transition-all font-mono dark:text-slate-100 dark:placeholder:text-slate-400"
                         />
                         <label
                           htmlFor={`prod-img-file-${idx}`}
-                          className="shrink-0 px-3 py-2.5 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-[10px] font-bold cursor-pointer flex items-center gap-1 transition-colors"
+                          className="shrink-0 px-3 py-2.5 bg-slate-800 hover:bg-slate-700 dark:bg-slate-500 dark:hover:bg-slate-400 text-white rounded-xl text-[10px] font-bold cursor-pointer flex items-center gap-1 transition-colors"
                         >
                           <span className="material-symbols-outlined text-sm leading-none">upload</span>
                           Subir
@@ -3638,7 +3638,7 @@ export default function AdminDashboardPage() {
                           <button
                             type="button"
                             onClick={() => removeProductImage(idx)}
-                            className="shrink-0 p-2 text-slate-400 hover:text-red-600 transition-colors rounded-lg hover:bg-red-50 cursor-pointer"
+                            className="shrink-0 p-2 text-slate-400 hover:text-red-600 dark:hover:text-red-400 transition-colors rounded-lg hover:bg-red-50 dark:hover:bg-red-500/10 cursor-pointer"
                             title="Quitar imagen"
                           >
                             <span className="material-symbols-outlined text-sm leading-none">delete</span>
