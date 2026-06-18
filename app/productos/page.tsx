@@ -636,7 +636,7 @@ export default function ProductosPage() {
           
           <div className="relative px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto w-full text-center z-10 scroll-reveal">
             <span className="inline-block py-1 px-3.5 mb-4 bg-primary/10 border border-primary/15 text-primary font-bold text-[10px] rounded-full uppercase tracking-widest">
-              Catálogo Virtual Oficial 2026
+              Catálogo Virtual
             </span>
             <h1 className="font-headline text-3xl md:text-5xl font-black text-on-surface leading-tight tracking-tight">
               Nuestro <span className="text-primary">Catálogo</span>
