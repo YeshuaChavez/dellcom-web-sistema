@@ -228,7 +228,7 @@ export default function NosotrosPage() {
                 <span className="material-symbols-outlined text-[16px]">stars</span>
                 Pilares del Soporte
               </span>
-              <h3 className="font-headline text-3xl font-bold text-on-surface">Nuestros <span className="text-primary">Valores Fundamentales</span></h3>
+              <h3 className="font-headline text-3xl font-bold text-on-surface">Nuestros Valores <span className="text-primary">Fundamentales</span></h3>
               <p className="text-sm font-semibold text-on-surface-variant max-w-lg mx-auto">
                 El ADN que guía cada intervención técnica y decisión estratégica.
               </p>
