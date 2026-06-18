@@ -3172,8 +3172,8 @@ export default function AdminDashboardPage() {
                   <input 
                     type="text" 
                     value={formTelefono}
-                    onChange={(e) => setFormTelefono(e.target.value)}
-                    placeholder="+51 999 999 999"
+                    onChange={(e) => setFormTelefono(e.target.value.replace(/\D/g, "").slice(0, 15))}
+                    placeholder="Ej. 987654321"
                     className="w-full bg-slate-50 border border-slate-200 focus:border-red-600 focus:ring-1 focus:ring-red-600 focus:outline-none rounded-xl px-4 py-3 text-sm transition-all"
                   />
                 </div>
