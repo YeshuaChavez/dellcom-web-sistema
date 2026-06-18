@@ -252,7 +252,7 @@ export default function PortfolioGallery({ trabajos = [] }: PortfolioGalleryProp
           onClick={handleCloseLightbox}
         >
           <div 
-            className="bg-white rounded-[2.5rem] border border-slate-900/15 shadow-2xl max-w-4xl w-full overflow-hidden flex flex-col md:flex-row relative max-h-[90vh] md:max-h-[85vh] animate-scale-up"
+            className="bg-white rounded-[2.5rem] border border-slate-900/15 shadow-2xl max-w-5xl w-full overflow-hidden flex flex-col md:flex-row relative max-h-[90vh] md:max-h-[85vh] animate-scale-up"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Close Button */}
@@ -339,12 +339,12 @@ export default function PortfolioGallery({ trabajos = [] }: PortfolioGalleryProp
                   <h4 className="text-[9px] font-extrabold uppercase tracking-widest text-slate-400">
                     Descripción del Trabajo
                   </h4>
-                  <p className="text-xs md:text-sm text-on-surface-variant leading-relaxed font-semibold">
+                  <p className="text-xs md:text-sm text-on-surface-variant leading-relaxed font-sans">
                     {parsedData.text || "Mantenimiento y soporte especializado realizado por técnicos certificados de DELLCOM."}
                   </p>
                 </div>
 
-                <div className="bg-slate-50 rounded-2xl p-4 border border-slate-150/50 flex items-start gap-3">
+                <div className="bg-slate-50 rounded-2xl p-4 border border-slate-500/50 flex items-start gap-3">
                   <span className="material-symbols-outlined text-emerald-600 font-bold">verified_user</span>
                   <div className="space-y-0.5">
                     <p className="text-[10px] font-extrabold uppercase tracking-wider text-slate-700">Garantía DELLCOM SAC</p>

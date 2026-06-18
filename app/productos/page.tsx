@@ -1128,7 +1128,7 @@ export default function ProductosPage() {
                   </div>
                 </div>
 
-                <p className="text-xs text-on-surface-variant leading-relaxed font-semibold">
+                <p className="text-xs text-on-surface-variant leading-relaxed font-sans">
                   {selectedProductDetails.descripcion || "Consúltanos especificaciones técnicas detalladas, stock en tienda física y compatibilidad exacta para este producto."}
                 </p>
 
@@ -1136,15 +1136,15 @@ export default function ProductosPage() {
                 <div className="border border-slate-100 rounded-2xl p-4 bg-slate-50/50 space-y-2.5">
                   <div className="flex justify-between text-xs">
                     <span className="text-slate-400 font-bold">Garantía</span>
-                    <span className="text-slate-700 font-extrabold">12 Meses DELLCOM</span>
+                    <span className="text-slate-700 font-semibold">12 Meses DELLCOM</span>
                   </div>
                   <div className="flex justify-between text-xs">
                     <span className="text-slate-400 font-bold">Condición</span>
-                    <span className="text-slate-700 font-extrabold">Nuevo Sellado</span>
+                    <span className="text-slate-700 font-semibold">Nuevo Sellado</span>
                   </div>
                   <div className="flex justify-between text-xs">
                     <span className="text-slate-400 font-bold">Instalación / Soporte</span>
-                    <span className="text-slate-700 font-extrabold text-primary">Disponible (Opcional)</span>
+                    <span className="text-slate-700 font-semibold text-primary">Disponible (Opcional)</span>
                   </div>
                 </div>
               </div>
