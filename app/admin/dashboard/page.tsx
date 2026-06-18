@@ -381,7 +381,7 @@ export default function AdminDashboardPage() {
     if (file.size > MAX_SIZE) {
       alert(
         `El archivo "${file.name}" supera el límite permitido para carga directa de 4.5MB (Pesa ${(file.size / (1024 * 1024)).toFixed(2)}MB).\n\n` +
-        `Para archivos grandes (como drivers o instaladores pesados), se recomienda alojar el archivo en Google Drive/Dropbox y colocar la URL directa en el campo de enlace superior.`
+        `Para archivos grandes (como drivers o instaladores pesados), se recomienda colocar la URL directa en el campo de enlace superior.`
       );
       e.target.value = ""; // Limpiar el input
       return;
