@@ -86,7 +86,7 @@ export default function AdminLoginPage() {
     <div className="w-full min-h-screen md:h-screen flex flex-col md:flex-row overflow-y-auto md:overflow-hidden bg-white selection:bg-primary/20 selection:text-primary">
 
       {/* Left Column: Welcome Visual Panel (Tech Dark Theme) */}
-      <div className="w-full md:w-1/2 min-h-[400px] md:h-full bg-[#0a0a0c] flex flex-col justify-between p-8 md:p-12 lg:p-16 relative overflow-hidden">
+      <div className="hidden md:flex w-full md:w-1/2 min-h-[400px] md:h-full bg-[#0a0a0c] flex-col justify-between p-8 md:p-12 lg:p-16 relative overflow-hidden">
         
         {/* Background Video with Blur & Overlay */}
         <video
@@ -107,7 +107,7 @@ export default function AdminLoginPage() {
             <span className="text-primary">Dellcom!</span>
           </h1>
           <p className="text-sm lg:text-base text-white font-semibold leading-relaxed max-w-sm lg:max-w-md">
-            Soporte IT de primer nivel, repuestos y licencias originales. Gestiona los servicios técnicos de forma eficiente y segura desde un solo panel.
+            Soporte IT de primer nivel, repuestos y licencias originales. Gestiona los servicios técnicos de forma eficiente and segura desde un solo panel.
           </p>
 
           {/* Red Circle-Icon Checkbox List */}
@@ -150,7 +150,7 @@ export default function AdminLoginPage() {
       </div>
 
       {/* Right Column: Credentials Form (Clean Light Theme) */}
-      <div className="w-full md:w-1/2 min-h-[600px] md:h-full bg-white flex flex-col justify-between p-8 md:p-12 lg:p-16 overflow-y-auto">
+      <div className="w-full md:w-1/2 min-h-screen md:h-full bg-white flex flex-col justify-between p-8 md:p-12 lg:p-16 overflow-y-auto">
 
         {/* Brand Header */}
         <div className="flex items-center gap-3 justify-center md:justify-start">
