@@ -26,7 +26,8 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   const body = await req.json();
   const result = ArchivoUpdateSchema.safeParse(body);
   if (!result.success) {
-    return NextResponse.json({ errors: result.error.flatten().fieldErrors }, { status: 400 });
+    const errorMsg = Object.values(result.error.flatten().fieldErrors).flat().join(", ");
+    return NextResponse.json({ error: errorMsg, errors: result.error.flatten().fieldErrors }, { status: 400 });
   }
 
   const archivo = await prisma.archivoTecnico.update({
