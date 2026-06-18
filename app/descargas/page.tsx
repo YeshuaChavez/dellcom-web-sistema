@@ -61,6 +61,7 @@ const FALLBACK_ARCHIVOS: ArchivoTecnico[] = [
 // Helper to overlay official sizes and compatibility metadata on top of files
 const getFileMetadata = (file: ArchivoTecnico) => {
   const name = file.nombre.toLowerCase();
+  const url = file.url_archivo.toLowerCase();
   
   if (name.includes("gk420t")) {
     return { tamano: "12.4 MB", compatibilidad: "Windows 10 / 11 (64-bit)", version: "v5.1.16" };
@@ -73,6 +74,17 @@ const getFileMetadata = (file: ArchivoTecnico) => {
   }
   if (name.includes("inventario")) {
     return { tamano: "1.2 MB", compatibilidad: "Excel / Google Sheets", version: "v2.0" };
+  }
+  
+  // Detección automática por extensión o nombre
+  const isPdf = name.endsWith(".pdf") || url.includes(".pdf") || name.includes(" pdf");
+  const isExcel = name.endsWith(".xlsx") || name.endsWith(".xls") || url.includes(".xlsx") || url.includes(".xls") || name.includes("excel");
+  
+  if (isPdf) {
+    return { tamano: "Documento PDF", compatibilidad: "Lector PDF (Acrobat/Navegador)", version: "PDF" };
+  }
+  if (isExcel) {
+    return { tamano: "Libro de Excel", compatibilidad: "Microsoft Excel / Hojas de Cálculo", version: "XLSX" };
   }
   
   switch (file.tipo) {
@@ -172,8 +184,15 @@ export default function DescargasPage() {
     return result;
   };
 
-  const getIconForType = (type: string) => {
-    switch (type) {
+  const getIconForFile = (file: ArchivoTecnico) => {
+    const name = file.nombre.toLowerCase();
+    const url = file.url_archivo.toLowerCase();
+    
+    if (name.endsWith(".pdf") || url.includes(".pdf") || name.includes(" pdf")) {
+      return "picture_as_pdf";
+    }
+    
+    switch (file.tipo) {
       case "programa": return "laptop_mac";
       case "driver": return "memory";
       case "excel": return "description";
@@ -182,8 +201,18 @@ export default function DescargasPage() {
     }
   };
 
-  const getLabelForType = (type: string) => {
-    switch (type) {
+  const getLabelForFile = (file: ArchivoTecnico) => {
+    const name = file.nombre.toLowerCase();
+    const url = file.url_archivo.toLowerCase();
+
+    if (name.endsWith(".pdf") || url.includes(".pdf") || name.includes(" pdf")) {
+      return "Documento PDF";
+    }
+    if (name.endsWith(".xlsx") || name.endsWith(".xls") || url.includes(".xlsx") || url.includes(".xls") || name.includes("excel")) {
+      return "Libro de Excel";
+    }
+
+    switch (file.tipo) {
       case "programa": return "Programa (.exe)";
       case "driver": return "Controlador (Driver)";
       case "excel": return "Documento / Excel";
@@ -295,26 +324,48 @@ export default function DescargasPage() {
 
                       <div className="flex items-start md:items-center gap-6 flex-1 min-w-0">
                         {/* File Format Visual Icon Badge */}
-                        <div className={`w-16 h-16 rounded-2xl flex flex-col items-center justify-center shrink-0 shadow-sm border transition-colors duration-300 ${
-                          file.tipo === "driver" ? "bg-blue-50/50 border-blue-100 text-blue-600 group-hover:bg-blue-50" :
-                          file.tipo === "programa" ? "bg-emerald-50/50 border-emerald-100 text-emerald-600 group-hover:bg-emerald-50" :
-                          file.tipo === "excel" ? "bg-teal-50/50 border-teal-100 text-teal-600 group-hover:bg-teal-50" :
-                          "bg-slate-50/50 border-slate-200/60 text-slate-600 group-hover:bg-slate-50"
-                        }`}>
-                          <span className="material-symbols-outlined text-2xl leading-none">
-                            {getIconForType(file.tipo)}
-                          </span>
-                          <span className="text-[9px] font-extrabold uppercase tracking-wider mt-1 block leading-none">
-                            {file.tipo === "driver" ? "DRV" :
-                             file.tipo === "programa" ? "EXE" :
-                             file.tipo === "excel" ? "XLS" : "LINK"}
-                          </span>
-                        </div>
+                        {(() => {
+                          const name = file.nombre.toLowerCase();
+                          const url = file.url_archivo.toLowerCase();
+                          const isPdf = name.endsWith(".pdf") || url.includes(".pdf") || name.includes(" pdf");
+                          const isExcel = name.endsWith(".xlsx") || name.endsWith(".xls") || url.includes(".xlsx") || url.includes(".xls") || name.includes("excel");
+                          
+                          let badgeBg = "bg-slate-50/50 border-slate-200/60 text-slate-600 group-hover:bg-slate-50";
+                          let badgeText = "LINK";
+                          
+                          if (isPdf) {
+                            badgeBg = "bg-red-50/50 border-red-100 text-red-600 group-hover:bg-red-50";
+                            badgeText = "PDF";
+                          } else if (isExcel) {
+                            badgeBg = "bg-emerald-50/50 border-emerald-100 text-emerald-600 group-hover:bg-emerald-50";
+                            badgeText = "XLSX";
+                          } else if (file.tipo === "driver") {
+                            badgeBg = "bg-blue-50/50 border-blue-100 text-blue-600 group-hover:bg-blue-50";
+                            badgeText = "DRV";
+                          } else if (file.tipo === "programa") {
+                            badgeBg = "bg-emerald-50/50 border-emerald-100 text-emerald-600 group-hover:bg-emerald-50";
+                            badgeText = "EXE";
+                          } else if (file.tipo === "excel") {
+                            badgeBg = "bg-teal-50/50 border-teal-100 text-teal-600 group-hover:bg-teal-50";
+                            badgeText = "XLS";
+                          }
+
+                          return (
+                            <div className={`w-16 h-16 rounded-2xl flex flex-col items-center justify-center shrink-0 shadow-sm border transition-colors duration-300 ${badgeBg}`}>
+                              <span className="material-symbols-outlined text-2xl leading-none">
+                                {getIconForFile(file)}
+                              </span>
+                              <span className="text-[9px] font-extrabold uppercase tracking-wider mt-1 block leading-none">
+                                {badgeText}
+                              </span>
+                            </div>
+                          );
+                        })()}
 
                         <div className="space-y-2 flex-1 min-w-0">
                           <div className="flex flex-wrap items-center gap-2">
                             <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-slate-100 text-[10px] text-slate-500 font-bold uppercase tracking-wider leading-none">
-                              {getLabelForType(file.tipo)}
+                              {getLabelForFile(file)}
                             </span>
                             {meta.version && (
                               <span className="text-[9px] bg-slate-50 border border-slate-200/60 text-slate-500 font-extrabold px-2 py-0.5 rounded leading-none">
