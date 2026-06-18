@@ -1490,12 +1490,12 @@ export default function AdminDashboardPage() {
           border-color: var(--border-color) !important;
         }
 
-        .dark-theme .fixed footer button {
+        .dark-theme .fixed footer button:not([class*="bg-red"]) {
           border-color: var(--border-color) !important;
           color: var(--text-main) !important;
         }
 
-        .dark-theme .fixed footer button:hover {
+        .dark-theme .fixed footer button:not([class*="bg-red"]):hover {
           background-color: var(--bg-hover) !important;
         }
 
