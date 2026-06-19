@@ -1499,7 +1499,9 @@ export default function AdminDashboardPage() {
         .dark-theme .bg-amber-100 {
           background-color: rgba(245, 158, 11, 0.15) !important;
         }
-        .dark-theme .text-amber-600 {
+        .dark-theme .text-amber-600,
+        .dark-theme .text-amber-700,
+        .dark-theme .text-amber-800 {
           color: #fbbf24 !important;
         }
         .dark-theme .border-amber-100,
