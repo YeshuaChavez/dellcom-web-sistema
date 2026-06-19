@@ -4115,10 +4115,10 @@ export default function AdminDashboardPage() {
                 <div
                   className={`border-2 border-dashed rounded-xl p-3 space-y-2 transition-all duration-200 ${
                     draggingPortfolioMain
-                      ? "border-red-500 bg-red-50/30 scale-[1.01]"
+                      ? "border-red-500 bg-red-50/30 dark:bg-red-500/10 scale-[1.01]"
                       : formPortfolioImgUrl
-                        ? "border-slate-200 bg-slate-50/50 border-solid"
-                        : "border-slate-300 bg-slate-50/30"
+                        ? "border-slate-200 dark:border-slate-600 bg-slate-50/50 dark:bg-slate-700/50 border-solid"
+                        : "border-slate-300 dark:border-slate-500 bg-slate-50/30 dark:bg-slate-700/30"
                   }`}
                   onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); setDraggingPortfolioMain(true); }}
                   onDragEnter={(e) => { e.preventDefault(); e.stopPropagation(); setDraggingPortfolioMain(true); }}
@@ -4146,7 +4146,7 @@ export default function AdminDashboardPage() {
                       value={formPortfolioImgUrl}
                       onChange={(e) => setFormPortfolioImgUrl(e.target.value)}
                       placeholder="Arrastra una imagen aquí o pega URL →"
-                      className="flex-1 bg-white border border-slate-200 focus:border-red-600 focus:ring-1 focus:ring-red-600 focus:outline-none rounded-xl px-4 py-3 text-sm transition-all"
+                      className="flex-1 bg-white dark:bg-slate-600 border border-slate-200 dark:border-slate-500 focus:border-red-600 focus:ring-1 focus:ring-red-600 focus:outline-none rounded-xl px-4 py-3 text-sm transition-all dark:text-slate-100 dark:placeholder:text-slate-400"
                     />
                     <div className="relative shrink-0">
                       <input
@@ -4193,10 +4193,10 @@ export default function AdminDashboardPage() {
                       key={idx}
                       className={`border-2 border-dashed rounded-xl p-2.5 transition-all duration-200 ${
                         draggingPortfolioExtraIdx === idx
-                          ? "border-red-500 bg-red-50/30 scale-[1.01]"
+                          ? "border-red-500 bg-red-50/30 dark:bg-red-500/10 scale-[1.01]"
                           : url.trim()
-                            ? "border-slate-200 bg-slate-50/50 border-solid"
-                            : "border-slate-300 bg-slate-50/30"
+                            ? "border-slate-200 dark:border-slate-600 bg-slate-50/50 dark:bg-slate-700/50 border-solid"
+                            : "border-slate-300 dark:border-slate-500 bg-slate-50/30 dark:bg-slate-700/30"
                       }`}
                       onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); setDraggingPortfolioExtraIdx(idx); }}
                       onDragEnter={(e) => { e.preventDefault(); e.stopPropagation(); setDraggingPortfolioExtraIdx(idx); }}
@@ -4215,7 +4215,7 @@ export default function AdminDashboardPage() {
                         </div>
                       )}
                       <div className={`flex gap-2 items-center ${draggingPortfolioExtraIdx === idx ? "opacity-50" : ""}`}>
-                        <div className="w-10 h-10 flex-shrink-0 rounded-lg overflow-hidden border border-slate-200 bg-slate-100">
+                        <div className="w-10 h-10 flex-shrink-0 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-500 bg-slate-100 dark:bg-slate-600">
                           {url && <img src={url} alt="" className="w-full h-full object-cover" />}
                         </div>
                         <input
@@ -4223,7 +4223,7 @@ export default function AdminDashboardPage() {
                           value={url}
                           onChange={(e) => setFormPortfolioExtraImgs(prev => prev.map((u, i) => i === idx ? e.target.value : u))}
                           placeholder="Arrastra una imagen o pega URL →"
-                          className="flex-1 bg-white border border-slate-200 focus:border-red-600 focus:ring-1 focus:ring-red-600 focus:outline-none rounded-xl px-3 py-2 text-sm transition-all"
+                          className="flex-1 bg-white dark:bg-slate-600 border border-slate-200 dark:border-slate-500 focus:border-red-600 focus:ring-1 focus:ring-red-600 focus:outline-none rounded-xl px-3 py-2 text-sm transition-all dark:text-slate-100 dark:placeholder:text-slate-400"
                         />
                         <div className="relative flex-shrink-0">
                           <input
