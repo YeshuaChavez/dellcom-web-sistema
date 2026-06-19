@@ -2163,9 +2163,7 @@ export default function AdminDashboardPage() {
                 <p className="text-xs font-bold text-on-surface">{session.user?.name || "Usuario Dellcom"}</p>
                 <p className="text-[9px] text-red-500 font-bold uppercase tracking-wider">{(session.user as any).role || "Técnico"}</p>
               </div>
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center shadow-inner shrink-0 ${
-                isAdmin ? "bg-red-600" : userRole === "tecnico" ? "bg-blue-600" : "bg-emerald-600"
-              }`}>
+              <div className="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center shadow-inner shrink-0">
                 <span className="material-symbols-outlined text-white text-[16px]">
                   {isAdmin ? "admin_panel_settings" : userRole === "tecnico" ? "engineering" : "storefront"}
                 </span>
