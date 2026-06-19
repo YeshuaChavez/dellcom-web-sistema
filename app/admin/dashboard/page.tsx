@@ -1771,26 +1771,30 @@ export default function AdminDashboardPage() {
                 )}
 
                 {/* INVENTARIO Y RECURSOS */}
-                <GroupHeader label="Inventario y Recursos" groupKey="inventario" />
+                {(canEditCatalogo || canEditTecnico) && (
+                  <GroupHeader label="Inventario y Recursos" groupKey="inventario" />
+                )}
                 {openGroups.inventario && (
                   <>
-                    <NavItem tab="products" icon="inventory_2" label="Catálogo de Suministros" />
-                    <NavItem tab="categories" icon="category" label="Categorías Catálogo" />
-                    <NavItem tab="files" icon="folder_open" label="Archivos y Drivers" />
+                    {canEditCatalogo && <NavItem tab="products" icon="inventory_2" label="Catálogo de Suministros" />}
+                    {canEditCatalogo && <NavItem tab="categories" icon="category" label="Categorías Catálogo" />}
+                    {canEditTecnico && <NavItem tab="files" icon="folder_open" label="Archivos y Drivers" />}
                   </>
                 )}
 
                 {/* CONTENIDO PÚBLICO */}
-                <GroupHeader label="Contenido Público" groupKey="contenido" />
+                {(canEditCatalogo || canEditTecnico) && (
+                  <GroupHeader label="Contenido Público" groupKey="contenido" />
+                )}
                 {openGroups.contenido && (
                   <>
-                    <NavItem tab="services" icon="build" label="Gestión de Servicios" />
-                    <NavItem tab="portfolio" icon="photo_library" label="Trabajos Realizados" />
+                    {canEditCatalogo && <NavItem tab="services" icon="build" label="Gestión de Servicios" />}
+                    {canEditTecnico && <NavItem tab="portfolio" icon="photo_library" label="Trabajos Realizados" />}
                   </>
                 )}
 
                 {/* SISTEMA — admin only */}
-                {(session?.user as any)?.role === "admin" && (
+                {isAdmin && (
                   <>
                     <GroupHeader label="Sistema" groupKey="sistema" />
                     {openGroups.sistema && (
@@ -1806,6 +1810,26 @@ export default function AdminDashboardPage() {
         {/* Support & Logout links in sidebar footer */}
         <div className="mt-auto border-t border-slate-100 pt-4 space-y-1">
 
+          {/* User info badge */}
+          <div className="mx-4 mb-2 px-3 py-2.5 rounded-xl bg-slate-50 border border-slate-200 flex items-center gap-2.5">
+            <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
+              isAdmin ? "bg-red-100" : userRole === "tecnico" ? "bg-blue-100" : "bg-emerald-100"
+            }`}>
+              <span className={`material-symbols-outlined text-[16px] ${
+                isAdmin ? "text-red-600" : userRole === "tecnico" ? "text-blue-600" : "text-emerald-600"
+              }`}>
+                {isAdmin ? "admin_panel_settings" : userRole === "tecnico" ? "engineering" : "storefront"}
+              </span>
+            </div>
+            <div className="min-w-0">
+              <p className="text-xs font-bold text-on-surface truncate">{(session?.user as any)?.name || "Usuario"}</p>
+              <span className={`inline-block text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded-md ${
+                isAdmin ? "bg-red-100 text-red-700" : userRole === "tecnico" ? "bg-blue-100 text-blue-700" : "bg-emerald-100 text-emerald-700"
+              }`}>
+                {isAdmin ? "Administrador" : userRole === "tecnico" ? "Técnico" : "Vendedor"}
+              </span>
+            </div>
+          </div>
 
           <Link href="/" className="flex items-center gap-3 text-slate-500 hover:text-on-surface px-6 py-3 hover:bg-slate-50 transition-colors">
             <span className="material-symbols-outlined text-[20px] text-slate-400">public</span>
