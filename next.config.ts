@@ -6,6 +6,9 @@ if (!process.env.NEXTAUTH_URL || process.env.NEXTAUTH_URL.trim() === "") {
 }
 
 const nextConfig: NextConfig = {
+  turbopack: {
+    root: __dirname,
+  },
   images: {
     remotePatterns: [
       {
