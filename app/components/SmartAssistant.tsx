@@ -203,6 +203,16 @@ export default function SmartAssistant() {
     }, delay);
   };
 
+  const getWhatsAppUrl = () => {
+    const defaultText = "Hola DELLCOM SAC, deseo comunicarme con un asesor para asistencia técnica.";
+    const lastUserMessage = [...messages].reverse().find((m) => m.sender === "user");
+    if (lastUserMessage) {
+      const customText = `Hola DELLCOM SAC, deseo comunicarme con un técnico. Mi consulta fue:\n\n"${lastUserMessage.text}"`;
+      return `https://wa.me/51925981741?text=${encodeURIComponent(customText)}`;
+    }
+    return `https://wa.me/51925981741?text=${encodeURIComponent(defaultText)}`;
+  };
+
   return (
     <div className="fixed bottom-6 right-6 z-50 font-body">
       {/* Chat Button Toggle */}
@@ -312,7 +322,7 @@ export default function SmartAssistant() {
             </form>
 
             <a
-              href="https://wa.me/51925981741?text=Hola%20Dellcom%20SAC,%20deseo%20comunicarme%20con%20un%20asesor%20para%20asistencia%20tecnica."
+              href={getWhatsAppUrl()}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center justify-center gap-1.5 w-full bg-green-600 hover:bg-green-700 text-white font-bold text-[10px] uppercase tracking-wider py-2.5 rounded-xl transition-all shadow-md shadow-green-600/10 text-center no-underline cursor-pointer"
