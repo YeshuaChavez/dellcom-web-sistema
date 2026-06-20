@@ -11,6 +11,11 @@ services:
       - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpassword"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
   web:
     build:
@@ -19,12 +24,16 @@ services:
     restart: always
     ports:
       - "3000:3000"
+    env_file:
+      - .env
     environment:
       DATABASE_URL: "mysql://root:rootpassword@db:3306/dellcom_db"
-      NEXTAUTH_SECRET: "super-secret-auth-key-change-in-production"
       NEXTAUTH_URL: "http://localhost:3000"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+    command: sh -c "npx prisma db push && npm start"
 
 volumes:
   mysql_data:
+
