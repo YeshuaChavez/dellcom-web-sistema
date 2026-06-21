@@ -13,6 +13,7 @@ import CleanFooter from "./components/CleanFooter";
 import HomeHeroSearch from "./components/HomeHeroSearch";
 import ScrollRevealObserver from "./components/ScrollRevealObserver";
 import HomePortfolioBubblePreview from "./components/HomePortfolioBubblePreview";
+import HomeFaqSection from "./components/HomeFaqSection";
 
 export const metadata = {
   title: "DELLCOM SAC | Tu centro de confianza",
@@ -481,6 +482,9 @@ export default async function Home() {
             </div>
           </div>
         </section>
+
+        {/* FAQ Section */}
+        <HomeFaqSection />
 
         {/* Ubicación / Google Maps Section */}
         <section className="py-24 px-margin-mobile md:px-margin-desktop bg-white border-t border-slate-100">
