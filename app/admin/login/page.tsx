@@ -70,7 +70,7 @@ export default function AdminLoginPage() {
       });
 
       if (res?.error) {
-        setError("Usuario o contraseña incorrectos o cuenta inactiva.");
+        setError("Usuario/correo o contraseña incorrectos o cuenta inactiva.");
       } else {
         router.push("/admin/dashboard");
         router.refresh();
@@ -184,7 +184,7 @@ export default function AdminLoginPage() {
             {/* Username Input Group */}
             <div className="flex flex-col">
               <label className="block text-[9px] lg:text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">
-                Usuario
+                Usuario o Correo
               </label>
               <div className="relative flex items-center bg-slate-50 border border-slate-100 rounded-xl focus-within:border-primary/40 focus-within:ring-1 focus-within:ring-primary/40 transition-all px-4 py-3">
                 <span className="material-symbols-outlined text-slate-400 transition-colors mr-3 text-lg leading-none">person</span>
@@ -194,7 +194,7 @@ export default function AdminLoginPage() {
                   disabled={loading}
                   value={usuario}
                   onChange={(e) => setUsuario(e.target.value)}
-                  placeholder="Ingresa tu usuario"
+                  placeholder="Ingresa tu usuario o correo"
                   className="w-full bg-transparent border-none focus:outline-none focus:ring-0 p-0 text-slate-800 text-sm font-semibold placeholder:text-slate-400/80"
                 />
               </div>

@@ -23,8 +23,13 @@ export const authOptions: AuthOptions = {
         }
 
         try {
-          const user = await prisma.usuario.findUnique({
-            where: { usuario: credentials.usuario },
+          const user = await prisma.usuario.findFirst({
+            where: {
+              OR: [
+                { usuario: credentials.usuario },
+                { email: credentials.usuario },
+              ],
+            },
           });
 
           // Verifica que el usuario exista y esté activo
