@@ -821,7 +821,7 @@ export default function AdminDashboardPage() {
       )}
       {showFileModal && (
         <FileModal
-          formFileName={formFileName} formFileType={formFileType}
+          formFileName={formFileName} formFileType={formFileType} setFormFileType={setFormFileType}
           formFileUrl={formFileUrl} formFileDesc={formFileDesc} setFormFileDesc={setFormFileDesc}
           uploading={uploading}
           onFileNameChange={handleFileNameChange}
