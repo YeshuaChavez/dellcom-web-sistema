@@ -229,14 +229,7 @@ export default function AdminLoginPage() {
             </div>
 
             {/* Options Row */}
-            <div className="flex items-center justify-between pt-1">
-              <label className="flex items-center gap-2 cursor-pointer select-none">
-                <input
-                  type="checkbox"
-                  className="rounded border-slate-300 text-primary focus:ring-primary w-4 h-4 cursor-pointer"
-                />
-                <span className="text-xs text-slate-500 font-semibold">Recordarme</span>
-              </label>
+            <div className="flex items-center justify-end pt-1">
               <NextLink
                 href="/admin/forgot-password"
                 className="text-xs font-bold text-primary hover:text-primary-dark hover:underline transition-all"
