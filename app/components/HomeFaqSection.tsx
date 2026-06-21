@@ -95,7 +95,7 @@ export default function HomeFaqSection() {
                 key={index}
                 className={`bg-white border rounded-[1.5rem] transition-all duration-300 ${
                   isOpen 
-                    ? "border-slate-300/80 shadow-md ring-1 ring-slate-100" 
+                    ? "border-slate-250 shadow-md ring-1 ring-slate-100/50" 
                     : "border-slate-200/80 hover:border-slate-300 shadow-sm"
                 }`}
               >
@@ -103,7 +103,9 @@ export default function HomeFaqSection() {
                 <button
                   type="button"
                   onClick={() => toggleFaq(index)}
-                  className="w-full flex items-center justify-between p-6 text-left cursor-pointer select-none bg-transparent border-none focus:outline-none"
+                  className={`w-full flex items-center justify-between px-6 pt-6 text-left cursor-pointer select-none bg-transparent border-none focus:outline-none transition-all duration-350 ${
+                    isOpen ? "pb-3" : "pb-6"
+                  }`}
                 >
                   <div className="flex items-center gap-4 pr-4">
                     <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-colors duration-300 ${
@@ -115,7 +117,7 @@ export default function HomeFaqSection() {
                       {faq.question}
                     </span>
                   </div>
-                  <span className={`material-symbols-outlined text-slate-400 transition-transform duration-300 ${
+                  <span className={`material-symbols-outlined text-slate-400 transition-transform duration-350 ${
                     isOpen ? "rotate-180 text-primary" : ""
                   }`}>
                     keyboard_arrow_down
@@ -124,11 +126,11 @@ export default function HomeFaqSection() {
 
                 {/* Accordion Content */}
                 <div
-                  className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                    isOpen ? "max-h-[300px] border-t border-primary/40" : "max-h-0"
+                  className={`overflow-hidden transition-all duration-350 ease-in-out ${
+                    isOpen ? "max-h-[300px]" : "max-h-0"
                   }`}
                 >
-                  <div className="p-6 text-xs md:text-sm text-on-surface-variant font-medium leading-relaxed bg-slate-50/50">
+                  <div className="px-6 pb-6 pt-1 text-xs md:text-sm text-on-surface-variant font-medium leading-relaxed">
                     {faq.answer}
                   </div>
                 </div>
