@@ -95,7 +95,7 @@ export default function HomeFaqSection() {
                 key={index}
                 className={`bg-white border rounded-[1.5rem] transition-all duration-300 ${
                   isOpen 
-                    ? "border-slate-250 shadow-md ring-1 ring-slate-100/50" 
+                    ? "border-slate-200 shadow-md ring-1 ring-slate-100/50" 
                     : "border-slate-200/80 hover:border-slate-300 shadow-sm"
                 }`}
               >
