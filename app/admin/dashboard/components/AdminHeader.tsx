@@ -136,7 +136,7 @@ export default function AdminHeader({
             <span className="material-symbols-outlined text-[20px]">search</span>
           </span>
           <input
-            className="w-full bg-slate-100 border-none rounded-xl pl-10 pr-4 py-2 text-xs focus:ring-1 focus:ring-red-600 focus:outline-none transition-all placeholder:text-slate-500"
+            className="w-full bg-slate-100 border-none rounded-xl pl-10 pr-4 py-2 text-xs focus:bg-white focus:scale-[1.01] focus:shadow-md focus:ring-1 focus:ring-red-600/30 focus:outline-none transition-all placeholder:text-slate-500 duration-200"
             placeholder={SEARCH_PLACEHOLDERS[activeTab] || "Buscar..."}
             type="text"
             value={searchQuery}
@@ -150,10 +150,10 @@ export default function AdminHeader({
         <div className="relative">
           <button
             onClick={() => setGuideVisible((v) => !v)}
-            className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all cursor-pointer ${
+            className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all hover:scale-105 active:scale-95 hover:shadow-md cursor-pointer ${
               guideVisible
                 ? "bg-primary text-white shadow-sm shadow-primary/10"
-                : "bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-on-surface dark-theme-toggle"
+                : "bg-slate-100 hover:bg-slate-200/80 text-slate-600 hover:text-on-surface dark-theme-toggle"
             }`}
             title={guideVisible ? "Ocultar guía" : "Mostrar guía de esta sección"}
           >
@@ -300,19 +300,19 @@ export default function AdminHeader({
         {/* Dark mode toggle */}
         <button
           onClick={toggleDarkMode}
-          className="w-10 h-10 rounded-xl flex items-center justify-center bg-slate-100 hover:bg-slate-200 dark-theme-toggle transition-all cursor-pointer text-slate-600 hover:text-on-surface animate-fade-in"
+          className="w-10 h-10 rounded-xl flex items-center justify-center bg-slate-100 hover:bg-slate-200/80 dark-theme-toggle transition-all hover:scale-105 active:scale-95 hover:shadow-md cursor-pointer text-slate-600 hover:text-on-surface animate-fade-in"
           title="Cambiar tema (Claro/Oscuro)"
         >
           <span className="material-symbols-outlined text-[20px]">{darkMode ? "light_mode" : "dark_mode"}</span>
         </button>
 
         {/* User info */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 group/user cursor-pointer">
           <div className="text-right hidden sm:block">
-            <p className="text-xs font-bold text-on-surface">{session?.user?.name || "Usuario Dellcom"}</p>
+            <p className="text-xs font-bold text-on-surface group-hover/user:text-primary transition-colors duration-200">{session?.user?.name || "Usuario Dellcom"}</p>
             <p className="text-[9px] text-red-500 font-bold uppercase tracking-wider">{(session?.user as any)?.role || "Técnico"}</p>
           </div>
-          <div className="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center shadow-inner shrink-0">
+          <div className="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center shadow-inner shrink-0 group-hover/user:scale-105 group-hover/user:ring-2 group-hover/user:ring-red-600/35 transition-all duration-200">
             <span className="material-symbols-outlined text-white text-[16px]">
               {isAdmin ? "admin_panel_settings" : userRole === "tecnico" ? "engineering" : "storefront"}
             </span>
