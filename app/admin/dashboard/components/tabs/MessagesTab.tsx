@@ -54,7 +54,7 @@ export default function MessagesTab({ filteredMensajes, canDelete, formatDate, o
             <tbody className="divide-y divide-slate-100">
               {filteredMensajes.length > 0 ? (
                 filteredMensajes.map((msg) => (
-                  <tr key={msg.id} className={`group/row transition-all duration-200 hover:bg-slate-50 ${!msg.leido ? "bg-red-50/35 font-semibold" : ""}`}>
+                  <tr key={msg.id} className={`group/row transition-all duration-200 hover:bg-slate-50 ${!msg.leido ? "font-semibold" : ""}`}>
                     <td className="px-6 py-4 text-xs text-slate-500">{formatDate(msg.fecha)}</td>
                     <td className="px-6 py-4 text-xs text-on-surface">
                       <div>{msg.nombre}</div>
