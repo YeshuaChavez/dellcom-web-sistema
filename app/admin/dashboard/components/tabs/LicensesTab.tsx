@@ -30,6 +30,25 @@ export default function LicensesTab({ filteredLicencias, isAdmin, canDelete, get
         )}
       </div>
 
+      {/* Licenses Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        {[
+          { label: "Licencias Activas", value: filteredLicencias.filter(l => l.estado === "activo").length, icon: "verified_user", bg: "bg-emerald-50 text-emerald-600" },
+          { label: "Próximas a Vencer", value: filteredLicencias.filter(l => getLicenseUrgency(l.fecha_fin) === "warning").length, icon: "schedule", bg: "bg-orange-50 text-orange-500" },
+          { label: "Alertas Críticas", value: filteredLicencias.filter(l => getLicenseUrgency(l.fecha_fin) === "expired").length, icon: "error", bg: "bg-red-50 text-red-600" },
+        ].map((item, i) => (
+          <div key={i} className="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm flex items-center gap-4">
+            <div className={`p-3 rounded-xl ${item.bg}`}>
+              <span className="material-symbols-outlined text-2xl">{item.icon}</span>
+            </div>
+            <div>
+              <h4 className="font-bold text-sm text-on-surface">{item.label}</h4>
+              <p className="text-xs text-slate-500 mt-0.5"><span className="font-extrabold text-slate-800 text-base">{item.value}</span> licencias</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
       <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">

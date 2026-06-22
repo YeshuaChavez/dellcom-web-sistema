@@ -1,8 +1,9 @@
-import { Licencia, MensajeContacto } from "../../types";
+import { Licencia, MensajeContacto, ArchivoTecnico } from "../../types";
 
 interface Props {
   licencias: Licencia[];
   mensajes: MensajeContacto[];
+  archivos: ArchivoTecnico[];
   filteredLicencias: Licencia[];
   filteredMensajes: MensajeContacto[];
   getLicenseUrgency: (dateStr: string | null) => "ok" | "warning" | "expired";
@@ -17,7 +18,7 @@ interface Props {
 }
 
 export default function OverviewTab({
-  licencias, mensajes, filteredLicencias, filteredMensajes,
+  licencias, mensajes, archivos, filteredLicencias, filteredMensajes,
   getLicenseUrgency, formatDate,
   isAdmin, canEditTecnico, canEditCatalogo,
   onOpenLicenseModal, onOpenFileModal, onOpenProductModal, setActiveTab,
@@ -64,6 +65,25 @@ export default function OverviewTab({
           <h2 className="text-xl font-bold text-on-surface font-headline">Resumen General del Sistema</h2>
           <p className="text-xs text-slate-500 mt-0.5">Métricas clave de desempeño, tendencias y próximos vencimientos de DELLCOM SAC.</p>
         </div>
+      </div>
+
+      {/* Overview Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {[
+          { label: "Licencias Activas", value: licencias.filter(l => l.estado === "activo").length, suffix: "", icon: "verified_user", bg: "bg-emerald-50 text-emerald-600" },
+          { label: "Controladores & Drivers", value: archivos.length, suffix: " archivos", icon: "folder_zip", bg: "bg-red-50 text-red-600" },
+          { label: "Alertas de Vencimiento", value: licencias.filter(l => getLicenseUrgency(l.fecha_fin) !== "ok").length, suffix: " críticas", icon: "error", bg: "bg-red-100 text-red-700" },
+        ].map((item, i) => (
+          <div key={i} className="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm flex items-center gap-4">
+            <div className={`p-3 rounded-xl ${item.bg}`}>
+              <span className="material-symbols-outlined text-2xl">{item.icon}</span>
+            </div>
+            <div>
+              <h4 className="font-bold text-sm text-on-surface">{item.label}</h4>
+              <p className="text-xs text-slate-500 mt-0.5"><span className="font-extrabold text-slate-800 text-base">{item.value}</span>{item.suffix}</p>
+            </div>
+          </div>
+        ))}
       </div>
 
       {/* Chart + License Status Row */}

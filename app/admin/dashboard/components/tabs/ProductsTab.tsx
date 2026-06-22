@@ -11,7 +11,7 @@ interface Props {
   onDelete: (id: number) => void;
 }
 
-export default function ProductsTab({ filteredProductos, canEditCatalogo, canDelete, setPreviewImage, onOpenCreate, onEdit, onDelete }: Props) {
+export default function ProductsTab({ filteredProductos, categorias, canEditCatalogo, canDelete, setPreviewImage, onOpenCreate, onEdit, onDelete }: Props) {
   return (
     <section className="animate-fade-in-up">
       <div className="flex justify-between items-end mb-6">
@@ -28,6 +28,25 @@ export default function ProductsTab({ filteredProductos, canEditCatalogo, canDel
             Registrar Producto
           </button>
         )}
+      </div>
+
+      {/* Products Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        {[
+          { label: "Productos Activos", value: filteredProductos.filter(p => p.activo).length, icon: "inventory_2", bg: "bg-emerald-50 text-emerald-600" },
+          { label: "Total en Catálogo", value: filteredProductos.length, icon: "storefront", bg: "bg-red-50 text-red-600" },
+          { label: "Categorías Activas", value: categorias.filter(c => c.activo).length, icon: "local_offer", bg: "bg-slate-100 text-slate-500" },
+        ].map((item, i) => (
+          <div key={i} className="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm flex items-center gap-4">
+            <div className={`p-3 rounded-xl ${item.bg}`}>
+              <span className="material-symbols-outlined text-2xl">{item.icon}</span>
+            </div>
+            <div>
+              <h4 className="font-bold text-sm text-on-surface">{item.label}</h4>
+              <p className="text-xs text-slate-500 mt-0.5"><span className="font-extrabold text-slate-800 text-base">{item.value}</span> registros</p>
+            </div>
+          </div>
+        ))}
       </div>
 
       <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">

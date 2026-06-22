@@ -2,6 +2,12 @@ export const detectFileType = (name: string, url: string): "programa" | "driver"
   const n = name.toLowerCase();
   const u = url.toLowerCase();
 
+  // Si es un enlace web que no apunta directamente a un archivo físico, clasificarlo como link
+  const hasFileExtension = /\.(exe|msi|pdf|xlsx|xls|csv|inf|zip|rar|tar|gz)($|\?|#)/i.test(u);
+  if ((u.startsWith("http://") || u.startsWith("https://")) && !hasFileExtension) {
+    return "link";
+  }
+
   if (
     n.endsWith(".pdf") || u.includes(".pdf") || n.includes(" pdf") ||
     n.endsWith(".xlsx") || n.endsWith(".xls") || n.endsWith(".csv") ||

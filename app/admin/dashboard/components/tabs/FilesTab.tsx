@@ -7,6 +7,7 @@ interface Props {
   fileCountByType: (type: string) => number;
   formatDate: (dateStr: string | null) => string;
   onOpenCreate: () => void;
+  onEdit: (file: ArchivoTecnico) => void;
   onDelete: (id: number) => void;
 }
 
@@ -24,7 +25,7 @@ function getFileBadge(file: ArchivoTecnico): { bg: string; text: string } {
   return { bg: "bg-slate-100 text-slate-700 border-slate-200", text: file.tipo.toUpperCase() };
 }
 
-export default function FilesTab({ filteredArchivos, canEditTecnico, canDelete, fileCountByType, formatDate, onOpenCreate, onDelete }: Props) {
+export default function FilesTab({ filteredArchivos, canEditTecnico, canDelete, fileCountByType, formatDate, onOpenCreate, onEdit, onDelete }: Props) {
   return (
     <section className="animate-fade-in-up">
       <div className="flex justify-between items-end mb-6">
@@ -97,11 +98,18 @@ export default function FilesTab({ filteredArchivos, canEditTecnico, canDelete, 
                       </td>
                       <td className="px-6 py-4 text-xs text-slate-500">{formatDate(file.fecha_subida)}</td>
                       <td className="px-6 py-4 text-right">
-                        {canDelete && (
-                          <button onClick={() => onDelete(file.id)} className="text-slate-400 hover:text-red-700 p-1 transition-colors cursor-pointer">
-                            <span className="material-symbols-outlined text-[18px]">delete</span>
-                          </button>
-                        )}
+                        <div className="flex justify-end items-center gap-1.5">
+                          {canEditTecnico && (
+                            <button onClick={() => onEdit(file)} className="text-slate-400 hover:text-blue-600 p-1 transition-colors cursor-pointer" title="Editar">
+                              <span className="material-symbols-outlined text-[18px]">edit</span>
+                            </button>
+                          )}
+                          {canDelete && (
+                            <button onClick={() => onDelete(file.id)} className="text-slate-400 hover:text-red-700 p-1 transition-colors cursor-pointer" title="Eliminar">
+                              <span className="material-symbols-outlined text-[18px]">delete</span>
+                            </button>
+                          )}
+                        </div>
                       </td>
                     </tr>
                   );
