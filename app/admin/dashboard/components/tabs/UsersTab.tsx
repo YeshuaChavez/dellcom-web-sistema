@@ -25,11 +25,12 @@ export default function UsersTab({ filteredUsuarios, onOpenCreate, onEdit, onTog
       </div>
 
       {/* Users Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         {[
           { label: "Personal Activo", value: filteredUsuarios.filter(u => u.activo).length, icon: "group", bg: "bg-emerald-50 text-emerald-600" },
           { label: "Administradores", value: filteredUsuarios.filter(u => u.rol === "admin").length, icon: "admin_panel_settings", bg: "bg-red-50 text-red-600" },
-          { label: "Técnicos", value: filteredUsuarios.filter(u => u.rol === "tecnico").length, icon: "engineering", bg: "bg-slate-100 text-slate-500" },
+          { label: "Técnicos", value: filteredUsuarios.filter(u => u.rol === "tecnico").length, icon: "engineering", bg: "bg-blue-50 text-blue-600" },
+          { label: "Vendedores", value: filteredUsuarios.filter(u => u.rol === "vendedor").length, icon: "storefront", bg: "bg-amber-50 text-amber-600" },
         ].map((item, i) => (
           <div key={i} className="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm flex items-center gap-4">
             <div className={`p-3 rounded-xl ${item.bg}`}>
