@@ -101,12 +101,12 @@ export default function LicensesTab({ filteredLicencias, isAdmin, canDelete, get
                       </td>
                       <td className="px-6 py-4 text-right space-x-2">
                         {isAdmin && (
-                          <button onClick={() => onEdit(lic)} className="text-slate-400 hover:text-red-600 p-1 transition-colors cursor-pointer" title="Editar">
+                          <button onClick={() => onEdit(lic)} className="text-slate-400 hover:text-red-600 hover:scale-110 active:scale-95 transition-all p-1 cursor-pointer inline-block" title="Editar">
                             <span className="material-symbols-outlined text-[18px]">edit</span>
                           </button>
                         )}
                         {canDelete && (
-                          <button onClick={() => onDelete(lic.id)} className="text-slate-400 hover:text-red-700 p-1 transition-colors cursor-pointer" title="Eliminar">
+                          <button onClick={() => onDelete(lic.id)} className="text-slate-400 hover:text-red-700 hover:scale-110 active:scale-95 transition-all p-1 cursor-pointer inline-block" title="Eliminar">
                             <span className="material-symbols-outlined text-[18px]">delete</span>
                           </button>
                         )}

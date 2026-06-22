@@ -72,7 +72,7 @@ export default function ProductsTab({ filteredProductos, categorias, canEditCata
                           <img
                             src={(() => { const f = prod.imagen_url!.split("||")[0]; return f.startsWith("http") || f.startsWith("/") ? f : `/${f}`; })()}
                             alt={prod.nombre}
-                            className="w-10 h-10 object-contain rounded-lg border border-slate-200 bg-slate-50 cursor-zoom-in hover:opacity-80 transition-opacity"
+                            className="w-10 h-10 object-contain rounded-lg border border-slate-200 bg-slate-50 cursor-zoom-in hover:scale-110 hover:shadow-md transition-all duration-200"
                             title="Click para previsualizar"
                             onClick={() => {
                               const f = prod.imagen_url!.split("||")[0];
@@ -108,12 +108,12 @@ export default function ProductsTab({ filteredProductos, categorias, canEditCata
                     </td>
                     <td className="px-6 py-4 text-right space-x-2">
                       {canEditCatalogo && (
-                        <button onClick={() => onEdit(prod)} className="text-slate-400 hover:text-red-600 p-1 transition-colors cursor-pointer" title="Editar">
+                        <button onClick={() => onEdit(prod)} className="text-slate-400 hover:text-red-600 hover:scale-110 active:scale-95 transition-all p-1 cursor-pointer" title="Editar">
                           <span className="material-symbols-outlined text-[18px]">edit</span>
                         </button>
                       )}
                       {canDelete && (
-                        <button onClick={() => onDelete(prod.id)} className="text-slate-400 hover:text-red-700 p-1 transition-colors cursor-pointer" title="Ocultar/Eliminar">
+                        <button onClick={() => onDelete(prod.id)} className="text-slate-400 hover:text-red-700 hover:scale-110 active:scale-95 transition-all p-1 cursor-pointer" title="Ocultar/Eliminar">
                           <span className="material-symbols-outlined text-[18px]">delete</span>
                         </button>
                       )}

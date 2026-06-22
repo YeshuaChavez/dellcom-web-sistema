@@ -81,12 +81,12 @@ export default function ServicesTab({ filteredServicios, canEditCatalogo, canDel
                     </td>
                     <td className="px-6 py-4 text-right space-x-2">
                       {canEditCatalogo && (
-                        <button onClick={() => onEdit(srv)} className="text-slate-400 hover:text-red-600 p-1 transition-colors cursor-pointer" title="Editar">
+                        <button onClick={() => onEdit(srv)} className="text-slate-400 hover:text-red-600 hover:scale-110 active:scale-95 transition-all p-1 cursor-pointer inline-block" title="Editar">
                           <span className="material-symbols-outlined text-[18px]">edit</span>
                         </button>
                       )}
                       {canDelete && (
-                        <button onClick={() => onDelete(srv.id)} className="text-slate-400 hover:text-red-700 p-1 transition-colors cursor-pointer" title="Desactivar">
+                        <button onClick={() => onDelete(srv.id)} className="text-slate-400 hover:text-red-700 hover:scale-110 active:scale-95 transition-all p-1 cursor-pointer inline-block" title="Desactivar">
                           <span className="material-symbols-outlined text-[18px]">block</span>
                         </button>
                       )}

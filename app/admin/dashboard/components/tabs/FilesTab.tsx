@@ -100,12 +100,12 @@ export default function FilesTab({ filteredArchivos, canEditTecnico, canDelete, 
                       <td className="px-6 py-4 text-right">
                         <div className="flex justify-end items-center gap-1.5">
                           {canEditTecnico && (
-                            <button onClick={() => onEdit(file)} className="text-slate-400 hover:text-blue-600 p-1 transition-colors cursor-pointer" title="Editar">
+                            <button onClick={() => onEdit(file)} className="text-slate-400 hover:text-blue-600 hover:scale-110 active:scale-95 transition-all p-1 cursor-pointer" title="Editar">
                               <span className="material-symbols-outlined text-[18px]">edit</span>
                             </button>
                           )}
                           {canDelete && (
-                            <button onClick={() => onDelete(file.id)} className="text-slate-400 hover:text-red-700 p-1 transition-colors cursor-pointer" title="Eliminar">
+                            <button onClick={() => onDelete(file.id)} className="text-slate-400 hover:text-red-700 hover:scale-110 active:scale-95 transition-all p-1 cursor-pointer" title="Eliminar">
                               <span className="material-symbols-outlined text-[18px]">delete</span>
                             </button>
                           )}

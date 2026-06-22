@@ -83,10 +83,10 @@ export default function UsersTab({ filteredUsuarios, onOpenCreate, onEdit, onTog
                       )}
                     </td>
                     <td className="px-6 py-4 text-right space-x-2">
-                      <button onClick={() => onEdit(u)} className="text-slate-400 hover:text-red-600 p-1 transition-colors cursor-pointer" title="Editar">
+                      <button onClick={() => onEdit(u)} className="text-slate-400 hover:text-red-600 hover:scale-110 active:scale-95 transition-all p-1 cursor-pointer inline-block" title="Editar">
                         <span className="material-symbols-outlined text-[18px]">edit</span>
                       </button>
-                      <button onClick={() => onToggleStatus(u.id, u.activo)} className="text-slate-400 hover:text-red-700 p-1 transition-colors cursor-pointer" title={u.activo ? "Desactivar Cuenta" : "Activar Cuenta"}>
+                      <button onClick={() => onToggleStatus(u.id, u.activo)} className="text-slate-400 hover:text-red-700 hover:scale-110 active:scale-95 transition-all p-1 cursor-pointer inline-block" title={u.activo ? "Desactivar Cuenta" : "Activar Cuenta"}>
                         <span className="material-symbols-outlined text-[18px]">{u.activo ? "block" : "check_circle"}</span>
                       </button>
                     </td>
