@@ -30,7 +30,7 @@ export default function CategoriesTab({ filteredCategorias, canEditCatalogo, can
       </div>
 
       {/* Categories Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 max-w-2xl">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 w-full">
         {[
           { label: "Categorías Activas", value: filteredCategorias.filter(c => c.activo).length, icon: "local_offer", bg: "bg-emerald-50 text-emerald-600" },
           { label: "Total Categorías", value: filteredCategorias.length, icon: "category", bg: "bg-red-50 text-red-600" },
@@ -48,7 +48,7 @@ export default function CategoriesTab({ filteredCategorias, canEditCatalogo, can
         ))}
       </div>
 
-      <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm max-w-2xl">
+      <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm w-full">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
