@@ -247,7 +247,7 @@ export default function OverviewTab({
                   .sort((a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime())
                   .slice(0, 3)
                   .map((msg) => (
-                    <div key={msg.id} className="py-4 flex items-start gap-4 transition-colors hover:bg-slate-50/50 rounded-xl px-2">
+                    <div key={msg.id} className="py-4 flex items-start gap-4 transition-all duration-200 hover:bg-slate-50 hover:translate-x-1 rounded-xl px-2">
                       <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center font-bold text-xs text-slate-600 uppercase shrink-0 border border-slate-200">
                         {msg.nombre.substring(0, 2)}
                       </div>
@@ -291,7 +291,7 @@ export default function OverviewTab({
                   upcoming.map((lic) => {
                     const urgency = getLicenseUrgency(lic.fecha_fin);
                     return (
-                      <div key={lic.id} className="py-4 flex items-center justify-between gap-4 transition-colors hover:bg-slate-50/50 rounded-xl px-2">
+                      <div key={lic.id} className="py-4 flex items-center justify-between gap-4 transition-all duration-200 hover:bg-slate-50 hover:translate-x-1 rounded-xl px-2">
                         <div className="min-w-0 flex-1 space-y-1">
                           <div className="flex items-center gap-2">
                             <span className="material-symbols-outlined text-sm text-slate-400 shrink-0">verified_user</span>

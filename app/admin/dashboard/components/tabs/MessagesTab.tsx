@@ -77,14 +77,14 @@ export default function MessagesTab({ filteredMensajes, canDelete, formatDate, o
                       )}
                     </td>
                     <td className="px-6 py-4 text-right space-x-2">
-                      <button onClick={() => onViewMessage(msg)} className="text-slate-400 hover:text-primary p-1 transition-colors cursor-pointer" title="Ver mensaje completo">
+                      <button onClick={() => onViewMessage(msg)} className="text-slate-400 hover:text-primary hover:scale-110 active:scale-95 transition-all p-1 cursor-pointer inline-block" title="Ver mensaje completo">
                         <span className="material-symbols-outlined text-[18px]">visibility</span>
                       </button>
-                      <button onClick={() => onToggleLeido(msg.id, msg.leido)} className="text-slate-400 hover:text-red-600 p-1 transition-colors cursor-pointer" title={msg.leido ? "Marcar como no leído" : "Marcar como leído"}>
+                      <button onClick={() => onToggleLeido(msg.id, msg.leido)} className="text-slate-400 hover:text-red-600 hover:scale-110 active:scale-95 transition-all p-1 cursor-pointer inline-block" title={msg.leido ? "Marcar como no leído" : "Marcar como leído"}>
                         <span className="material-symbols-outlined text-[18px]">{msg.leido ? "mark_email_unread" : "mark_email_read"}</span>
                       </button>
                       {canDelete && (
-                        <button onClick={() => onDelete(msg.id)} className="text-slate-400 hover:text-red-700 p-1 transition-colors cursor-pointer" title="Eliminar">
+                        <button onClick={() => onDelete(msg.id)} className="text-slate-400 hover:text-red-700 hover:scale-110 active:scale-95 transition-all p-1 cursor-pointer inline-block" title="Eliminar">
                           <span className="material-symbols-outlined text-[18px]">delete</span>
                         </button>
                       )}

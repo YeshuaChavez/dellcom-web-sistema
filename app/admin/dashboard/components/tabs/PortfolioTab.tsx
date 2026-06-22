@@ -67,11 +67,11 @@ export default function PortfolioTab({ filteredTrabajos, canEditTecnico, canDele
                 filteredTrabajos.map((job) => (
                   <tr key={job.id} className="transition-colors hover:bg-slate-50/50">
                     <td className="px-6 py-3">
-                      <div className="w-12 h-12 rounded-xl overflow-hidden border border-slate-200 bg-slate-50 flex items-center justify-center">
+                      <div className="w-12 h-12 rounded-xl overflow-hidden border border-slate-200 bg-slate-50 flex items-center justify-center hover:scale-110 hover:shadow-md transition-all duration-200">
                         <img
                           src={job.imagen_url.split("||")[0]}
                           alt={job.titulo}
-                          className="w-full h-full object-cover cursor-zoom-in hover:opacity-85 transition-opacity"
+                          className="w-full h-full object-cover cursor-zoom-in"
                           title="Click para previsualizar"
                           onClick={() => setPreviewImage(job.imagen_url.split("||")[0])}
                         />
@@ -87,12 +87,12 @@ export default function PortfolioTab({ filteredTrabajos, canEditTecnico, canDele
                     <td className="px-6 py-4 text-xs text-slate-500">{formatDate(job.fecha)}</td>
                     <td className="px-6 py-4 text-right space-x-2">
                       {canEditTecnico && (
-                        <button onClick={() => onEdit(job)} className="text-slate-400 hover:text-red-600 p-1 transition-colors cursor-pointer" title="Editar">
+                        <button onClick={() => onEdit(job)} className="text-slate-400 hover:text-red-600 hover:scale-110 active:scale-95 transition-all p-1 cursor-pointer inline-block" title="Editar">
                           <span className="material-symbols-outlined text-[18px]">edit</span>
                         </button>
                       )}
                       {canDelete && (
-                        <button onClick={() => onDelete(job.id)} className="text-slate-400 hover:text-red-700 p-1 transition-colors cursor-pointer" title="Eliminar">
+                        <button onClick={() => onDelete(job.id)} className="text-slate-400 hover:text-red-700 hover:scale-110 active:scale-95 transition-all p-1 cursor-pointer inline-block" title="Eliminar">
                           <span className="material-symbols-outlined text-[18px]">delete</span>
                         </button>
                       )}
