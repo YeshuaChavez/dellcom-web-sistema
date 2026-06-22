@@ -22,7 +22,7 @@ export default function ProductsTab({ filteredProductos, categorias, canEditCata
         {canEditCatalogo && (
           <button
             onClick={onOpenCreate}
-            className="bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-5 py-3 rounded-xl transition-all active:scale-95 shadow-md shadow-red-600/10 flex items-center gap-2 cursor-pointer"
+            className="bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-5 py-3 rounded-xl hover:scale-[1.02] active:scale-95 shadow-md shadow-red-600/10 hover:shadow-lg hover:shadow-red-600/20 flex items-center gap-2 cursor-pointer transition-all duration-200"
           >
             <span className="material-symbols-outlined text-base">add</span>
             Registrar Producto
@@ -37,9 +37,9 @@ export default function ProductsTab({ filteredProductos, categorias, canEditCata
           { label: "Total en Catálogo", value: filteredProductos.length, icon: "storefront", bg: "bg-red-50 text-red-600" },
           { label: "Categorías Activas", value: categorias.filter(c => c.activo).length, icon: "local_offer", bg: "bg-slate-100 text-slate-500" },
         ].map((item, i) => (
-          <div key={i} className="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm flex items-center gap-4 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
-            <div className={`p-3 rounded-xl ${item.bg}`}>
-              <span className="material-symbols-outlined text-2xl">{item.icon}</span>
+          <div key={i} className="group bg-white border border-slate-200 p-5 rounded-2xl shadow-sm flex items-center gap-4 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
+            <div className={`p-3 rounded-xl ${item.bg} transition-transform duration-300 group-hover:scale-105`}>
+              <span className="material-symbols-outlined text-2xl transition-transform duration-300 group-hover:scale-110">{item.icon}</span>
             </div>
             <div>
               <h4 className="font-bold text-sm text-on-surface">{item.label}</h4>
@@ -65,7 +65,7 @@ export default function ProductsTab({ filteredProductos, categorias, canEditCata
             <tbody className="divide-y divide-slate-100">
               {filteredProductos.length > 0 ? (
                 filteredProductos.map((prod) => (
-                  <tr key={prod.id} className="hover:bg-slate-50/50 transition-colors">
+                  <tr key={prod.id} className="group/row hover:bg-slate-50 transition-all duration-200">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         {prod.imagen_url && !prod.imagen_url.includes("placeholder.png") ? (
@@ -106,17 +106,27 @@ export default function ProductsTab({ filteredProductos, categorias, canEditCata
                         </span>
                       )}
                     </td>
-                    <td className="px-6 py-4 text-right space-x-2">
-                      {canEditCatalogo && (
-                        <button onClick={() => onEdit(prod)} className="text-slate-400 hover:text-red-600 hover:scale-110 active:scale-95 transition-all p-1 cursor-pointer" title="Editar">
-                          <span className="material-symbols-outlined text-[18px]">edit</span>
-                        </button>
-                      )}
-                      {canDelete && (
-                        <button onClick={() => onDelete(prod.id)} className="text-slate-400 hover:text-red-700 hover:scale-110 active:scale-95 transition-all p-1 cursor-pointer" title="Ocultar/Eliminar">
-                          <span className="material-symbols-outlined text-[18px]">delete</span>
-                        </button>
-                      )}
+                    <td className="px-6 py-3 text-right">
+                      <div className="flex justify-end items-center gap-1.5">
+                        {canEditCatalogo && (
+                          <button
+                            onClick={() => onEdit(prod)}
+                            className="w-8 h-8 rounded-xl flex items-center justify-center text-slate-400 opacity-60 group-hover/row:opacity-100 hover:bg-blue-50 hover:text-blue-600 hover:scale-105 active:scale-90 transition-all duration-200 cursor-pointer"
+                            title="Editar"
+                          >
+                            <span className="material-symbols-outlined text-[18px]">edit</span>
+                          </button>
+                        )}
+                        {canDelete && (
+                          <button
+                            onClick={() => onDelete(prod.id)}
+                            className="w-8 h-8 rounded-xl flex items-center justify-center text-slate-400 opacity-60 group-hover/row:opacity-100 hover:bg-red-50 hover:text-red-600 hover:scale-105 active:scale-90 transition-all duration-200 cursor-pointer"
+                            title="Ocultar/Eliminar"
+                          >
+                            <span className="material-symbols-outlined text-[18px]">delete</span>
+                          </button>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))

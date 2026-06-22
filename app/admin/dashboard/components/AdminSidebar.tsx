@@ -26,13 +26,13 @@ function NavItem({
   return (
     <button
       onClick={() => { setActiveTab(tab); setSidebarOpen(false); }}
-      className={`w-full flex items-center gap-3 px-6 py-3 transition-colors duration-150 border-l-4 cursor-pointer text-left ${
+      className={`group w-full flex items-center gap-3 px-6 py-3 transition-all duration-200 border-l-4 cursor-pointer text-left ${
         activeTab === tab
-          ? "text-primary font-extrabold border-primary bg-primary/5"
-          : "text-slate-500 border-transparent hover:text-on-surface hover:bg-slate-50"
+          ? "text-primary font-extrabold border-primary bg-primary/5 translate-x-0.5"
+          : "text-slate-500 border-transparent hover:text-on-surface hover:bg-slate-50/80 hover:translate-x-1"
       }`}
     >
-      <span className={`material-symbols-outlined text-[20px] shrink-0 ${activeTab === tab ? "text-primary" : "text-slate-400"}`}>{icon}</span>
+      <span className={`material-symbols-outlined text-[20px] shrink-0 transition-transform duration-200 group-hover:scale-110 ${activeTab === tab ? "text-primary scale-105" : "text-slate-400"}`}>{icon}</span>
       <span className="text-sm leading-tight">{label}</span>
       {badge && <span className="ml-auto shrink-0">{badge}</span>}
     </button>
@@ -46,10 +46,10 @@ function GroupHeader({ label, groupKey, openGroups, toggleGroup }: {
   return (
     <button
       onClick={() => toggleGroup(groupKey)}
-      className="w-full flex items-center justify-between px-6 pt-5 pb-1 text-[9px] font-black text-slate-400 uppercase tracking-widest select-none hover:text-slate-600 transition-colors cursor-pointer"
+      className="group w-full flex items-center justify-between px-6 pt-5 pb-1 text-[9px] font-black text-slate-400 uppercase tracking-widest select-none hover:text-slate-600 transition-all duration-200 cursor-pointer"
     >
       <span>{label}</span>
-      <span className={`material-symbols-outlined text-sm transition-transform duration-200 ${openGroups[groupKey] ? "rotate-0" : "-rotate-90"}`}>
+      <span className={`material-symbols-outlined text-sm transition-transform duration-200 group-hover:scale-110 ${openGroups[groupKey] ? "rotate-0" : "-rotate-90"}`}>
         expand_more
       </span>
     </button>
@@ -141,15 +141,15 @@ export default function AdminSidebar({
       </nav>
 
       <div className="mt-auto border-t border-slate-100 pt-4 space-y-1">
-        <Link href="/" className="flex items-center gap-3 text-slate-500 hover:text-on-surface px-6 py-3 hover:bg-slate-50 transition-colors">
-          <span className="material-symbols-outlined text-[20px] text-slate-400">public</span>
+        <Link href="/" className="group flex items-center gap-3 text-slate-500 hover:text-on-surface px-6 py-3 hover:bg-slate-50/80 hover:translate-x-1 transition-all duration-200">
+          <span className="material-symbols-outlined text-[20px] text-slate-400 transition-transform duration-200 group-hover:scale-110">public</span>
           <span className="text-sm">Ver Web Pública</span>
         </Link>
         <button
           onClick={() => signOut({ callbackUrl: "/admin/login" })}
-          className="w-full flex items-center gap-3 text-slate-500 hover:text-primary px-6 py-3 hover:bg-red-50 transition-colors cursor-pointer"
+          className="group w-full flex items-center gap-3 text-slate-500 hover:text-primary px-6 py-3 hover:bg-red-50/60 hover:translate-x-1 transition-all duration-200 cursor-pointer"
         >
-          <span className="material-symbols-outlined text-[20px] text-slate-400">logout</span>
+          <span className="material-symbols-outlined text-[20px] text-slate-400 transition-transform duration-200 group-hover:scale-110 group-hover:text-primary">logout</span>
           <span className="text-sm">Cerrar Sesión</span>
         </button>
       </div>

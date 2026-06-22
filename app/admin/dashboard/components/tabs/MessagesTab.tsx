@@ -26,9 +26,9 @@ export default function MessagesTab({ filteredMensajes, canDelete, formatDate, o
           { label: "Total Mensajes", value: filteredMensajes.length, icon: "mail", bg: "bg-slate-100 text-slate-500" },
           { label: "Leídos", value: filteredMensajes.filter(m => m.leido).length, icon: "mark_email_read", bg: "bg-emerald-50 text-emerald-600" },
         ].map((item, i) => (
-          <div key={i} className="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm flex items-center gap-4 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
-            <div className={`p-3 rounded-xl ${item.bg}`}>
-              <span className="material-symbols-outlined text-2xl">{item.icon}</span>
+          <div key={i} className="group bg-white border border-slate-200 p-5 rounded-2xl shadow-sm flex items-center gap-4 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
+            <div className={`p-3 rounded-xl ${item.bg} transition-transform duration-300 group-hover:scale-105`}>
+              <span className="material-symbols-outlined text-2xl transition-transform duration-300 group-hover:scale-110">{item.icon}</span>
             </div>
             <div>
               <h4 className="font-bold text-sm text-on-surface">{item.label}</h4>
@@ -54,7 +54,7 @@ export default function MessagesTab({ filteredMensajes, canDelete, formatDate, o
             <tbody className="divide-y divide-slate-100">
               {filteredMensajes.length > 0 ? (
                 filteredMensajes.map((msg) => (
-                  <tr key={msg.id} className={`transition-colors hover:bg-slate-50/50 ${!msg.leido ? "bg-red-50/30 font-semibold" : ""}`}>
+                  <tr key={msg.id} className={`group/row transition-all duration-200 hover:bg-slate-50 ${!msg.leido ? "bg-red-50/35 font-semibold" : ""}`}>
                     <td className="px-6 py-4 text-xs text-slate-500">{formatDate(msg.fecha)}</td>
                     <td className="px-6 py-4 text-xs text-on-surface">
                       <div>{msg.nombre}</div>
@@ -76,18 +76,32 @@ export default function MessagesTab({ filteredMensajes, canDelete, formatDate, o
                         <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-red-100 text-red-800 text-[10px] font-bold">Nuevo</span>
                       )}
                     </td>
-                    <td className="px-6 py-4 text-right space-x-2">
-                      <button onClick={() => onViewMessage(msg)} className="text-slate-400 hover:text-primary hover:scale-110 active:scale-95 transition-all p-1 cursor-pointer inline-block" title="Ver mensaje completo">
-                        <span className="material-symbols-outlined text-[18px]">visibility</span>
-                      </button>
-                      <button onClick={() => onToggleLeido(msg.id, msg.leido)} className="text-slate-400 hover:text-red-600 hover:scale-110 active:scale-95 transition-all p-1 cursor-pointer inline-block" title={msg.leido ? "Marcar como no leído" : "Marcar como leído"}>
-                        <span className="material-symbols-outlined text-[18px]">{msg.leido ? "mark_email_unread" : "mark_email_read"}</span>
-                      </button>
-                      {canDelete && (
-                        <button onClick={() => onDelete(msg.id)} className="text-slate-400 hover:text-red-700 hover:scale-110 active:scale-95 transition-all p-1 cursor-pointer inline-block" title="Eliminar">
-                          <span className="material-symbols-outlined text-[18px]">delete</span>
+                    <td className="px-6 py-3 text-right">
+                      <div className="flex justify-end items-center gap-1.5">
+                        <button
+                          onClick={() => onViewMessage(msg)}
+                          className="w-8 h-8 rounded-xl flex items-center justify-center text-slate-400 opacity-60 group-hover/row:opacity-100 hover:bg-slate-100 hover:text-slate-800 hover:scale-105 active:scale-90 transition-all duration-200 cursor-pointer"
+                          title="Ver mensaje completo"
+                        >
+                          <span className="material-symbols-outlined text-[18px]">visibility</span>
                         </button>
-                      )}
+                        <button
+                          onClick={() => onToggleLeido(msg.id, msg.leido)}
+                          className="w-8 h-8 rounded-xl flex items-center justify-center text-slate-400 opacity-60 group-hover/row:opacity-100 hover:bg-purple-50 hover:text-purple-600 hover:scale-105 active:scale-90 transition-all duration-200 cursor-pointer"
+                          title={msg.leido ? "Marcar como no leído" : "Marcar como leído"}
+                        >
+                          <span className="material-symbols-outlined text-[18px]">{msg.leido ? "mark_email_unread" : "mark_email_read"}</span>
+                        </button>
+                        {canDelete && (
+                          <button
+                            onClick={() => onDelete(msg.id)}
+                            className="w-8 h-8 rounded-xl flex items-center justify-center text-slate-400 opacity-60 group-hover/row:opacity-100 hover:bg-red-50 hover:text-red-600 hover:scale-105 active:scale-90 transition-all duration-200 cursor-pointer"
+                            title="Eliminar"
+                          >
+                            <span className="material-symbols-outlined text-[18px]">delete</span>
+                          </button>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))

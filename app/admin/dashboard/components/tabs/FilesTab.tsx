@@ -36,7 +36,7 @@ export default function FilesTab({ filteredArchivos, canEditTecnico, canDelete, 
         {canEditTecnico && (
           <button
             onClick={onOpenCreate}
-            className="bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-5 py-3 rounded-xl transition-all active:scale-95 shadow-md shadow-red-600/10 flex items-center gap-2 cursor-pointer"
+            className="bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-5 py-3 rounded-xl hover:scale-[1.02] active:scale-95 shadow-md shadow-red-600/10 hover:shadow-lg hover:shadow-red-600/20 flex items-center gap-2 cursor-pointer transition-all duration-200"
           >
             <span className="material-symbols-outlined text-base">cloud_upload</span>
             Registrar Recurso
@@ -51,9 +51,9 @@ export default function FilesTab({ filteredArchivos, canEditTecnico, canDelete, 
           { icon: "description", label: "Planillas Excel", count: fileCountByType("excel"), suffix: " documentos" },
           { icon: "link", label: "Enlaces Útiles", count: fileCountByType("link"), suffix: " links" },
         ].map((item) => (
-          <div key={item.icon} className="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm flex items-center gap-4 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
-            <div className="bg-red-50 text-red-600 p-3 rounded-xl">
-              <span className="material-symbols-outlined text-2xl">{item.icon}</span>
+          <div key={item.icon} className="group bg-white border border-slate-200 p-5 rounded-2xl shadow-sm flex items-center gap-4 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
+            <div className="bg-red-50 text-red-600 p-3 rounded-xl transition-transform duration-300 group-hover:scale-105">
+              <span className="material-symbols-outlined text-2xl transition-transform duration-300 group-hover:scale-110">{item.icon}</span>
             </div>
             <div>
               <h4 className="font-bold text-sm text-on-surface">{item.label}</h4>
@@ -80,7 +80,7 @@ export default function FilesTab({ filteredArchivos, canEditTecnico, canDelete, 
                 filteredArchivos.map((file) => {
                   const badge = getFileBadge(file);
                   return (
-                    <tr key={file.id} className="hover:bg-slate-50/50 transition-colors">
+                    <tr key={file.id} className="group/row hover:bg-slate-50 transition-all duration-200">
                       <td className="px-6 py-4">
                         <span className="font-semibold text-sm text-on-surface block">{file.nombre}</span>
                         {file.descripcion && <span className="text-xs text-slate-500 leading-none">{file.descripcion}</span>}
@@ -97,15 +97,23 @@ export default function FilesTab({ filteredArchivos, canEditTecnico, canDelete, 
                         </a>
                       </td>
                       <td className="px-6 py-4 text-xs text-slate-500">{formatDate(file.fecha_subida)}</td>
-                      <td className="px-6 py-4 text-right">
+                      <td className="px-6 py-3 text-right">
                         <div className="flex justify-end items-center gap-1.5">
                           {canEditTecnico && (
-                            <button onClick={() => onEdit(file)} className="text-slate-400 hover:text-blue-600 hover:scale-110 active:scale-95 transition-all p-1 cursor-pointer" title="Editar">
+                            <button
+                              onClick={() => onEdit(file)}
+                              className="w-8 h-8 rounded-xl flex items-center justify-center text-slate-400 opacity-60 group-hover/row:opacity-100 hover:bg-blue-50 hover:text-blue-600 hover:scale-105 active:scale-90 transition-all duration-200 cursor-pointer"
+                              title="Editar"
+                            >
                               <span className="material-symbols-outlined text-[18px]">edit</span>
                             </button>
                           )}
                           {canDelete && (
-                            <button onClick={() => onDelete(file.id)} className="text-slate-400 hover:text-red-700 hover:scale-110 active:scale-95 transition-all p-1 cursor-pointer" title="Eliminar">
+                            <button
+                              onClick={() => onDelete(file.id)}
+                              className="w-8 h-8 rounded-xl flex items-center justify-center text-slate-400 opacity-60 group-hover/row:opacity-100 hover:bg-red-50 hover:text-red-600 hover:scale-105 active:scale-90 transition-all duration-200 cursor-pointer"
+                              title="Eliminar"
+                            >
                               <span className="material-symbols-outlined text-[18px]">delete</span>
                             </button>
                           )}
