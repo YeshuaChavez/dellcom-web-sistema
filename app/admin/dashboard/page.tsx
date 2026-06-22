@@ -89,6 +89,7 @@ export default function AdminDashboardPage() {
   const [showCategoryModal, setShowCategoryModal] = useState(false);
 
   const [editingLicense, setEditingLicense] = useState<Licencia | null>(null);
+  const [editingFile, setEditingFile] = useState<ArchivoTecnico | null>(null);
   const [editingProduct, setEditingProduct] = useState<Producto | null>(null);
   const [editingUser, setEditingUser] = useState<Usuario | null>(null);
   const [editingService, setEditingService] = useState<Servicio | null>(null);
@@ -399,13 +400,32 @@ export default function AdminDashboardPage() {
   const handleFileNameChange = (val: string) => { setFormFileName(val); setFormFileType(detectFileType(val, formFileUrl)); };
   const handleFileUrlChange = (val: string) => { setFormFileUrl(val); setFormFileType(detectFileType(formFileName, val)); };
 
-  const handleCreateFile = async (e: React.FormEvent) => {
+  const handleCreateOrUpdateFile = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const res = await fetch("/api/archivos", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ nombre: formFileName, tipo: formFileType, url_archivo: formFileUrl, descripcion: formFileDesc || null }) });
-      if (res.ok) { alert("Archivo / Driver creado con éxito"); fetchArchivos(); closeFileModal(); }
-      else { const err = await res.json(); alert(`Error: ${err.error || "No se pudo guardar el archivo"}`); }
-    } catch { alert("Error de conexión al registrar el archivo."); }
+      const url = editingFile ? `/api/archivos/${editingFile.id}` : "/api/archivos";
+      const method = editingFile ? "PUT" : "POST";
+      const res = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          nombre: formFileName,
+          tipo: formFileType,
+          url_archivo: formFileUrl,
+          descripcion: formFileDesc || null
+        })
+      });
+      if (res.ok) {
+        alert(editingFile ? "Archivo / Driver actualizado con éxito" : "Archivo / Driver creado con éxito");
+        fetchArchivos();
+        closeFileModal();
+      } else {
+        const err = await res.json();
+        alert(`Error: ${err.error || "No se pudo guardar el archivo"}`);
+      }
+    } catch {
+      alert("Error de conexión al registrar/actualizar el archivo.");
+    }
   };
 
   const handleDeleteFile = async (id: number) => {
@@ -417,7 +437,23 @@ export default function AdminDashboardPage() {
     } catch { alert("Error de conexión."); }
   };
 
-  const closeFileModal = () => { setFormFileName(""); setFormFileType("programa"); setFormFileUrl(""); setFormFileDesc(""); setShowFileModal(false); };
+  const openEditFileModal = (file: ArchivoTecnico) => {
+    setEditingFile(file);
+    setFormFileName(file.nombre);
+    setFormFileType(file.tipo);
+    setFormFileUrl(file.url_archivo);
+    setFormFileDesc(file.descripcion || "");
+    setShowFileModal(true);
+  };
+
+  const closeFileModal = () => {
+    setEditingFile(null);
+    setFormFileName("");
+    setFormFileType("programa");
+    setFormFileUrl("");
+    setFormFileDesc("");
+    setShowFileModal(false);
+  };
 
   // --- Products ---
   const handleCreateOrUpdateProduct = async (e: React.FormEvent) => {
@@ -706,23 +742,12 @@ export default function AdminDashboardPage() {
           userRole={userRole}
         />
 
-        {/* Stats bar */}
-        <div className="border-b border-slate-200/80 bg-white px-6 py-3 flex gap-4 overflow-x-auto shrink-0">
-          {tabStats.map((stat, i) => (
-            <div key={i} className={`flex items-center gap-3 px-4 py-2 rounded-xl ${stat.bg} border border-transparent shrink-0`}>
-              <span className={`material-symbols-outlined text-lg ${stat.fg}`}>{stat.icon}</span>
-              <div>
-                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider leading-none mb-0.5">{stat.label}</p>
-                <p className={`text-base font-black ${stat.valueCls} leading-none`}>{stat.value}{stat.suffix}</p>
-              </div>
-            </div>
-          ))}
-        </div>
+
 
         <main className="flex-1 overflow-y-auto p-6 space-y-6">
           {activeTab === "overview" && (
             <OverviewTab
-              licencias={licencias} mensajes={mensajes}
+              licencias={licencias} mensajes={mensajes} archivos={archivos}
               filteredLicencias={filteredLicencias} filteredMensajes={filteredMensajes}
               getLicenseUrgency={getLicenseUrgency} formatDate={formatDate}
               isAdmin={isAdmin} canEditTecnico={canEditTecnico} canEditCatalogo={canEditCatalogo}
@@ -746,6 +771,7 @@ export default function AdminDashboardPage() {
               filteredArchivos={filteredArchivos} canEditTecnico={canEditTecnico} canDelete={canDelete}
               fileCountByType={fileCountByType} formatDate={formatDate}
               onOpenCreate={() => setShowFileModal(true)}
+              onEdit={openEditFileModal}
               onDelete={handleDeleteFile}
             />
           )}
@@ -778,6 +804,7 @@ export default function AdminDashboardPage() {
           {activeTab === "services" && (
             <ServicesTab
               filteredServicios={filteredServicios} canEditCatalogo={canEditCatalogo} canDelete={canDelete}
+              trabajosCount={trabajos.length}
               onOpenCreate={() => setShowServiceModal(true)}
               onEdit={openEditServiceModal}
               onDelete={handleDeleteService}
@@ -786,6 +813,7 @@ export default function AdminDashboardPage() {
           {activeTab === "portfolio" && (
             <PortfolioTab
               filteredTrabajos={filteredTrabajos} canEditTecnico={canEditTecnico} canDelete={canDelete}
+              serviciosCount={servicios.filter(s => s.activo).length}
               formatDate={formatDate} setPreviewImage={setPreviewImage}
               onOpenCreate={() => setShowPortfolioModal(true)}
               onEdit={openEditPortfolioModal}
@@ -795,6 +823,7 @@ export default function AdminDashboardPage() {
           {activeTab === "categories" && (
             <CategoriesTab
               filteredCategorias={filteredCategorias} canEditCatalogo={canEditCatalogo} canDelete={canDelete}
+              productosCount={productos.length}
               onOpenCreate={() => setShowCategoryModal(true)}
               onEdit={openEditCategoryModal}
               onDelete={handleDeleteCategory}
@@ -821,6 +850,7 @@ export default function AdminDashboardPage() {
       )}
       {showFileModal && (
         <FileModal
+          editingFile={editingFile}
           formFileName={formFileName} formFileType={formFileType} setFormFileType={setFormFileType}
           formFileUrl={formFileUrl} formFileDesc={formFileDesc} setFormFileDesc={setFormFileDesc}
           uploading={uploading}
@@ -828,7 +858,7 @@ export default function AdminDashboardPage() {
           onFileUrlChange={handleFileUrlChange}
           onUploadFile={(e) => handleUploadFile(e, "file")}
           onClose={closeFileModal}
-          onSubmit={handleCreateFile}
+          onSubmit={handleCreateOrUpdateFile}
         />
       )}
       {showProductModal && (

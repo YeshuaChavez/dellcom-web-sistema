@@ -1,4 +1,7 @@
+import { ArchivoTecnico } from "../../types";
+
 interface Props {
+  editingFile?: ArchivoTecnico | null;
   formFileName: string;
   formFileType: string; setFormFileType: (v: string) => void;
   formFileUrl: string;
@@ -14,6 +17,7 @@ interface Props {
 const inputCls = "w-full bg-slate-50 border border-slate-200 focus:border-red-600 focus:ring-1 focus:ring-red-600 focus:outline-none rounded-xl px-4 py-3 text-sm transition-all";
 
 export default function FileModal({
+  editingFile,
   formFileName, formFileType, setFormFileType,
   formFileUrl, formFileDesc, setFormFileDesc,
   uploading, onFileNameChange, onFileUrlChange, onUploadFile,
@@ -23,7 +27,9 @@ export default function FileModal({
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
       <div className="bg-white border border-slate-200 rounded-3xl w-full max-w-lg shadow-2xl relative overflow-hidden">
         <header className="px-8 py-5 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-          <h3 className="font-bold text-base text-on-surface">Registrar Nuevo Recurso / Driver</h3>
+          <h3 className="font-bold text-base text-on-surface">
+            {editingFile ? "Editar Recurso / Driver" : "Registrar Nuevo Recurso / Driver"}
+          </h3>
           <button onClick={onClose} className="text-slate-400 hover:text-slate-700 transition-colors cursor-pointer">
             <span className="material-symbols-outlined">close</span>
           </button>
@@ -76,7 +82,7 @@ export default function FileModal({
               Cancelar
             </button>
             <button type="submit" className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold transition-all active:scale-95 shadow-md shadow-red-600/10 cursor-pointer">
-              Guardar Recurso
+              {editingFile ? "Guardar Cambios" : "Guardar Recurso"}
             </button>
           </footer>
         </form>

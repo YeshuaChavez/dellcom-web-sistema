@@ -4,12 +4,13 @@ interface Props {
   filteredCategorias: Categoria[];
   canEditCatalogo: boolean;
   canDelete: boolean;
+  productosCount: number;
   onOpenCreate: () => void;
   onEdit: (cat: Categoria) => void;
   onDelete: (id: number) => void;
 }
 
-export default function CategoriesTab({ filteredCategorias, canEditCatalogo, canDelete, onOpenCreate, onEdit, onDelete }: Props) {
+export default function CategoriesTab({ filteredCategorias, canEditCatalogo, canDelete, productosCount, onOpenCreate, onEdit, onDelete }: Props) {
   return (
     <section className="animate-fade-in-up">
       <div className="flex justify-between items-end mb-6">
@@ -26,6 +27,25 @@ export default function CategoriesTab({ filteredCategorias, canEditCatalogo, can
             Crear Categoría
           </button>
         )}
+      </div>
+
+      {/* Categories Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 max-w-2xl">
+        {[
+          { label: "Categorías Activas", value: filteredCategorias.filter(c => c.activo).length, icon: "local_offer", bg: "bg-emerald-50 text-emerald-600" },
+          { label: "Total Categorías", value: filteredCategorias.length, icon: "category", bg: "bg-red-50 text-red-600" },
+          { label: "Productos en Catálogo", value: productosCount, icon: "inventory_2", bg: "bg-slate-100 text-slate-500" },
+        ].map((item, i) => (
+          <div key={i} className="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm flex items-center gap-4">
+            <div className={`p-3 rounded-xl ${item.bg}`}>
+              <span className="material-symbols-outlined text-2xl">{item.icon}</span>
+            </div>
+            <div>
+              <h4 className="font-bold text-sm text-on-surface">{item.label}</h4>
+              <p className="text-xs text-slate-500 mt-0.5"><span className="font-extrabold text-slate-800 text-base">{item.value}</span> elementos</p>
+            </div>
+          </div>
+        ))}
       </div>
 
       <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm max-w-2xl">
