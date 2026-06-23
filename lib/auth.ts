@@ -60,7 +60,10 @@ export const authOptions: AuthOptions = {
     }),
   ],
   // Usa JWT en lugar de sesiones en base de datos (sin tabla de sesiones)
-  session: { strategy: "jwt" },
+  session: {
+    strategy: "jwt",
+    maxAge: 24 * 60 * 60, // 24 horas (1 día) de sesión activa como máximo
+  },
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
