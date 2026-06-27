@@ -1,323 +1,85 @@
-# DELLCOM SAC - Plataforma Corporativa y Sistema Administrativo IT
+# DELLCOM SAC — Plataforma de Gestión de Servicios IT y Suministros
 
-Este repositorio contiene la solucion de software integral para la corporacion DELLCOM SAC, un centro tecnologico especializado en soporte tecnico de computadoras, redes y suministros IT, ubicado en Los Olivos, Lima. El proyecto combina un portal publico de alta gama con un panel administrativo protegido de nivel empresarial, con permisos diferenciados para administradores, tecnicos y vendedores.
+Solución corporativa y administrativa integral desarrollada para **DELLCOM SAC** (Los Olivos, Lima), un centro técnico especializado en soporte informático, redes y repuestos IT. El sistema combina un portal público moderno de alta gama con un panel administrativo protegido de nivel empresarial que implementa control de acceso basado en roles (RBAC).
 
-La solucion esta desarrollada con Next.js 16.2.4 (App Router, Turbopack), TypeScript en modo estricto, Tailwind CSS v4, Prisma ORM 5.22 con MySQL en Railway, NextAuth.js 4 para autenticacion JWT, React 19.2.4, y un conjunto de herramientas de ingenieria de software de alta calidad (Zod, bcryptjs, Jest, GitHub Actions).
+## 🚀 Arquitectura Cloud de Producción (Costo Mensual $0.00)
 
-**Produccion:** [dellcom-web.vercel.app](https://dellcom-web.vercel.app) — desplegado en Vercel con integracion continua via GitHub App (cada push a `main` dispara un build y deploy automatico, sin pasos manuales).
+Toda la infraestructura de producción ha sido optimizada y migrada bajo una arquitectura de **costo mensual cero ($0.00 USD)** usando los planes gratuitos permanentes (Free Tiers) de proveedores de nube líderes:
+
+*   **Hosting Full-Stack (Vercel)**: Aloja el portal público y las API Routes de Next.js. Despliegue continuo (CI/CD) vinculado directamente al repositorio privado del proyecto.
+*   **Base de Datos Relacional (Aiven MySQL)**: Base de datos MySQL de alta disponibilidad. Cuenta con un sistema keep-alive automatizado que realiza pings periódicos para evitar la suspensión automática por inactividad.
+*   **Almacenamiento de Archivos (Cloudflare R2)**: Repositorio compatible con el SDK S3 de AWS para la subida física de imágenes de productos, evidencias de trabajos y drivers. Egress fees (costo de descarga de datos) de $0.00 permanentes.
+*   **Mensajería SMTP (Gmail Corporativo)**: Envío de correos de sistema (creación de cuentas, bienvenida y restablecimiento de contraseña) utilizando contraseñas de aplicación cifradas.
+*   **Keep-Alive Programado (Cron-Job.org)**: Automatización externa que realiza pings HTTP cada 30 minutos al endpoint `/api/cron/keep-alive` para mantener activa la base de datos de producción.
 
 ---
 
-## Estructura Completa de Directorios del Proyecto
+## 🛠️ Stack Tecnológico
+
+*   **Core**: Next.js 16 (App Router, Turbopack) & React 19.
+*   **Lenguaje**: TypeScript en modo estricto (`strict: true`).
+*   **Estilos**: Tailwind CSS v4 con arquitectura responsiva y animaciones dinámicas basadas en `IntersectionObserver`.
+*   **Base de Datos**: MySQL gestionado con Prisma ORM v5 (Cliente singleton).
+*   **Autenticación**: NextAuth.js v4 con seguridad basada en JSON Web Tokens (JWT) y cookies seguras.
+*   **Seguridad**: Hashing de contraseñas con `bcryptjs`, validación con Zod en servidor, rate limiting y sanitización HTML contra inyecciones XSS.
+
+---
+
+## 🛡️ Control de Acceso Basado en Roles (RBAC)
+
+El panel administrativo (`/admin/dashboard`) e APIs aplican una estrategia de defensa en profundidad en tres capas independientes (UI, Middleware de Edge Runtime y API endpoints):
+
+| Rol | Modales / CRUDs Permitidos | Solo Lectura | Eliminar |
+| :--- | :--- | :--- | :--- |
+| **`admin`** | Todos los módulos + Gestión de personal | — | Todos los módulos |
+| **`tecnico`** | Portafolio (Trabajos), Archivos y Drivers | Productos, Categorías, Servicios, Licencias | Ninguno |
+| **`vendedor`** | Productos, Categorías y Servicios | Portafolio, Archivos/Drivers, Licencias | Ninguno |
+
+*Nota: La eliminación de registros está estrictamente reservada al rol de `admin` en todos los módulos como medida preventiva.*
+
+---
+
+## 📋 Estructura de Directorios del Proyecto
 
 ```
 DELLCOM-WEB/
-├── .github/
-│   └── workflows/
-│       └── nextjs.yml                  # Pipeline de CI: lint, tests, typecheck y build
-├── __tests__/
-│   └── api.test.ts                     # Pruebas unitarias de esquemas de datos con Jest
-├── app/
+├── app/                               # Directorio de la aplicación (Next.js App Router)
 │   ├── admin/
-│   │   ├── dashboard/
-│   │   │   └── page.tsx                # Panel principal con 8 modulos CRUD (tabs + modales)
-│   │   ├── login/
-│   │   │   └── page.tsx                # Login glassmorphic con video de fondo y JWT
-│   │   └── layout.tsx                  # Layout con SessionProvider de NextAuth
-│   ├── api/
+│   │   ├── dashboard/                 # Panel principal (Tabs y Modales CRUD)
+│   │   ├── change-password/           # Vista de cambio de contraseña obligatoria al primer ingreso
+│   │   ├── reset-password/            # Formulario de establecimiento de nueva contraseña desde correo
+│   │   └── login/                     # Login administrativo con autenticación de credenciales
+│   ├── api/                           # API Routes (Handlers de peticiones HTTP)
 │   │   ├── admin/
-│   │   │   ├── contacto/
-│   │   │   │   └── route.ts            # GET/PUT mensajes de contacto (cualquier sesion) / DELETE (solo admin)
-│   │   │   ├── upload/
-│   │   │   │   └── route.ts            # POST carga de archivos: AWS S3 o fallback local
-│   │   │   └── usuarios/
-│   │   │       └── route.ts            # GET/POST/PUT/PATCH CRUD de personal (solo admin)
-│   │   ├── archivos/
-│   │   │   ├── [id]/
-│   │   │   │   └── route.ts            # PUT/DELETE archivo especifico
-│   │   │   └── route.ts                # GET/POST archivos y drivers tecnicos
-│   │   ├── auth/
-│   │   │   └── [...nextauth]/
-│   │   │       └── route.ts            # Handler interno de NextAuth.js
-│   │   ├── categorias/
-│   │   │   ├── [id]/
-│   │   │   │   └── route.ts            # PUT/DELETE categoria especifica
-│   │   │   └── route.ts                # GET/POST categorias del catalogo
-│   │   ├── contacto/
-│   │   │   └── route.ts                # POST formulario publico (Zod + rate limiting + sanitizacion HTML)
+│   │   │   ├── upload/                # Carga de archivos a Cloudflare R2 (S3 API)
+│   │   │   └── usuarios/              # CRUD de personal de Dellcom (solo admin)
 │   │   ├── cron/
-│   │   │   └── check-licencias/
-│   │   │       └── route.ts            # GET/POST job de vencimiento de licencias (Bearer token)
-│   │   ├── licencias/
-│   │   │   ├── [id]/
-│   │   │   │   └── route.ts            # PUT/DELETE licencia especifica
-│   │   │   └── route.ts                # GET/POST licencias de software de clientes
-│   │   ├── productos/
-│   │   │   ├── [id]/
-│   │   │   │   └── route.ts            # GET/PUT/DELETE producto especifico
-│   │   │   └── route.ts                # GET/POST productos del catalogo
-│   │   ├── servicios/
-│   │   │   ├── [id]/
-│   │   │   │   └── route.ts            # PUT/DELETE servicio especifico
-│   │   │   └── route.ts                # GET/POST servicios de TI
-│   │   └── trabajos/
-│   │       ├── [id]/
-│   │       │   └── route.ts            # PUT/DELETE trabajo de portafolio especifico
-│   │       └── route.ts                # GET/POST trabajos realizados (portafolio)
-│   ├── components/
-│   │   ├── AnyDeskConsole.tsx          # Consola interactiva de consulta de IDs AnyDesk
-│   │   ├── CleanFooter.tsx             # Pie de pagina corporativo con redes y accesos
-│   │   ├── CotizadorExpress.tsx        # Generador rapido de cotizaciones
-│   │   ├── HomeHeroSearch.tsx          # Buscador de diagnostico de fallas con autocomplete
-│   │   ├── PortfolioGallery.tsx        # Carrusel de trabajos realizados con modal
-│   │   ├── ScrollRevealObserver.tsx    # Animaciones de fade-in por scroll (IntersectionObserver)
-│   │   ├── SmartAssistant.tsx          # Chatbot flotante con respuestas por palabras clave
-│   │   └── StatusHeader.tsx            # Barra de navegacion principal con logo SVG
-│   ├── contacto/
-│   │   ├── layout.tsx
-│   │   └── page.tsx                    # Formulario publico de consultas con validacion
-│   ├── descargas/
-│   │   ├── layout.tsx
-│   │   └── page.tsx                    # Repositorio publico de drivers y manuales
-│   ├── nosotros/
-│   │   └── page.tsx                    # Trayectoria, vision, mision y valores corporativos
-│   ├── productos/
-│   │   ├── layout.tsx
-│   │   └── page.tsx                    # Catalogo virtual con filtros, carrito y vista rapida
-│   ├── servicios/
-│   │   └── page.tsx                    # Servicios de TI en layout de filas alternas
-│   ├── soporte/
-│   │   └── page.tsx                    # Guia de soporte remoto AnyDesk con consola interactiva
-│   ├── globals.css                     # Estilos globales y tokens de Tailwind CSS v4
-│   ├── layout.tsx                      # Raiz de la app: tipografia Outfit e iconos Material
-│   └── page.tsx                        # Landing page principal (Hero, Bento Grid, Portafolio)
-├── lib/
-│   ├── apiAuth.ts                      # Helper requireRole(): autorizacion por rol reutilizable en rutas API
-│   ├── auth.ts                         # Configuracion de NextAuth: proveedor, callbacks JWT, roles
-│   └── prisma.ts                       # Cliente Prisma singleton (previene multiples instancias)
-├── prisma/
-│   └── schema.prisma                   # Modelos relacionales y conectores MySQL
-├── public/
-│   ├── img/
-│   │   ├── portafolio/                 # Fotos de trabajos realizados
-│   │   ├── productos/                  # Imagenes del catalogo de suministros
-│   │   └── servicios/                  # Imagenes de servicios de TI
-│   ├── vid/
-│   │   └── laptop_video.mp4            # Video de fondo del login administrativo
-│   └── uploads/                        # Directorio de fallback para archivos subidos localmente
-├── scripts/
-│   └── seed.ts                         # Poblado inicial de la BD (npx prisma db seed)
-├── Dockerfile                          # Imagen Docker de produccion
-├── docker-compose.yml                  # Orquestacion de contenedores para desarrollo
-├── eslint.config.mjs                   # Configuracion ESLint (next/core-web-vitals + typescript)
-├── jest.config.js                      # Configuracion Jest con ts-jest
-├── middleware.ts                       # Control de acceso por roles (RBAC) y rutas protegidas
-├── next.config.ts                      # Configuracion de compilacion de Next.js
-├── package.json                        # Dependencias y scripts del proyecto
-└── tsconfig.json                       # Configuracion de TypeScript en modo estricto
+│   │   │   └── keep-alive/            # Ping de mantenimiento para evitar suspensión de la BD
+│   │   └── password/                  # Lógica de recuperación y cambio de contraseñas
+│   ├── components/                    # Componentes React (Buscador, Cotizador, Chatbot, Consola)
+│   ├── descargas/                     # Portal de drivers y manuales
+│   └── nosotros/                      # Misión, visión y trayectoria
+├── lib/                               # Clientes e inicializadores (Prisma, Mailer, API Auth)
+├── prisma/                            # Modelado de datos (schema.prisma) y migraciones
+├── scripts/                           # Script de poblado inicial (seed.ts)
+├── Dockerfile                         # Imagen Docker optimizada (Multi-stage build)
+└── docker-compose.yml                 # Orquestación de desarrollo local
 ```
 
 ---
 
-## Modulos y Funcionalidades Principales
+## ⚙️ Configuración del Archivo `.env`
 
-### 1. Portal Corporativo Publico (Frontend)
-
-* **Landing Page (Hero & Bento Grid)**: Seccion de bienvenida con acceso directo a soporte por WhatsApp, buscador de diagnostico de fallas con autocomplete (`HomeHeroSearch`) y bento grid con propuesta de valor.
-* **Servicios de TI**: Visualizacion dinamica de servicios (Soporte, Redes, Licenciamiento, Hardware) con layout de filas alternas que combina descripciones y fotografias locales.
-* **Catalogo Virtual y Carrito de Cotizacion**: Exposicion de suministros con filtros por categoria y busqueda en tiempo real. Incluye carrito de cotizacion via `localStorage` que envia solicitudes formateadas a WhatsApp, y modal de Vista Rapida implementado con React Portal.
-* **Portafolio de Trabajos**: Carrusel animado (`PortfolioGallery`) con fotos reales de instalaciones, cableado y reparaciones realizadas.
-* **Descargas de Soporte**: Repositorio publico de drivers oficiales, manuales e instaladores clasificados por tipo.
-* **Soporte Remoto (/soporte)**: Guia paso a paso de AnyDesk con consola interactiva de consulta de IDs de conexion (`AnyDeskConsole`).
-* **Formulario de Contacto (/contacto)**: Validacion con Zod, rate limiting por IP (5 envios cada 10 minutos) y sanitizacion HTML antes de persistir en la BD.
-* **Asistente Virtual (Chatbot)**: Componente flotante (`SmartAssistant`) con respuestas automaticas por palabras clave (horarios, ubicacion, AnyDesk, servicios). Se oculta automaticamente en rutas `/admin/*`.
-
-### 2. Panel Administrativo Protegido (/admin/dashboard)
-
-Acceso restringido por JWT. Los roles disponibles son `admin`, `tecnico` y `vendedor`, cada uno con permisos delimitados por su funcion de trabajo (ver tabla de roles mas abajo).
-
-* **Gestion de Licencias**: Registro de cuentas de correo, claves y vigencias de licencias de software (Windows, Office, Antivirus) vendidas a clientes. Alertas visuales por proximidad de vencimiento (activo / por vencer / vencido). Exclusivo de `admin`.
-* **Archivos y Drivers**: Repositorio interno de ejecutables, drivers, planillas Excel y enlaces utiles con subida fisica via AWS S3 o fallback local. Gestionado por `admin` y `tecnico`.
-* **Catalogo de Productos**: CRUD completo de suministros (ribbons, tintas, memorias, accesorios). Incluye subida de imagen, asignacion de categoria y toggle de visibilidad en la web publica. Gestionado por `admin` y `vendedor`.
-* **Categorias de Productos**: Creacion y desactivacion de las categorias que agrupan el catalogo virtual. Gestionado por `admin` y `vendedor`.
-* **Gestion de Servicios**: Alta, edicion y desactivacion de los servicios de TI mostrados en la web publica. El icono se configura con un nombre de Material Symbol. Gestionado por `admin` y `vendedor`.
-* **Portafolio / Trabajos Realizados**: Registro de fotos y descripcion de proyectos completados, asociados opcionalmente a un servicio. Gestionado por `admin` y `tecnico`.
-* **Mensajes de Contacto**: Bandeja de entrada con mensajes del formulario publico. El asunto y el cuerpo del mensaje se pueden abrir en un modal de lectura completa con un clic (remitente, fecha y texto integro). Permite marcar como leido/no leido (cualquier rol) y eliminar (solo `admin`).
-* **Gestion de Personal (solo admin)**: CRUD de usuarios con hash bcrypt de contrasenas, asignacion de roles y activacion/desactivacion de cuentas.
-
-#### Modelo de Permisos por Rol
-
-| Rol | Puede crear/editar | Solo lectura | Eliminar |
-|-----|---------------------|--------------|----------|
-| `admin` | Todos los modulos | — | Todos los modulos |
-| `tecnico` | Portafolio, Archivos/Drivers | Productos, Categorias, Servicios, Licencias | Ninguno |
-| `vendedor` | Productos, Categorias, Servicios | Portafolio, Archivos/Drivers, Licencias | Ninguno |
-
-Mensajes de contacto (lectura y marcado leido/no leido) y Gestion de Personal quedan fuera de esta tabla: el primero es comun a los tres roles, el segundo es exclusivo de `admin`. **Eliminar registros esta restringido a `admin` en todos los modulos** como medida de seguridad adicional, incluso en aquellos donde el rol tiene permiso de creacion/edicion.
-
-La restriccion se aplica en tres capas independientes (defensa en profundidad):
-1. **UI**: los botones de crear/editar/eliminar se ocultan segun el rol de la sesion activa.
-2. **Middleware** (`middleware.ts`, Edge Runtime): bloquea a nivel de borde la escritura en `/api/licencias` (no-admin) y `/api/archivos` (vendedor) antes de que la peticion llegue a la ruta.
-3. **Ruta API** (`requireRole()` en `lib/apiAuth.ts`): cada handler POST/PUT/DELETE valida el rol exacto contra la base de datos de la sesion, de modo que una llamada directa a la API (sin pasar por la UI) tambien queda bloqueada.
-
----
-
-## Calidad de Software e Ingenieria de Codigo
-
-* **Validacion con Zod**: Todos los endpoints administrativos y el formulario de contacto validan los payloads con esquemas Zod en el servidor.
-* **Seguridad Criptografica**: Contrasenas de personal hasheadas con `bcryptjs` (10 salt rounds) antes de persistirse. Nunca se almacenan en texto plano.
-* **Sanitizacion de Inputs**: Los campos de texto del formulario de contacto publico son sanitizados para eliminar etiquetas HTML antes de guardarse en la base de datos.
-* **Rate Limiting**: El endpoint `POST /api/contacto` limita a 5 envios por IP cada 10 minutos, retornando HTTP 429 si se supera el limite.
-* **Control de Acceso basado en Roles (RBAC)**: El middleware protege todas las rutas administrativas y cada ruta API valida el rol exacto con `requireRole()`. Solo `admin` gestiona usuarios y licencias; `tecnico` gestiona Portafolio y Archivos/Drivers; `vendedor` gestiona Productos, Categorias y Servicios; eliminar registros queda reservado a `admin` en todos los modulos.
-* **Automatizacion de Licencias (Cron Job)**: Endpoint `GET /api/cron/check-licencias` protegido por Bearer Token que actualiza automaticamente el estado de licencias cuya fecha de fin ya paso. Requiere la variable `CRON_SECRET` en produccion.
-* **Carga de Archivos Hibrida (AWS S3 / Local)**: El endpoint `POST /api/admin/upload` detecta automaticamente si las credenciales de S3 estan configuradas. Si lo estan, sube el archivo al bucket S3. Si no, escribe en `public/uploads/` de forma transparente.
-* **Pruebas con Jest**: Suite de pruebas unitarias en `__tests__/` configurada con `ts-jest` para validar esquemas y logica de datos.
-* **Pipeline CI con GitHub Actions**: Se ejecuta en cada push a `main`: instala dependencias, genera cliente Prisma, corre ESLint, ejecuta Jest, valida TypeScript y compila el build de Next.js.
-* **Estados de Carga Explicitos**: Las paginas publicas que consumen datos via fetch del lado del cliente (p. ej. `/productos`) muestran un esqueleto de carga mientras la peticion esta en curso, en lugar de renderizar prematuramente un estado de "sin resultados" durante una red lenta o un cold-start del servidor.
-* **Renderizado de Fechas Seguro para Hidratacion**: Todo formato de fecha visible en paginas publicas (`toLocaleDateString`) fija explicitamente `timeZone: "UTC"`. Esto evita que el servidor (Vercel, UTC) y el navegador del visitante (zona horaria local, p. ej. Peru UTC-5) calculen un dia distinto para el mismo instante, lo que de otro modo produce un error de hidratacion de React (#418) visible en la consola del navegador.
-
----
-
-## Esquema de Base de Datos (Prisma ORM + MySQL)
-
-### Sistema Administrativo
-
-| Modelo | Descripcion | Campos clave |
-|--------|-------------|--------------|
-| `Usuario` | Personal de DELLCOM | `usuario` (unico), `email` (unico), `contrasena` (hash), `rol` (admin/tecnico/vendedor), `activo` |
-| `Licencia` | Licencias de software vendidas a clientes | `software`, `correo_cuenta`, `contrasena`, `fecha_inicio`, `fecha_fin`, `nombre_cliente`, `estado` (activo/vencido) |
-| `ArchivoTecnico` | Drivers, instaladores y documentos | `nombre`, `tipo` (programa/driver/excel/link), `url_archivo`, `fecha_subida` |
-
-### Sistema Web Publico
-
-| Modelo | Descripcion | Campos clave |
-|--------|-------------|--------------|
-| `Servicio` | Servicios de TI ofrecidos | `nombre`, `descripcion`, `icono_url` (Material Symbol), `activo` |
-| `Categoria` | Categorias del catalogo | `nombre` (unico), `activo` |
-| `Producto` | Suministros del catalogo | `nombre`, `precio` (Decimal 10,2), `imagen_url`, `activo`, `id_categoria` |
-| `TrabajoRealizado` | Fotos del portafolio | `titulo`, `descripcion`, `imagen_url`, `fecha`, `id_servicio` (opcional) |
-| `MensajeContacto` | Consultas del formulario publico | `nombre`, `correo`, `telefono`, `asunto`, `mensaje`, `leido`, `fecha` |
-
-**Relaciones:** `Usuario` 1:N `Licencia`, `Usuario` 1:N `ArchivoTecnico`, `Categoria` 1:N `Producto`, `Servicio` 1:N `TrabajoRealizado`.
-
----
-
-## Variables de Entorno (.env)
-
-Cree un archivo `.env` en la raiz del proyecto:
+Cree un archivo `.env` en la raíz del proyecto para desarrollo local:
 
 ```env
-# 1. Base de Datos
-DATABASE_URL="mysql://usuario:contrasena@host:puerto/nombre_base_datos"
+# 1. Conexión de Base de Datos (Aiven MySQL)
+DATABASE_URL="mysql://avnadmin:password@host:port/defaultdb?ssl-mode=REQUIRED"
 
-# 2. NextAuth
-NEXTAUTH_SECRET="clave_aleatoria_segura_de_minimo_32_caracteres"
+# 2. NextAuth (Autenticación)
+NEXTAUTH_SECRET="clave_secreta_minimo_32_caracteres"
 NEXTAUTH_URL="http://localhost:3000"
 
-# 3. AWS S3 (Opcional - si no se configura, los archivos se guardan en public/uploads/)
-AWS_ACCESS_KEY_ID="tu_access_key_id_de_iam"
-AWS_SECRET_ACCESS_KEY="tu_secret_access_key_de_iam"
-AWS_REGION="us-east-1"
-AWS_BUCKET_NAME="nombre_del_bucket_s3"
-
-# 4. Cron Job (Requerido para /api/cron/check-licencias)
-CRON_SECRET="clave_aleatoria_segura_para_el_cron"
-```
-
----
-
-## Instalacion y Despliegue Local
-
-1. Clonar el repositorio e instalar dependencias:
-   ```bash
-   npm install
-   ```
-
-2. Generar el cliente de Prisma:
-   ```bash
-   npx prisma generate
-   ```
-
-3. Sincronizar el esquema con la base de datos:
-   ```bash
-   npx prisma db push
-   ```
-
-4. Poblar la base de datos con datos iniciales y el administrador por defecto:
-   ```bash
-   npx prisma db seed
-   ```
-   > Las credenciales por defecto son `admin` / `admin123`. Cambialas inmediatamente al ingresar al panel.
-
-5. Iniciar el servidor de desarrollo:
-   ```bash
-   npm run dev
-   ```
-
-La aplicacion estara disponible en `http://localhost:3000` y el panel admin en `http://localhost:3000/admin/login`.
-
----
-
-## Arquitectura de Despliegue en Produccion
-
-| Componente | Proveedor | Detalle |
-|------------|-----------|---------|
-| Aplicacion Next.js (frontend + API routes) | Vercel | Deploy automatico en cada push a `main` via integracion GitHub App. Sin `vercel.json`; configuracion gestionada desde el dashboard de Vercel. |
-| Base de datos MySQL | Railway | Instancia gestionada, accesible via `DATABASE_URL` |
-| Almacenamiento de archivos e imagenes | AWS S3 | Bucket privado; `POST /api/admin/upload` sube directamente desde el panel admin. Si las credenciales no estan configuradas, el sistema usa `public/uploads/` como fallback transparente. |
-| Integracion Continua | GitHub Actions | Corre en cada push/PR a `main`/`master`: lint, Jest, `tsc --noEmit` y build. No despliega; el deploy lo gestiona Vercel de forma independiente. |
-
-El repositorio es publico en GitHub. **Recomendacion de seguridad:** las credenciales por defecto del seed (`admin` / `admin123`, documentadas mas arriba) deben cambiarse antes de operar el sistema con datos reales de clientes, ya que quedan visibles en texto plano en `scripts/seed.ts` para cualquiera que consulte el repositorio.
-
----
-
-## Catalogo de Endpoints de la API
-
-### Publicos (sin autenticacion)
-
-| Metodo | Endpoint | Descripcion |
-|--------|----------|-------------|
-| GET | `/api/productos` | Lista productos activos. `?all=true` para incluir inactivos |
-| GET | `/api/productos/[id]` | Detalle de un producto |
-| GET | `/api/servicios` | Lista servicios activos |
-| GET | `/api/categorias` | Lista categorias activas |
-| GET | `/api/trabajos` | Lista trabajos del portafolio |
-| GET | `/api/archivos` | Lista drivers y manuales disponibles |
-| POST | `/api/contacto` | Envia mensaje de contacto (rate limit: 5/10min por IP) |
-
-### Administrativos (requieren sesion activa)
-
-| Metodo | Endpoint | Rol requerido | Descripcion |
-|--------|----------|----------------|-------------|
-| GET | `/api/licencias` | cualquier sesion | Lista todas las licencias |
-| POST | `/api/licencias` | admin | Registra nueva licencia |
-| PUT | `/api/licencias/[id]` | admin | Edita licencia |
-| DELETE | `/api/licencias/[id]` | admin | Elimina licencia |
-| POST | `/api/archivos` | admin, tecnico | Registra nuevo archivo |
-| PUT | `/api/archivos/[id]` | admin, tecnico | Edita archivo |
-| DELETE | `/api/archivos/[id]` | admin | Elimina archivo |
-| POST | `/api/productos` | admin, vendedor | Crea producto |
-| PUT | `/api/productos/[id]` | admin, vendedor | Edita producto |
-| DELETE | `/api/productos/[id]` | admin | Desactiva producto (soft delete) |
-| POST | `/api/categorias` | admin, vendedor | Crea categoria |
-| PUT | `/api/categorias/[id]` | admin, vendedor | Edita categoria |
-| DELETE | `/api/categorias/[id]` | admin | Desactiva categoria |
-| POST | `/api/servicios` | admin, vendedor | Crea servicio |
-| PUT | `/api/servicios/[id]` | admin, vendedor | Edita servicio |
-| DELETE | `/api/servicios/[id]` | admin | Desactiva servicio |
-| POST | `/api/trabajos` | admin, tecnico | Registra trabajo de portafolio |
-| PUT | `/api/trabajos/[id]` | admin, tecnico | Edita trabajo |
-| DELETE | `/api/trabajos/[id]` | admin | Elimina trabajo |
-| POST | `/api/admin/upload` | admin + (vendedor en `productos`, tecnico en `portfolio`/`uploads`) | Sube archivo a S3 o local segun la carpeta destino |
-| GET | `/api/admin/contacto` | cualquier sesion | Lista mensajes de contacto |
-| PUT | `/api/admin/contacto` | cualquier sesion | Marca mensaje como leido/no leido |
-| DELETE | `/api/admin/contacto?id=X` | admin | Elimina mensaje |
-| GET | `/api/admin/usuarios` | admin | Lista personal registrado |
-| POST | `/api/admin/usuarios` | admin | Crea nuevo usuario |
-| PUT | `/api/admin/usuarios` | admin | Edita perfil de usuario |
-| PATCH | `/api/admin/usuarios` | admin | Activa o desactiva cuenta |
-
-> `GET /api/archivos` no aparece en esta tabla porque es publico (ver tabla anterior); el resto de operaciones GET de los modulos administrativos (licencias, mensajes) requieren sesion activa pero no un rol especifico.
 
 ### Automatizacion
 
@@ -345,7 +107,4 @@ npm run build
 # Iniciar en produccion
 npm run start
 ```
-
----
-*Nota: Este proyecto ha sido migrado a un repositorio privado e independiente para la operación en producción de DELLCOM SAC.*
 
