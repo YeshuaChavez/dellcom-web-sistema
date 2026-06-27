@@ -4,12 +4,12 @@ Este repositorio contiene la solución de software integral para la corporación
 
 La solución está desarrollada con Next.js 16.2.4 (App Router, Turbopack), TypeScript en modo estricto, Tailwind CSS v4, Prisma ORM v5.22, NextAuth.js v4 para autenticación JWT y React 19.
 
-## 🚀 Arquitectura Cloud de Producción (Costo Mensual $0.00)
+## Arquitectura Cloud de Producción
 
-Toda la infraestructura ha sido migrada bajo un enfoque de **costo mensual cero ($0.00 USD)** usando planes gratuitos permanentes:
+Toda la infraestructura ha sido migrada bajo un enfoque de alta disponibilidad y optimización de recursos usando planes y servicios en la nube:
 *   **Hosting Full-Stack (Vercel)**: Despliegue continuo (CI/CD) vinculado directamente al repositorio privado del proyecto.
-*   **Base de Datos Relacional (Aiven MySQL)**: Instancia MySQL de alta disponibilidad en plan gratuito permanente con keep-alive externo.
-*   **Almacenamiento (Cloudflare R2)**: Repositorio compatible con el SDK S3 de AWS para la subida de imágenes y drivers con egress fees de $0.00.
+*   **Base de Datos Relacional (Aiven MySQL)**: Instancia MySQL de alta disponibilidad en la nube con keep-alive externo.
+*   **Almacenamiento (Cloudflare R2)**: Repositorio compatible con el SDK S3 de AWS para la subida de imágenes y drivers con transferencia de datos optimizada.
 *   **Mensajería SMTP (Gmail Corporativo)**: Envío de correos de sistema (creación de cuentas, bienvenida y restablecimiento de contraseña) con contraseñas de aplicación cifradas.
 *   **Keep-Alive Programado (Cron-Job.org)**: Automatización externa que realiza pings HTTP cada 30 minutos al endpoint `/api/cron/keep-alive` para mantener activa la base de datos.
 
