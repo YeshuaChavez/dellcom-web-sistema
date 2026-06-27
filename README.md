@@ -345,3 +345,7 @@ npm run build
 # Iniciar en produccion
 npm run start
 ```
+
+---
+*Nota: Este proyecto ha sido migrado a un repositorio privado e independiente para la operación en producción de DELLCOM SAC.*
+
