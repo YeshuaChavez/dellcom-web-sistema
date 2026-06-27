@@ -56,8 +56,11 @@ const emailWrapper = (content: string) => `
 
           <!-- Footer -->
           <tr>
-            <td style="background-color:#f1f5f9;border-top:1px solid #e2e8f0;padding:20px 36px;text-align:center;">
-              <p style="margin:0;font-size:10px;color:#94a3b8;font-weight:700;text-transform:uppercase;letter-spacing:1px;line-height:1.4;">
+            <td style="background-color:#f1f5f9;border-top:1px solid #e2e8f0;padding:24px 36px;text-align:center;">
+              <p style="margin:0 0 10px 0;font-size:11px;color:#ef4444;font-weight:600;font-family:'Outfit',sans-serif;line-height:1.4;">
+                ⚠️ ¿No encuentras nuestros correos? Por favor, revisa tu bandeja de correo no deseado (SPAM) y márcanos como "correo seguro" para no perder futuras notificaciones.
+              </p>
+              <p style="margin:0;font-size:10px;color:#94a3b8;font-weight:700;text-transform:uppercase;letter-spacing:1px;font-family:'Outfit',sans-serif;line-height:1.4;">
                 © 2026 DELLCOM SAC — Av. Santa Elvira, Los Olivos, Lima, Perú
               </p>
             </td>
