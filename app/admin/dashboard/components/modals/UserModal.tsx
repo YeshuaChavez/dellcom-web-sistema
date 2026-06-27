@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Usuario } from "../../types";
 
 interface Props {
@@ -22,6 +23,8 @@ export default function UserModal({
   formUserRol, setFormUserRol,
   onClose, onSubmit,
 }: Props) {
+  const [showPassword, setShowPassword] = useState(false);
+
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
       <div className="bg-white border border-slate-200 rounded-3xl w-full max-w-lg shadow-2xl relative overflow-hidden">
@@ -74,7 +77,24 @@ export default function UserModal({
           {editingUser ? (
             <div>
               <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Contraseña (Dejar en blanco para conservar actual)</label>
-              <input type="password" value={formUserContrasena} onChange={e => setFormUserContrasena(e.target.value)} placeholder="Mínimo 6 caracteres" className={inputCls} />
+              <div className="relative flex items-center">
+                <input 
+                  type={showPassword ? "text" : "password"} 
+                  value={formUserContrasena} 
+                  onChange={e => setFormUserContrasena(e.target.value)} 
+                  placeholder="Mínimo 6 caracteres" 
+                  className={`${inputCls} pr-12`} 
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 text-slate-400 hover:text-slate-600 transition-colors flex items-center focus:outline-none cursor-pointer"
+                >
+                  <span className="material-symbols-outlined text-lg leading-none">
+                    {showPassword ? "visibility_off" : "visibility"}
+                  </span>
+                </button>
+              </div>
             </div>
           ) : (
             <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 flex items-start gap-3">
