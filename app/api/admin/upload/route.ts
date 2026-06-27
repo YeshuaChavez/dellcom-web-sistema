@@ -13,9 +13,10 @@ import { writeFile, mkdir } from "fs/promises";
 import path from "path";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 
-// Configurar cliente de AWS S3
+// Configurar cliente S3-compatible (AWS S3 o Cloudflare R2)
 const s3Client = new S3Client({
-  region: process.env.AWS_REGION || "us-east-1",
+  region: process.env.AWS_REGION || "auto",
+  endpoint: process.env.S3_ENDPOINT,
   credentials: {
     accessKeyId: process.env.AWS_ACCESS_KEY_ID || "",
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || "",
@@ -80,14 +81,15 @@ export async function POST(req: NextRequest) {
         })
       );
 
-      const s3Url = `https://${bucketName}.s3.${region}.amazonaws.com/${key}`;
+      const publicBase = process.env.R2_PUBLIC_URL || `https://${bucketName}.s3.${region}.amazonaws.com`;
+      const s3Url = `${publicBase}/${key}`;
 
       return NextResponse.json({
         success: true,
         url: s3Url,
         name: file.name,
         size: file.size,
-        storage: "s3",
+        storage: process.env.S3_ENDPOINT ? "r2" : "s3",
       });
     } else {
       // Fallback local en caso de no contar con variables de entorno de S3
