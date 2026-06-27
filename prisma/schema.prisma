@@ -44,6 +44,7 @@ model Licencia {
   fecha_fin      DateTime?
   nombre_cliente String
   telefono       String?
+  anydesk_id     String?
   estado         EstadoLicencia @default(activo)
   observaciones  String?   @db.Text
   createdAt      DateTime  @default(now())

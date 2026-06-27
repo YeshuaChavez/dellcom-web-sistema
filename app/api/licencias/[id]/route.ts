@@ -12,7 +12,7 @@ import { z } from "zod";
 // Todos los campos son opcionales para permitir actualizaciones parciales
 const LicenciaUpdateSchema = z.object({
   software: z.string().min(3, "El nombre del software debe tener al menos 3 caracteres").optional(),
-  correo_cuenta: z.string().email("El correo de la cuenta no es válido").optional(),
+  correo_cuenta: z.string().min(3, "La cuenta/correo debe tener al menos 3 caracteres").optional(),
   contrasena: z.string().min(4, "La contraseña/clave debe tener al menos 4 caracteres").optional(),
   nombre_cliente: z.string().min(3, "El nombre del cliente debe tener al menos 3 caracteres").optional(),
   telefono: z
@@ -23,6 +23,7 @@ const LicenciaUpdateSchema = z.object({
     .optional()
     .nullable()
     .or(z.literal("")),
+  anydesk_id: z.string().optional().nullable().or(z.literal("")),
   fecha_inicio: z.string().optional(),
   fecha_fin: z.string().nullable().optional(),
   observaciones: z.string().nullable().optional(),

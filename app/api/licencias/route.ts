@@ -14,7 +14,7 @@ import { z } from "zod";
 // Esquema Zod para crear una licencia nueva
 const LicenciaSchema = z.object({
   software: z.string().min(3, "El nombre del software debe tener al menos 3 caracteres"),
-  correo_cuenta: z.string().email("El correo de la cuenta no es válido"),
+  correo_cuenta: z.string().min(3, "La cuenta/correo debe tener al menos 3 caracteres"),
   contrasena: z.string().min(4, "La contraseña/clave debe tener al menos 4 caracteres"),
   nombre_cliente: z.string().min(3, "El nombre del cliente debe tener al menos 3 caracteres"),
   telefono: z
@@ -25,6 +25,7 @@ const LicenciaSchema = z.object({
     .optional()
     .nullable()
     .or(z.literal("")),
+  anydesk_id: z.string().optional().nullable().or(z.literal("")),
   fecha_inicio: z.string().min(1, "La fecha de inicio es requerida"),
   fecha_fin: z.string().nullable().optional(),
   observaciones: z.string().nullable().optional(),
