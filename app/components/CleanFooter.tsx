@@ -70,7 +70,6 @@ export default function CleanFooter() {
             <li><Link className="text-sm text-on-surface-variant hover:text-primary transition-transform hover:translate-x-1 inline-block" href="/nosotros">Sobre Nosotros</Link></li>
             <li><Link className="text-sm text-on-surface-variant hover:text-primary transition-transform hover:translate-x-1 inline-block" href="/#portafolio">Casos de Éxito</Link></li>
             <li><Link className="text-sm text-on-surface-variant hover:text-primary transition-transform hover:translate-x-1 inline-block" href="/productos">Nuestro Catálogo</Link></li>
-            <li><Link className="text-sm text-on-surface-variant hover:text-primary transition-transform hover:translate-x-1 inline-block" href="/descargas">Descargas y Drivers</Link></li>
             <li><Link className="text-sm text-on-surface-variant hover:text-primary transition-transform hover:translate-x-1 inline-block" href="/soporte">Soporte AnyDesk</Link></li>
             <li><Link className="text-sm text-on-surface-variant hover:text-primary transition-transform hover:translate-x-1 inline-block" href="/admin/login">Portal Interno</Link></li>
           </ul>

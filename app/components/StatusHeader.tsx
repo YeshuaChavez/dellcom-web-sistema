@@ -37,7 +37,6 @@ export default function StatusHeader() {
     { href: "/", label: "Inicio" },
     { href: "/productos", label: "Catálogo" },
     { href: "/servicios", label: "Servicios" },
-    { href: "/descargas", label: "Descargas" },
     { href: "/nosotros", label: "Nosotros" },
     { href: "/contacto", label: "Contacto" }
   ];
