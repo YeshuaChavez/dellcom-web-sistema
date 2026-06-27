@@ -57,6 +57,7 @@ export default function LicensesTab({ filteredLicencias, isAdmin, canDelete, get
                 <th className="px-6 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider">Cliente</th>
                 <th className="px-6 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider">Software</th>
                 <th className="px-6 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider">Cuenta Correo</th>
+                <th className="px-6 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider">ID AnyDesk</th>
                 <th className="px-6 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider">Vencimiento</th>
                 <th className="px-6 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider">Estado</th>
                 <th className="px-6 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Acciones</th>
@@ -81,6 +82,7 @@ export default function LicensesTab({ filteredLicencias, isAdmin, canDelete, get
                       <td className="px-6 py-4 font-semibold text-sm text-on-surface">{lic.nombre_cliente}</td>
                       <td className="px-6 py-4 text-xs text-slate-600 font-semibold">{lic.software}</td>
                       <td className="px-6 py-4 text-xs text-slate-500">{lic.correo_cuenta}</td>
+                      <td className="px-6 py-4 text-xs font-bold text-slate-700">{lic.anydesk_id || "-"}</td>
                       <td className={`px-6 py-4 text-xs font-bold ${isWarning ? "text-red-600" : "text-slate-500"}`}>
                         {formatDate(lic.fecha_fin)}
                       </td>
@@ -126,7 +128,7 @@ export default function LicensesTab({ filteredLicencias, isAdmin, canDelete, get
                 })
               ) : (
                 <tr>
-                  <td colSpan={6} className="px-6 py-12 text-center text-xs text-slate-500">
+                  <td colSpan={7} className="px-6 py-12 text-center text-xs text-slate-500">
                     No se encontraron licencias registradas.
                   </td>
                 </tr>

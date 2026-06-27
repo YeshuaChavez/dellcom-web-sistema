@@ -4,6 +4,7 @@ interface Props {
   editingLicense: Licencia | null;
   formCliente: string; setFormCliente: (v: string) => void;
   formTelefono: string; setFormTelefono: (v: string) => void;
+  formAnydeskId: string; setFormAnydeskId: (v: string) => void;
   formSoftware: string; setFormSoftware: (v: string) => void;
   formCorreo: string; setFormCorreo: (v: string) => void;
   formContrasena: string; setFormContrasena: (v: string) => void;
@@ -19,6 +20,7 @@ const inputCls = "w-full bg-slate-50 border border-slate-200 focus:border-red-60
 export default function LicenseModal({
   editingLicense,
   formCliente, setFormCliente, formTelefono, setFormTelefono,
+  formAnydeskId, setFormAnydeskId,
   formSoftware, setFormSoftware, formCorreo, setFormCorreo,
   formContrasena, setFormContrasena, formFechaInicio, setFormFechaInicio,
   formFechaFin, setFormFechaFin, formObservaciones, setFormObservaciones,
@@ -38,13 +40,20 @@ export default function LicenseModal({
 
         <form onSubmit={onSubmit} className="p-8 space-y-4 max-h-[70vh] overflow-y-auto custom-scrollbar">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
+            <div className="sm:col-span-2">
               <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Nombre del Cliente</label>
               <input type="text" required value={formCliente} onChange={e => setFormCliente(e.target.value)} placeholder="Corporación S.A.C." className={inputCls} />
             </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Teléfono Cliente</label>
               <input type="text" value={formTelefono} onChange={e => setFormTelefono(e.target.value.replace(/\D/g, "").slice(0, 15))} placeholder="Ej. 987654321" className={inputCls} />
+            </div>
+            <div>
+              <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">ID AnyDesk (Opcional)</label>
+              <input type="text" value={formAnydeskId} onChange={e => setFormAnydeskId(e.target.value.replace(/[^0-9\s-]/g, "").slice(0, 15))} placeholder="Ej. 123 456 789" className={inputCls} />
             </div>
           </div>
 
@@ -55,7 +64,7 @@ export default function LicenseModal({
             </div>
             <div>
               <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Correo Electrónico Cuenta</label>
-              <input type="email" required value={formCorreo} onChange={e => setFormCorreo(e.target.value)} placeholder="soporte@cliente.com" className={inputCls} />
+              <input type="text" required value={formCorreo} onChange={e => setFormCorreo(e.target.value)} placeholder="soporte@cliente.com" className={inputCls} />
             </div>
           </div>
 

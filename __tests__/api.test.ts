@@ -26,10 +26,11 @@ const CreateUserSchema = z.object({
 
 const LicenciaSchema = z.object({
   software: z.string().min(1),
-  correo_cuenta: z.string().email(),
+  correo_cuenta: z.string().min(3),
   contrasena: z.string().min(1),
   nombre_cliente: z.string().min(1),
   telefono: z.string().nullable().optional(),
+  anydesk_id: z.string().nullable().optional(),
   fecha_inicio: z.string(),
   fecha_fin: z.string().nullable().optional(),
   observaciones: z.string().nullable().optional(),
@@ -254,10 +255,10 @@ describe("LicenciaSchema - Validacion de licencias de software", () => {
     expect(result.success).toBe(false);
   });
 
-  it("rechaza correo de cuenta invalido", () => {
+  it("rechaza cuenta/correo muy corto", () => {
     const result = LicenciaSchema.safeParse({
       software: "Adobe Acrobat",
-      correo_cuenta: "no-es-correo",
+      correo_cuenta: "ab",
       contrasena: "pass",
       nombre_cliente: "Cliente Test",
       fecha_inicio: "2026-01-01",

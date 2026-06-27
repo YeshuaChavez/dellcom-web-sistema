@@ -7,6 +7,7 @@ export interface Licencia {
   fecha_fin: string | null;
   nombre_cliente: string;
   telefono: string | null;
+  anydesk_id: string | null;
   estado: string;
   observaciones: string | null;
 }

@@ -110,6 +110,7 @@ export default function AdminDashboardPage() {
   const [formFechaInicio, setFormFechaInicio] = useState("");
   const [formFechaFin, setFormFechaFin] = useState("");
   const [formObservaciones, setFormObservaciones] = useState("");
+  const [formAnydeskId, setFormAnydeskId] = useState("");
 
   // --- File form ---
   const [formFileName, setFormFileName] = useState("");
@@ -370,7 +371,18 @@ export default function AdminDashboardPage() {
   // --- Licenses ---
   const handleCreateOrUpdateLicense = async (e: React.FormEvent) => {
     e.preventDefault();
-    const data = { software: formSoftware, correo_cuenta: formCorreo, contrasena: formContrasena, nombre_cliente: formCliente, telefono: formTelefono || null, fecha_inicio: formFechaInicio || new Date().toISOString(), fecha_fin: formFechaFin ? new Date(formFechaFin).toISOString() : null, observaciones: formObservaciones || null, estado: formFechaFin && new Date(formFechaFin) < new Date() ? "vencido" : "activo" };
+    const data = {
+      software: formSoftware,
+      correo_cuenta: formCorreo,
+      contrasena: formContrasena,
+      nombre_cliente: formCliente,
+      telefono: formTelefono || null,
+      anydesk_id: formAnydeskId || null,
+      fecha_inicio: formFechaInicio || new Date().toISOString(),
+      fecha_fin: formFechaFin ? new Date(formFechaFin).toISOString() : null,
+      observaciones: formObservaciones || null,
+      estado: formFechaFin && new Date(formFechaFin) < new Date() ? "vencido" : "activo"
+    };
     try {
       const url = editingLicense ? `/api/licencias/${editingLicense.id}` : "/api/licencias";
       const res = await fetch(url, { method: editingLicense ? "PUT" : "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
@@ -392,13 +404,14 @@ export default function AdminDashboardPage() {
   const openEditLicenseModal = (lic: Licencia) => {
     setEditingLicense(lic); setFormSoftware(lic.software); setFormCorreo(lic.correo_cuenta); setFormContrasena(lic.contrasena);
     setFormCliente(lic.nombre_cliente); setFormTelefono(lic.telefono || "");
+    setFormAnydeskId(lic.anydesk_id || "");
     setFormFechaInicio(lic.fecha_inicio ? lic.fecha_inicio.substring(0, 10) : "");
     setFormFechaFin(lic.fecha_fin ? lic.fecha_fin.substring(0, 10) : "");
     setFormObservaciones(lic.observaciones || ""); setShowLicenseModal(true);
   };
   const closeLicenseModal = () => {
     setEditingLicense(null); setFormSoftware(""); setFormCorreo(""); setFormContrasena("");
-    setFormCliente(""); setFormTelefono(""); setFormFechaInicio(""); setFormFechaFin(""); setFormObservaciones(""); setShowLicenseModal(false);
+    setFormCliente(""); setFormTelefono(""); setFormAnydeskId(""); setFormFechaInicio(""); setFormFechaFin(""); setFormObservaciones(""); setShowLicenseModal(false);
   };
 
   // --- Files ---
@@ -666,7 +679,8 @@ export default function AdminDashboardPage() {
   const filteredLicencias = licencias.filter(l =>
     l.nombre_cliente.toLowerCase().includes(searchQuery.toLowerCase()) ||
     l.software.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    l.correo_cuenta.toLowerCase().includes(searchQuery.toLowerCase())
+    l.correo_cuenta.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (l.anydesk_id && l.anydesk_id.toLowerCase().includes(searchQuery.toLowerCase()))
   );
   const filteredArchivos = archivos.filter(a =>
     a.nombre.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -846,6 +860,7 @@ export default function AdminDashboardPage() {
           formContrasena={formContrasena} setFormContrasena={setFormContrasena}
           formCliente={formCliente} setFormCliente={setFormCliente}
           formTelefono={formTelefono} setFormTelefono={setFormTelefono}
+          formAnydeskId={formAnydeskId} setFormAnydeskId={setFormAnydeskId}
           formFechaInicio={formFechaInicio} setFormFechaInicio={setFormFechaInicio}
           formFechaFin={formFechaFin} setFormFechaFin={setFormFechaFin}
           formObservaciones={formObservaciones} setFormObservaciones={setFormObservaciones}
