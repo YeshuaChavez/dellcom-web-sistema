@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 
+const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z\d]).{8,}$/;
+
 export async function POST(req: NextRequest) {
   try {
     const { token, newPassword } = await req.json();
@@ -9,8 +11,11 @@ export async function POST(req: NextRequest) {
     if (!token || typeof token !== "string" || !newPassword || typeof newPassword !== "string") {
       return NextResponse.json({ error: "Datos inválidos." }, { status: 400 });
     }
-    if (newPassword.length < 8) {
-      return NextResponse.json({ error: "La contraseña debe tener al menos 8 caracteres." }, { status: 400 });
+    
+    if (!PASSWORD_REGEX.test(newPassword)) {
+      return NextResponse.json({ 
+        error: "La contraseña debe tener al menos 8 caracteres, incluir una mayúscula, una minúscula, un número y un carácter especial." 
+      }, { status: 400 });
     }
 
     const record = await prisma.passwordResetToken.findUnique({ where: { token } });
