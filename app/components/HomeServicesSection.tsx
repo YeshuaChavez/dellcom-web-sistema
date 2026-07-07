@@ -23,19 +23,19 @@ function getServiceVisuals(nombre: string, defaultIcon: string) {
 }
 
 const FALLBACK_SERVICES = [
-  { id: 1, nombre: "Reparación de Laptops y Equipos", descripcion: "Diagnóstico avanzado y reparación electrónica de hardware multimarca para laptops, impresoras y PCs de escritorio.", icono_url: "laptop_mac" },
-  { id: 2, nombre: "Microelectrónica y Placas", descripcion: "Reparación a nivel de componentes en placas madre, reballing, microsoldadura y restauración de circuitos integrados.", icono_url: "memory" },
-  { id: 4, nombre: "Soporte Remoto (AnyDesk)", descripcion: "Asistencia técnica remota inmediata para mantenimiento de sistemas operativos, virus, configuraciones y software de oficina.", icono_url: "support_agent" },
-  { id: 5, nombre: "Venta de Repuestos de Laptops", descripcion: "Distribución de repuestos originales y compatibles para laptops multimarca: pantallas, teclados, baterías, cargadores, placas y carcasas.", icono_url: "storefront" },
-  { id: 6, nombre: "Licencias de Software", descripcion: "Venta e instalación de licencias de software originales para sistemas operativos Windows, suites de Office y antivirus corporativos.", icono_url: "verified_user" },
-  { id: 7, nombre: "Correos Corporativos", descripcion: "Configuración, migración y administración de correos profesionales en Google Workspace, Microsoft 365 y Webmail corporativo.", icono_url: "mail" },
+  { id: 1, nombre: "Reparación de Laptops y Equipos", descripcion: "Diagnóstico avanzado y reparación electrónica de hardware multimarca para laptops, impresoras y PCs de escritorio.", icono_url: "laptop_mac", imagen_url: null },
+  { id: 2, nombre: "Microelectrónica y Placas", descripcion: "Reparación a nivel de componentes en placas madre, reballing, microsoldadura y restauración de circuitos integrados.", icono_url: "memory", imagen_url: null },
+  { id: 4, nombre: "Soporte Remoto (AnyDesk)", descripcion: "Asistencia técnica remota inmediata para mantenimiento de sistemas operativos, virus, configuraciones y software de oficina.", icono_url: "support_agent", imagen_url: null },
+  { id: 5, nombre: "Venta de Repuestos de Laptops", descripcion: "Distribución de repuestos originales y compatibles para laptops multimarca: pantallas, teclados, baterías, cargadores, placas y carcasas.", icono_url: "storefront", imagen_url: null },
+  { id: 6, nombre: "Licencias de Software", descripcion: "Venta e instalación de licencias de software originales para sistemas operativos Windows, suites de Office y antivirus corporativos.", icono_url: "verified_user", imagen_url: null },
+  { id: 7, nombre: "Correos Corporativos", descripcion: "Configuración, migración y administración de correos profesionales en Google Workspace, Microsoft 365 y Webmail corporativo.", icono_url: "mail", imagen_url: null },
 ];
 
 async function getServices() {
   try {
     const dbServices = await prisma.servicio.findMany({ where: { activo: true }, orderBy: { id: "asc" } });
     if (dbServices && dbServices.length > 0) {
-      return dbServices.map(s => ({ id: s.id, nombre: s.nombre, descripcion: s.descripcion, icono_url: s.icono_url || "laptop_mac" }));
+      return dbServices.map(s => ({ id: s.id, nombre: s.nombre, descripcion: s.descripcion, icono_url: s.icono_url || "laptop_mac", imagen_url: s.imagen_url || null }));
     }
   } catch {
     /* Prisma unavailable — use fallback */
@@ -76,7 +76,7 @@ export default async function HomeServicesSection() {
                 style={{ transitionDelay: `${(index % 3) * 100}ms` }}
               >
                 <div className="relative h-48 w-full overflow-hidden bg-slate-100">
-                  <img src={visuals.image} alt={service.nombre} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
+                  <img src={service.imagen_url || visuals.image} alt={service.nombre} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-75" />
                   <div className="w-12 h-12 bg-white text-primary rounded-2xl flex items-center justify-center absolute bottom-4 left-4 shadow-md transition-all group-hover:bg-primary group-hover:text-white">
                     <span className="material-symbols-outlined text-[24px]">{visuals.icon}</span>

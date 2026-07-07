@@ -5,7 +5,13 @@ interface Props {
   formServiceName: string; setFormServiceName: (v: string) => void;
   formServiceDesc: string; setFormServiceDesc: (v: string) => void;
   formServiceIcon: string; setFormServiceIcon: (v: string) => void;
+  formServiceImage: string; setFormServiceImage: (v: string) => void;
   formServiceActive: boolean; setFormServiceActive: (v: boolean) => void;
+  uploadingService: boolean;
+  draggingServiceImg: boolean; setDraggingServiceImg: (v: boolean) => void;
+  setPreviewImage: (url: string | null) => void;
+  onUploadFile: (e: React.ChangeEvent<HTMLInputElement>, target: "service") => void;
+  onServiceDrop: (file: File) => void;
   onClose: () => void;
   onSubmit: (e: React.FormEvent) => void;
 }
@@ -32,7 +38,10 @@ export default function ServiceModal({
   formServiceName, setFormServiceName,
   formServiceDesc, setFormServiceDesc,
   formServiceIcon, setFormServiceIcon,
+  formServiceImage, setFormServiceImage,
   formServiceActive, setFormServiceActive,
+  uploadingService, draggingServiceImg, setDraggingServiceImg,
+  setPreviewImage, onUploadFile, onServiceDrop,
   onClose, onSubmit,
 }: Props) {
   return (
@@ -56,6 +65,46 @@ export default function ServiceModal({
           <div>
             <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Descripción del Servicio</label>
             <textarea required value={formServiceDesc} onChange={e => setFormServiceDesc(e.target.value)} placeholder="Detalle estructurado del servicio técnico..." rows={4} className={`${inputCls} resize-none`} />
+          </div>
+
+          <div>
+            <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Imagen del Servicio</label>
+            <div
+              className={`border-2 border-dashed rounded-xl p-3 space-y-2 transition-all duration-200 ${
+                draggingServiceImg ? "border-red-500 bg-red-50/30 scale-[1.01]" : formServiceImage ? "border-slate-200 bg-slate-50/50 border-solid" : "border-slate-300 bg-slate-50/30"
+              }`}
+              onDragOver={e => { e.preventDefault(); e.stopPropagation(); setDraggingServiceImg(true); }}
+              onDragEnter={e => { e.preventDefault(); e.stopPropagation(); setDraggingServiceImg(true); }}
+              onDragLeave={e => { e.preventDefault(); e.stopPropagation(); setDraggingServiceImg(false); }}
+              onDrop={e => { e.preventDefault(); e.stopPropagation(); setDraggingServiceImg(false); const f = e.dataTransfer.files?.[0]; if (f) onServiceDrop(f); }}
+            >
+              {draggingServiceImg && (
+                <div className="flex items-center justify-center gap-2 py-2 text-red-500">
+                  <span className="material-symbols-outlined text-lg animate-bounce">cloud_upload</span>
+                  <span className="text-[11px] font-bold">Suelta la imagen aquí</span>
+                </div>
+              )}
+              <div className={`flex gap-3 items-center ${draggingServiceImg ? "opacity-50" : ""}`}>
+                {formServiceImage && (
+                  <img src={formServiceImage} alt="Imagen del servicio" className="w-12 h-12 object-cover rounded-xl border border-slate-200 shrink-0 cursor-zoom-in hover:opacity-80 transition-opacity" title="Click para previsualizar" onClick={() => setPreviewImage(formServiceImage)} />
+                )}
+                <input type="text" value={formServiceImage} onChange={e => setFormServiceImage(e.target.value)} placeholder="Arrastra una imagen aquí o pega URL →" className={inputCls} />
+                <div className="relative shrink-0">
+                  <input type="file" id="formServiceImgFile" onChange={e => onUploadFile(e, "service")} className="hidden" accept="image/*" />
+                  <label htmlFor="formServiceImgFile" className="px-4 py-3 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-bold transition-all cursor-pointer inline-flex items-center gap-1.5">
+                    {uploadingService
+                      ? <span className="material-symbols-outlined text-sm animate-spin">progress_activity</span>
+                      : <span className="material-symbols-outlined text-sm">upload</span>
+                    }
+                    Subir
+                  </label>
+                </div>
+              </div>
+              {uploadingService && <span className="text-[10px] text-red-600 font-bold block">Cargando archivo...</span>}
+            </div>
+            <span className="text-[9px] text-slate-400 mt-1.5 block">
+              Si no subes una imagen, se mostrará una imagen genérica de referencia en la web pública.
+            </span>
           </div>
 
           <div>

@@ -27,6 +27,7 @@ const s3Client = new S3Client({
 const folderAllowedRoles: Record<string, Rol[]> = {
   productos: ["admin", "vendedor"],
   portfolio: ["admin", "tecnico"],
+  servicios: ["admin", "vendedor"],
   uploads: ["admin", "tecnico"],
 };
 
@@ -40,6 +41,7 @@ export async function POST(req: NextRequest) {
     const allowedFolders: Record<string, string> = {
       productos: "productos",
       portfolio: "portfolio",
+      servicios: "servicios",
       uploads: "uploads",
     };
     const folder = allowedFolders[folderParam] ?? "uploads";

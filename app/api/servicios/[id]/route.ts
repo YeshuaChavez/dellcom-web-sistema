@@ -14,6 +14,7 @@ const ServicioUpdateSchema = z.object({
   nombre: z.string().min(1, "El nombre del servicio es requerido").optional(),
   descripcion: z.string().min(1, "La descripción es requerida").optional(),
   icono_url: z.string().nullable().optional(),
+  imagen_url: z.string().nullable().optional(),
   activo: z.boolean().optional(),
 });
 

@@ -15,6 +15,8 @@ const ServicioSchema = z.object({
   descripcion: z.string().min(1, "La descripción es requerida"),
   // Nombre del ícono de Material Symbols (ej: "laptop_mac", "build")
   icono_url: z.string().nullable().optional(),
+  // URL de la imagen real subida por el admin para representar el servicio
+  imagen_url: z.string().nullable().optional(),
   activo: z.boolean().default(true),
 });
 

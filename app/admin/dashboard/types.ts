@@ -67,6 +67,7 @@ export interface Servicio {
   nombre: string;
   descripcion: string;
   icono_url: string | null;
+  imagen_url: string | null;
   activo: boolean;
 }
 

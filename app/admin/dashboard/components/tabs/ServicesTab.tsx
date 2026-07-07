@@ -5,12 +5,13 @@ interface Props {
   canEditCatalogo: boolean;
   canDelete: boolean;
   trabajosCount: number;
+  setPreviewImage: (url: string | null) => void;
   onOpenCreate: () => void;
   onEdit: (srv: Servicio) => void;
   onDelete: (id: number) => void;
 }
 
-export default function ServicesTab({ filteredServicios, canEditCatalogo, canDelete, trabajosCount, onOpenCreate, onEdit, onDelete }: Props) {
+export default function ServicesTab({ filteredServicios, canEditCatalogo, canDelete, trabajosCount, setPreviewImage, onOpenCreate, onEdit, onDelete }: Props) {
   return (
     <section className="animate-fade-in-up">
       <div className="flex justify-between items-end mb-6">
@@ -53,6 +54,7 @@ export default function ServicesTab({ filteredServicios, canEditCatalogo, canDel
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-slate-50 border-b border-slate-200">
+                <th className="px-6 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider">Imagen</th>
                 <th className="px-6 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider">Nombre del Servicio</th>
                 <th className="px-6 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider">Descripción</th>
                 <th className="px-6 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider">Icono (Google)</th>
@@ -64,6 +66,21 @@ export default function ServicesTab({ filteredServicios, canEditCatalogo, canDel
               {filteredServicios.length > 0 ? (
                 filteredServicios.map((srv) => (
                   <tr key={srv.id} className="group/row hover:bg-slate-50 transition-all duration-200">
+                    <td className="px-6 py-4">
+                      {srv.imagen_url ? (
+                        <img
+                          src={srv.imagen_url}
+                          alt={srv.nombre}
+                          className="w-10 h-10 object-cover rounded-lg border border-slate-200 bg-slate-50 cursor-zoom-in hover:scale-110 hover:shadow-md transition-all duration-200"
+                          title="Click para previsualizar"
+                          onClick={() => setPreviewImage(srv.imagen_url)}
+                        />
+                      ) : (
+                        <div className="w-10 h-10 rounded-lg border border-slate-200 bg-slate-100 flex items-center justify-center text-slate-400">
+                          <span className="material-symbols-outlined text-lg">image</span>
+                        </div>
+                      )}
+                    </td>
                     <td className="px-6 py-4 text-xs font-semibold text-on-surface">{srv.nombre}</td>
                     <td className="px-6 py-4 text-xs text-slate-600 max-w-xs truncate">{srv.descripcion}</td>
                     <td className="px-6 py-4 text-xs text-slate-500 font-mono">
@@ -105,7 +122,7 @@ export default function ServicesTab({ filteredServicios, canEditCatalogo, canDel
                 ))
               ) : (
                 <tr>
-                  <td colSpan={5} className="px-6 py-12 text-center text-xs text-slate-500">
+                  <td colSpan={6} className="px-6 py-12 text-center text-xs text-slate-500">
                     No se encontraron servicios registrados.
                   </td>
                 </tr>

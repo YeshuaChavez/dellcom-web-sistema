@@ -82,6 +82,7 @@ model Servicio {
   nombre      String
   descripcion String             @db.Text
   icono_url   String?
+  imagen_url  String?            @db.Text
   activo      Boolean            @default(true)
   trabajos    TrabajoRealizado[]
 }

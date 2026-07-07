@@ -139,7 +139,10 @@ export default function AdminDashboardPage() {
   const [formServiceName, setFormServiceName] = useState("");
   const [formServiceDesc, setFormServiceDesc] = useState("");
   const [formServiceIcon, setFormServiceIcon] = useState("laptop_mac");
+  const [formServiceImage, setFormServiceImage] = useState("");
   const [formServiceActive, setFormServiceActive] = useState(true);
+  const [uploadingService, setUploadingService] = useState(false);
+  const [draggingServiceImg, setDraggingServiceImg] = useState(false);
 
   // --- Portfolio form ---
   const [formPortfolioTitle, setFormPortfolioTitle] = useState("");
@@ -215,7 +218,7 @@ export default function AdminDashboardPage() {
   // --- Upload handler ---
   const handleUploadFile = async (
     e: React.ChangeEvent<HTMLInputElement>,
-    target: "product" | "file" | "portfolio" | "portfolio-extra",
+    target: "product" | "file" | "portfolio" | "portfolio-extra" | "service",
     idx?: number
   ) => {
     const file = e.target.files?.[0];
@@ -228,11 +231,12 @@ export default function AdminDashboardPage() {
     }
     if (target === "product" && idx !== undefined) setUploadingProductIdx(idx);
     else if (target === "portfolio-extra" && idx !== undefined) setUploadingPortfolioExtraIdx(idx);
+    else if (target === "service") setUploadingService(true);
     else setUploading(true);
 
     const fd = new FormData();
     fd.append("file", file);
-    fd.append("folder", target === "product" ? "productos" : (target.startsWith("portfolio") ? "portfolio" : "uploads"));
+    fd.append("folder", target === "product" ? "productos" : target === "service" ? "servicios" : (target.startsWith("portfolio") ? "portfolio" : "uploads"));
 
     try {
       const res = await fetch("/api/admin/upload", { method: "POST", body: fd });
@@ -244,6 +248,8 @@ export default function AdminDashboardPage() {
         setFormPortfolioExtraImgs(prev => prev.map((u, i) => i === idx ? data.url : u));
       } else if (target === "portfolio") {
         setFormPortfolioImgUrl(data.url);
+      } else if (target === "service") {
+        setFormServiceImage(data.url);
       } else {
         setFormFileUrl(data.url);
         if (!formFileName) {
@@ -262,6 +268,7 @@ export default function AdminDashboardPage() {
     } finally {
       if (target === "product") setUploadingProductIdx(null);
       else if (target === "portfolio-extra") setUploadingPortfolioExtraIdx(null);
+      else if (target === "service") setUploadingService(false);
       else setUploading(false);
     }
   };
@@ -299,6 +306,21 @@ export default function AdminDashboardPage() {
       alert("Imagen cargada con éxito.");
     } catch { alert("Error al subir la imagen."); }
     finally { setUploading(false); }
+  };
+
+  const handleServiceDrop = async (file: File) => {
+    if (file.size > 4.5 * 1024 * 1024) { alert(`"${file.name}" supera 4.5MB.`); return; }
+    if (!file.type.startsWith("image/")) { alert("Solo imágenes."); return; }
+    setUploadingService(true);
+    const fd = new FormData(); fd.append("file", file); fd.append("folder", "servicios");
+    try {
+      const res = await fetch("/api/admin/upload", { method: "POST", body: fd });
+      if (!res.ok) throw new Error();
+      const data = await res.json();
+      setFormServiceImage(data.url);
+      alert("Imagen cargada con éxito.");
+    } catch { alert("Error al subir la imagen."); }
+    finally { setUploadingService(false); }
   };
 
   const handlePortfolioExtraDrop = async (file: File, idx: number) => {
@@ -509,7 +531,7 @@ export default function AdminDashboardPage() {
   // --- Services ---
   const handleCreateOrUpdateService = async (e: React.FormEvent) => {
     e.preventDefault();
-    const data = { nombre: formServiceName, descripcion: formServiceDesc, icono_url: formServiceIcon || "laptop_mac", activo: formServiceActive };
+    const data = { nombre: formServiceName, descripcion: formServiceDesc, icono_url: formServiceIcon || "laptop_mac", imagen_url: formServiceImage || null, activo: formServiceActive };
     try {
       const url = editingService ? `/api/servicios/${editingService.id}` : "/api/servicios";
       const res = await fetch(url, { method: editingService ? "PUT" : "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
@@ -528,9 +550,13 @@ export default function AdminDashboardPage() {
 
   const openEditServiceModal = (srv: Servicio) => {
     setEditingService(srv); setFormServiceName(srv.nombre); setFormServiceDesc(srv.descripcion);
-    setFormServiceIcon(srv.icono_url || "laptop_mac"); setFormServiceActive(srv.activo); setShowServiceModal(true);
+    setFormServiceIcon(srv.icono_url || "laptop_mac"); setFormServiceImage(srv.imagen_url || "");
+    setFormServiceActive(srv.activo); setShowServiceModal(true);
   };
-  const closeServiceModal = () => { setEditingService(null); setFormServiceName(""); setFormServiceDesc(""); setFormServiceIcon("laptop_mac"); setFormServiceActive(true); setShowServiceModal(false); };
+  const closeServiceModal = () => {
+    setEditingService(null); setFormServiceName(""); setFormServiceDesc(""); setFormServiceIcon("laptop_mac");
+    setFormServiceImage(""); setFormServiceActive(true); setShowServiceModal(false);
+  };
 
   // --- Portfolio ---
   const handleCreateOrUpdatePortfolio = async (e: React.FormEvent) => {
@@ -824,6 +850,7 @@ export default function AdminDashboardPage() {
             <ServicesTab
               filteredServicios={filteredServicios} canEditCatalogo={canEditCatalogo} canDelete={canDelete}
               trabajosCount={trabajos.length}
+              setPreviewImage={setPreviewImage}
               onOpenCreate={() => setShowServiceModal(true)}
               onEdit={openEditServiceModal}
               onDelete={handleDeleteService}
@@ -922,7 +949,13 @@ export default function AdminDashboardPage() {
           formServiceName={formServiceName} setFormServiceName={setFormServiceName}
           formServiceDesc={formServiceDesc} setFormServiceDesc={setFormServiceDesc}
           formServiceIcon={formServiceIcon} setFormServiceIcon={setFormServiceIcon}
+          formServiceImage={formServiceImage} setFormServiceImage={setFormServiceImage}
           formServiceActive={formServiceActive} setFormServiceActive={setFormServiceActive}
+          uploadingService={uploadingService}
+          draggingServiceImg={draggingServiceImg} setDraggingServiceImg={setDraggingServiceImg}
+          setPreviewImage={setPreviewImage}
+          onUploadFile={(e) => handleUploadFile(e, "service")}
+          onServiceDrop={handleServiceDrop}
           onClose={closeServiceModal}
           onSubmit={handleCreateOrUpdateService}
         />

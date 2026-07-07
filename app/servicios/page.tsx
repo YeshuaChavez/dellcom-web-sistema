@@ -113,6 +113,7 @@ async function getServices() {
         nombre: s.nombre,
         descripcion: s.descripcion,
         icono_url: s.icono_url || "laptop_mac",
+        imagen_url: s.imagen_url || null,
       }));
     }
   } catch (error) {
@@ -125,36 +126,42 @@ async function getServices() {
       nombre: "Reparación de Hardware",
       descripcion: "Diagnóstico avanzado y reparación de nivel componente para laptops, PCs de alto rendimiento y servidores corporativos.",
       icono_url: "computer",
+      imagen_url: null,
     },
     {
       id: 3,
       nombre: "Soporte Corporativo",
       descripcion: "Mantenimiento preventivo y correctivo con planes de respuesta inmediata para asegurar la productividad de su equipo.",
       icono_url: "business",
+      imagen_url: null,
     },
     {
       id: 4,
       nombre: "Licenciamiento de Software",
       descripcion: "Gestión y venta de licencias oficiales (Microsoft, Adobe, Autodesk) garantizando cumplimiento legal y seguridad.",
       icono_url: "verified_user",
+      imagen_url: null,
     },
     {
       id: 5,
       nombre: "Ciberseguridad",
       descripcion: "Protección activa contra amenazas digitales, firewalls avanzados y recuperación de datos críticos ante incidentes.",
       icono_url: "security",
+      imagen_url: null,
     },
     {
       id: 6,
       nombre: "Consultoría IT",
       descripcion: "Planeación estratégica para el crecimiento tecnológico, optimización de presupuestos y arquitectura de soluciones.",
       icono_url: "psychology",
+      imagen_url: null,
     },
     {
       id: 7,
       nombre: "Venta de Repuestos de Laptops",
       descripcion: "Distribución de repuestos originales y compatibles para laptops multimarca: pantallas, teclados, baterías, cargadores, placas y carcasas.",
       icono_url: "storefront",
+      imagen_url: null,
     },
   ];
 }
@@ -244,10 +251,10 @@ export default async function ServiciosPage() {
                   {/* Image Card (cuadro) */}
                   <div className="w-full lg:w-1/2 group">
                     <div className="relative aspect-[4/3] rounded-[2rem] overflow-hidden border border-slate-200 shadow-md bg-slate-50">
-                      <img 
-                        src={visuals.image} 
-                        alt={service.nombre} 
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
+                      <img
+                        src={service.imagen_url || visuals.image}
+                        alt={service.nombre}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                       />
                       {/* Floating Icon Badge */}
                       <div className="absolute top-6 left-6 w-14 h-14 bg-white/90 backdrop-blur-sm border border-slate-100 rounded-2xl flex items-center justify-center text-primary shadow-md">
