@@ -61,7 +61,7 @@ export default function NosotrosPage() {
                 <img 
                   alt="Sede Principal DELLCOM SAC" 
                   className="w-full h-full object-cover transition-transform duration-700 hover:scale-105" 
-                  src="/img/servicios/huandoy.jpg" 
+                  src="/img/servicios/huandoy.jpeg" 
                 />
               </div>
 
