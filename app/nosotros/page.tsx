@@ -62,7 +62,7 @@ export default function NosotrosPage() {
                   alt="Sede Principal DELLCOM SAC" 
                   className="w-full h-full object-cover transition-transform duration-700 hover:scale-105" 
                   src="public/img/servicios/tienda_front.jpg" 
-                />
+                >
               </div>
 
               {/* Floating Sede Central Badge */}
