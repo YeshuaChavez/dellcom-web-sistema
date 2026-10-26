@@ -55,7 +55,7 @@ export default async function Home() {
               </div>
               <div className="space-y-4">
                 <h1 className="font-headline text-4xl md:text-5xl lg:text-6xl font-black text-on-surface leading-tight tracking-tight">
-                  Ingeniería IT de <br /><span className="text-primary italic">Alta Precisión</span>
+                  Servicio Técnico Especializado <br /><span className="text-primary italic">Alta Precisión</span>
                 </h1>
                 <p className="text-sm md:text-base text-on-surface-variant max-w-lg leading-relaxed">
                   Desde reparación electrónica a nivel de placa madre hasta licenciamiento oficial. Garantizamos la continuidad operativa de tu empresa con soluciones inmediatas.
